@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import video from "../assets/Pattern-Charcoal.mp4"
+import video from "../assets/background.mp4"
 
 const VideoBackground = () => {
   return (

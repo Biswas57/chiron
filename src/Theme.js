@@ -9,7 +9,7 @@ const theme = createTheme({
     },
     background: {
       default: '#1a1a1a', // Black background
-      paper: '#222222',   // Dark gray for components
+      paper: '#040404',   // Dark gray for components
     },
     text: {
       primary: '#ffffff', // White text
