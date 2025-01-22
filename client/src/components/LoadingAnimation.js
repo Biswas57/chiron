@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashLoader } from 'react-spinners';
+import { SyncLoader } from 'react-spinners';
 import Box from '@mui/material/Box';
 import { motion } from 'framer-motion';
 
@@ -40,9 +40,9 @@ const LoadingAnimation = () => {
             }
           }}
         >
-          <HashLoader 
+          <SyncLoader 
             color="#7855fb"
-            size={90}
+            size={15}
             speedMultiplier={0.9}
             cssOverride={{
               filter: 'drop-shadow(0 0 10px rgba(120,85,251,0.3))'

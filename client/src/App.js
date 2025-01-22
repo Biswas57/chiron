@@ -12,34 +12,44 @@ import ScriptBox from "./components/ScriptBox";
 
 const MotionBox = motion(Box);
 
+const API_URL = 'http://localhost:5000/api/extract-text';
+
 function App() {
   const [showScript, setShowScript] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [scriptText, setScriptText] = useState("");
+  const [error, setError] = useState(null);
 
   const handleUrlSubmit = async (url) => {
     setIsLoading(true);
+    setError(null);
     
     try {
-      // Replace this with actual API call
-      await new Promise(resolve => setTimeout(resolve, 7000));
-      
-      // example text from api call
-      setScriptText(`Lorem ipsum dolor sit amet. Ut laboriosam quisquam ea explicabo enim sed quia aspernatur hic corporis odio 33 quaerat sint et veritatis atque in rerum architecto. Sit provident perferendis non perspiciatis reprehenderit ea magni sint sit aliquid recusandae est asperiores harum quo quae odio. Hic laboriosam soluta et modi ratione aut mollitia nihil et voluptatum consectetur! Eum laboriosam unde ex molestiae voluptas a exercitationem autem?
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url }),
+      });
 
-        Hic sunt officiis eum praesentium odio et officiis quae et sapiente eligendi. Qui repudiandae debitis qui veritatis modi qui molestiae dolores ad porro delectus et quam beatae et corrupti praesentium id quia quod. Ex nemo temporibus est doloribus officia id possimus cumque hic mollitia adipisci aut cumque velit aut repellat magnam in incidunt iure?
-        
-        At eaque dolor et molestiae consectetur ut similique doloribus est rerum similique et tempora perspiciatis. Sed impedit consequatur et veniam perferendis aut exercitationem tempora. Eos veritatis veniam et accusamus alias non sunt necessitatibus non alias minima et voluptatem maxime et quaerat tempore et molestias dicta.
-        
-        Et explicabo blanditiis ut assumenda voluptas et natus nemo et vitae Quis! Non repellendus voluptas qui neque aperiam et neque dolor. Quo atque iusto est suscipit pariatur est similique voluptate eos alias laborum ut quae vitae.
-        
-        Et nihil nisi aut galisum quisquam in esse explicabo. Et dolor perferendis nam aliquid rerum aut placeat vitae vel odit natus eum dignissimos porro et numquam dignissimos id omnis fugit.
-        
-        `);
-      setShowScript(true);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setScriptText(data.data);
+        setShowScript(true);
+      } else {
+        throw new Error(data.error || 'Failed to extract text');
+      }
     } catch (error) {
       console.error('Error fetching script:', error);
-      // handle error
+      setError(error.message);
+      // You might want to show this error to the user
+      setShowScript(false);
     } finally {
       setIsLoading(false);
     }
@@ -66,6 +76,18 @@ function App() {
               transition={{ duration: 0.3 }}
             >
               <InputBox onSubmit={handleUrlSubmit} />
+              {error && (
+                <Box sx={{ 
+                  color: 'error.main',
+                  textAlign: 'center',
+                  mt: 2,
+                  p: 2,
+                  bgcolor: 'error.light',
+                  borderRadius: 1
+                }}>
+                  {error}
+                </Box>
+              )}
             </MotionBox>
           )}
           {isLoading && (
