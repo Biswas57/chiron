@@ -6,7 +6,9 @@ import Box from '@mui/material/Box';
 const InputBox = ({ onSubmit }) => {
   const [url, setUrl] = useState('');
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(`clicked! URL: ${url}`)
     if (url.trim()) {
       onSubmit(url);
     }
@@ -18,17 +20,19 @@ const InputBox = ({ onSubmit }) => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '80vh', // Ensure the box takes the full height of the screen
+        height: '80vh',
       }}
     >
       <Box
+        component="form"
+        onSubmit={handleSubmit}
         sx={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           gap: 2,
           width: '100%',
-          maxWidth: '500px', // Maximum width for input box
+          maxWidth: '500px',
         }}
       >
         <TextField
@@ -37,9 +41,13 @@ const InputBox = ({ onSubmit }) => {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           color="primary"
+          autoComplete="off"
+          inputProps={{
+            autoComplete: 'off',
+          }}
           sx={{
             backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            width: '100%', // Ensures the input takes up the full width of the container
+            width: '100%',
             '& .MuiOutlinedInput-root': {
               '&.Mui-focused fieldset': {
                 borderColor: '#7855fb',
@@ -48,9 +56,9 @@ const InputBox = ({ onSubmit }) => {
           }}
         />
         <Button
+          type="submit"
           variant="contained"
           color="primary"
-          onClick={handleSubmit}
           sx={{
             backgroundColor: '#7855fb',
             '&:hover': {
