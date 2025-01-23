@@ -10,6 +10,7 @@ import Navbar from './components/Navbar';
 import Box from '@mui/material/Box';
 import theme from './Theme';
 import VideoBackground from './components/VideoBackground';
+import ScriptBox from "./pages/ScriptBox";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -23,13 +24,16 @@ root.render(
           backgroundColor: 'transparent'
         }}
       >
+        {/* These appear on all pages */}
         <VideoBackground />
         <Navbar />
 
         {/* Page content */}
         <Routes>
           <Route path="/" element={<App />} />
+          <Route path="/result" element={<ScriptBox />} />
         </Routes>
+
       </Box>
     </ThemeProvider>
   </BrowserRouter>

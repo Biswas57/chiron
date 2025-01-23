@@ -4,8 +4,11 @@ import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import ntxLogo from '../assets/nutanix.svg';
+import { useNavigate } from 'react-router';
 
 const Navbar = () => {
+  const navigate = useNavigate();
+
   return (
     <AppBar position="static" color="primary" 
       sx={{
@@ -27,7 +30,7 @@ const Navbar = () => {
               fontWeight: 'bold',
               textShadow: `0 0 25px rgba(255, 255, 255, 0.35)`,    
           }}
-          onClick={() => {window.location.reload();}}
+          onClick={() => {navigate("/");}}
         >
           Chiron Framework
         </Button>

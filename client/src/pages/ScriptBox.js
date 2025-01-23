@@ -2,8 +2,15 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Box from '@mui/material/Box';
 import '@fontsource/inter';
+import { useLocation } from 'react-router';
 
-const ScriptBox = ({ scriptText }) => {
+function ScriptBox() {
+  const location = useLocation();
+  const { state } = location;
+
+  const scriptText = state.scriptText;
+  console.log(scriptText);
+
   const containerVariants = {
     hidden: { 
       opacity: 0,
