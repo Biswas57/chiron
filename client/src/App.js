@@ -10,8 +10,6 @@ const MotionBox = motion(Box);
 const API_URL = 'http://localhost:5000/api/extract-text';
 
 function App() {
-  localStorage.setItem("scriptText", "");
-
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +35,6 @@ function App() {
       const data = await response.json();
       
       if (data.success) {
-        await new Promise(r => setTimeout(r, 2000));
         navigate("/result", { state: { scriptText: data.data } });
       } else {
         throw new Error(data.error || 'Failed to extract text');
