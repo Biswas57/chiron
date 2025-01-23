@@ -14,7 +14,6 @@ function ScriptBox() {
   const { state } = location;
   const scriptText = state.scriptText;
 
-const ScriptBox = ({ scriptText }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
