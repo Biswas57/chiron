@@ -1,13 +1,8 @@
 import React, { useState } from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import { AnimatePresence, motion } from 'framer-motion';
-import Navbar from './components/Navbar';
 import InputBox from './components/URLInput';
 import LoadingAnimation from './components/LoadingAnimation';
-import theme from './Theme';
-import VideoBackground from './components/VideoBackground';
 import ScriptBox from "./components/ScriptBox";
 
 const MotionBox = motion(Box);
@@ -56,17 +51,6 @@ function App() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box
-        sx={{
-          minHeight: '100vh',
-          position: 'relative',
-          backgroundColor: 'transparent'
-        }}
-      >
-        <VideoBackground />
-        <Navbar />
         <AnimatePresence mode="wait">
           {!showScript && !isLoading && (
             <MotionBox
@@ -112,8 +96,7 @@ function App() {
             </MotionBox>
           )}
         </AnimatePresence>
-      </Box>
-    </ThemeProvider>
+
   );
 }
 

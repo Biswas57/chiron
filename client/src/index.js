@@ -4,13 +4,34 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route } from "react-router";
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Navbar from './components/Navbar';
+import Box from '@mui/material/Box';
+import theme from './Theme';
+import VideoBackground from './components/VideoBackground';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<App />} />
-    </Routes>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box
+        sx={{
+          minHeight: '100vh',
+          position: 'relative',
+          backgroundColor: 'transparent'
+        }}
+      >
+        <VideoBackground />
+        <Navbar />
+
+        {/* Page content */}
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </Box>
+    </ThemeProvider>
   </BrowserRouter>
 );
 
