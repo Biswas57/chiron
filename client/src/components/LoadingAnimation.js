@@ -1,5 +1,5 @@
 import React from 'react';
-import { SyncLoader } from 'react-spinners';
+import { RingLoader } from 'react-spinners';
 import Box from '@mui/material/Box';
 import { motion } from 'framer-motion';
 
@@ -40,9 +40,9 @@ const LoadingAnimation = () => {
             }
           }}
         >
-          <SyncLoader 
+          <RingLoader 
             color="#7855fb"
-            size={15}
+            size={90}
             speedMultiplier={0.9}
             cssOverride={{
               filter: 'drop-shadow(0 0 10px rgba(120,85,251,0.3))'

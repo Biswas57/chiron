@@ -65,7 +65,7 @@ function App() {
           backgroundColor: 'transparent'
         }}
       >
-        <VideoBackground />
+        {!showScript && <VideoBackground />}
         <Navbar />
         <AnimatePresence mode="wait">
           {!showScript && !isLoading && (
