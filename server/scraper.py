@@ -7,6 +7,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 
 def scrape_text(url):
+    return "Try Now hehe cat"
+
     PATH = "chromedriver-mac-x64/chromedriver"
     service = Service(PATH)
 
