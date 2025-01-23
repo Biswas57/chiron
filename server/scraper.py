@@ -1,4 +1,5 @@
 from playwright.sync_api import sync_playwright
+import ollama_parse as op
 import time
 
 def scrape_text(url):
@@ -11,7 +12,6 @@ def scrape_text(url):
             # Auto-scroll to load dynamic content
             last_height = page.evaluate('document.body.scrollHeight')
             while True:
-                page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
                 time.sleep(1)
                 new_height = page.evaluate('document.body.scrollHeight')
                 if new_height == last_height:
@@ -37,4 +37,5 @@ def parse(text):
 
 def scrape(url):
     text = scrape_text(url)
-    return parse(text)
+    parsed_text = parse(text)
+    return op.generate_script(parsed_text)
