@@ -5,11 +5,10 @@ import '@fontsource/inter';
 import { useLocation } from 'react-router';
 
 function ScriptBox() {
+  // Get the result from App.js
   const location = useLocation();
   const { state } = location;
-
   const scriptText = state.scriptText;
-  console.log(scriptText);
 
   const containerVariants = {
     hidden: { 
