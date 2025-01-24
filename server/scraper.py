@@ -2,6 +2,7 @@ from playwright.sync_api import sync_playwright
 import ollama_parse as op
 import time
 import re
+import platform
 
 def scrape_title_and_text(url):
     with sync_playwright() as p:
