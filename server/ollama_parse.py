@@ -1,8 +1,10 @@
 from groq import Groq
 import os
+from dotenv import load_dotenv
 
+load_dotenv(dotenv_path=".env")
 client = Groq(
-  api_key="gsk_GdB3dW0Zuh7KBixxVLQbWGdyb3FYLyTnbM8Yq9AwAG06ryJrq"
+  api_key=os.getenv('GROQ_API_KEY')
 )
 
 def generate_prompt(content):
