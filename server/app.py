@@ -37,7 +37,7 @@ def extract_text_endpoint():
         }), 400
 
     try:
-        result = scrape(url)
+        kb_id, title, result = scrape(url)
         if not result:
             return jsonify({
                 "success": False,
@@ -46,10 +46,13 @@ def extract_text_endpoint():
             
         return jsonify({
             "success": True,
+            "kb_id": kb_id,
+            "title": title,
             "data": result
         }), 200
         
     except Exception as e:
+        print("extract_text_endpoint(): exception thrown: " + str(e))
         return jsonify({
             "success": False,
             "error": str(e)

@@ -1,8 +1,9 @@
 from playwright.sync_api import sync_playwright
 import ollama_parse as op
 import time
+import re
 
-def scrape_text(url):
+def scrape_title_and_text(url):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
@@ -19,10 +20,10 @@ def scrape_text(url):
                 last_height = new_height
                 
             content = page.evaluate('document.body.innerText')
-            return content
+            return page.title(), content
         except Exception as e:
             print(f"Error scraping: {e}")
-            return None
+            return None, None
         finally:
             browser.close()
 
@@ -35,7 +36,18 @@ def parse(text):
     except:
         return text  # Return full text if "Try Now" not found
 
+def scrape_kb_id(text):
+    if not text:
+        return None
+    
+    match = re.search(r"KB-[0-9]*", text)
+    if not match:
+        return "KB-????"
+    else:
+        return match.group()
+
 def scrape(url):
-    text = scrape_text(url)
+    title, text = scrape_title_and_text(url)
     parsed_text = parse(text)
-    return op.generate_script(parsed_text)
+    kb_id = scrape_kb_id(parsed_text)
+    return kb_id, title, op.generate_script(parsed_text)
