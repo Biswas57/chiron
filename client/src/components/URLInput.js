@@ -5,12 +5,17 @@ import Box from '@mui/material/Box';
 
 const InputBox = ({ onSubmit }) => {
   const [url, setUrl] = useState('');
+  const [error, setError] = useState(false);
+
+  const urlPattern = /^https:\/\/portal\.nutanix\.com\//;
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(`clicked! URL: ${url}`)
-    if (url.trim()) {
+    if (urlPattern.test(url.trim())) {
+      setError(false);
       onSubmit(url);
+    } else {
+      setError(true);
     }
   };
 
@@ -40,6 +45,8 @@ const InputBox = ({ onSubmit }) => {
           variant="filled"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
+          error={error}
+          helperText={error ? 'URL must be from the Nutanix portal.' : ''}
           color="primary"
           autoComplete="off"
           inputProps={{
