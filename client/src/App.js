@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import InputBox from './components/URLInput';
 import LoadingAnimation from './components/LoadingAnimation';
 import { useNavigate } from 'react-router';
+import { addKBtoLocalStorage } from './utils/localStorage';
 
 const MotionBox = motion(Box);
 
@@ -35,6 +36,7 @@ function App() {
       const data = await response.json();
       
       if (data.success) {
+        addKBtoLocalStorage(data.kb_id, data.title, data.data);
         navigate("/result", { state: { scriptText: data.data } });
       } else {
         throw new Error(data.error || 'Failed to extract text');
