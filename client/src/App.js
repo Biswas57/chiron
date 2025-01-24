@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import { AnimatePresence, motion } from 'framer-motion';
 import InputBox from './components/URLInput';
 import LoadingAnimation from './components/LoadingAnimation';
+import VideoBackground from './components/VideoBackground';
 import { useNavigate } from 'react-router';
 import { addKBtoLocalStorage } from './utils/localStorage';
 
@@ -51,6 +52,7 @@ function App() {
 
   return (
     <AnimatePresence mode="wait">
+      <VideoBackground />
       {!isLoading && (
         <MotionBox
           key="input"

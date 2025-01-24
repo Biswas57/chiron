@@ -9,7 +9,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Navbar from './components/Navbar';
 import Box from '@mui/material/Box';
 import theme from './Theme';
-import VideoBackground from './components/VideoBackground';
 import ScriptBox from "./pages/ScriptBox";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -25,7 +24,7 @@ root.render(
         }}
       >
         {/* These appear on all pages */}
-        <VideoBackground />
+        
         <Navbar />
 
         {/* Page content */}
