@@ -85,7 +85,7 @@ const Navbar = () => {
                   {[
                     ["Adib Akbari", ""],
                     ["Bill Nguyen", "https://www.linkedin.com/in/bill-nguyen-737061232"],
-                    ["Biswas Simkhada", ""],
+                    ["Biswas Simkhada", "https://www.linkedin.com/in/biswas-simkhada/"],
                     ["Joseph Hayek", ""],
                     ["Leo Li", ""],
                     ["Lucas Young", ""],
