@@ -83,14 +83,14 @@ const Navbar = () => {
                 <Divider />
                 <List>
                   {[
-                    ["Adib Akbari", ""],
+                    ["Adib Akbari", "https://www.linkedin.com/in/adibakbari"],
                     ["Bill Nguyen", "https://www.linkedin.com/in/bill-nguyen-737061232"],
-                    ["Biswas Simkhada", ""],
+                    ["Biswas Simkhada", "https://www.linkedin.com/in/biswas-simkhada"],
                     ["Joseph Hayek", ""],
-                    ["Leo Li", ""],
-                    ["Lucas Young", ""],
-                    ["Sandin Jayasekera", ""],
-                    ["Elizabeth Pynadath", ""]
+                    ["Leo Li", "https://www.linkedin.com/in/leo-l-384b4b160"],
+                    ["Lucas Young", "https://www.linkedin.com/in/lyou02"],
+                    ["Sandin Jayasekera", "https://www.linkedin.com/in/sandin-j"],
+                    ["Elizabeth Pynadath", "https://www.linkedin.com/in/elizebethpynadath"]
                   ].map((author) => {
                     return (
                       <ListItem
