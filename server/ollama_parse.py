@@ -1,7 +1,8 @@
 from groq import Groq
+import os
 
 client = Groq(
-  api_key="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"
+  api_key="gsk_GdB3dW0Zuh7KBixxVLQbWGdyb3FYLyTnbM8Yq9AwAG06ryJrq"
 )
 
 def generate_prompt(content):
