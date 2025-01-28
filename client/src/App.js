@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, use } from 'react';
-import BIRDS from 'vanta/dist/vanta.birds.min'
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 // import Box from '@mui/material/Box';
@@ -11,62 +10,12 @@ import theme from './Theme';
 import VideoBackground from './components/VideoBackground';
 import ScriptBox from "./components/ScriptBox";
 
-// import * as THREE from "three";
-// import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-
-import { createRoot } from 'react-dom/client'
-import { useFrame } from '@react-three/fiber'
-
 import * as THREE from 'three';
 
-			import Stats from 'three/addons/libs/stats.module.js';
-			import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+import Stats from 'three/addons/libs/stats.module.js';
+import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
-			import { GPUComputationRenderer } from 'three/addons/misc/GPUComputationRenderer.js';
-
-// function Box(props) {
-  
-//   return (
-//     <mesh
-//       {...props}
-//       ref={meshRef}
-//       scale={active ? 1.5 : 1}
-//       onClick={(event) => setActive(!active)}
-//       onPointerOver={(event) => setHover(true)}
-//       onPointerOut={(event) => setHover(false)}>
-//       <boxGeometry args={[1, 1, 1]} />
-//       <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
-//     </mesh>
-//   )
-// }
-
-
-// const MotionBox = motion(Box);
-
-function Box(props) {
-  // This reference will give us direct access to the mesh
-  const meshRef = useRef()
-  // Set up state for the hovered and active state
-  const [hovered, setHover] = useState(false)
-  const [active, setActive] = useState(false)
-  // Subscribe this component to the render-loop, rotate the mesh every frame
-  useFrame((state, delta) => (meshRef.current.rotation.x += delta))
-  // Return view, these are regular three.js elements expressed in JSX
-  return (
-    <mesh
-      {...props}
-      ref={meshRef}
-      scale={active ? 1.5 : 1}
-      onClick={(event) => setActive(!active)}
-      onPointerOver={(event) => setHover(true)}
-      onPointerOut={(event) => setHover(false)}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
-    </mesh>
-  )
-}
-
-
+import { GPUComputationRenderer } from 'three/addons/misc/GPUComputationRenderer.js';
 
 function App() {
   const [showScript, setShowScript] = useState(false);
@@ -98,9 +47,6 @@ function App() {
       this.setAttribute( 'birdColor', birdColors );
       this.setAttribute( 'reference', references );
       this.setAttribute( 'birdVertex', birdVertex );
-
-      // this.setAttribute( 'normal', new Float32Array( points * 3 ), 3 );
-
 
       let v = 0;
 
@@ -281,35 +227,9 @@ let once = false;
         once = true;
         init();
       } 
-      console.log("once")
+      // console.log("once")
   }, [])
 
-
-  // This reference will give us direct access to the mesh
-  // const myRef = useRef()
-  // // Set up state for the hovered and active state
-  // const [hovered, setHover] = useState(false)
-  // const [active, setActive] = useState(false)
-  // // Subscribe this component to the render-loop, rotate the mesh every frame
-  // useFrame((state, delta) => (myRef.current.rotation.x += delta))
-  // Return view, these are regular three.js elements expressed in JSX
-
-  // const [vantaEffect, setVantaEffect] = useState(null)
-  // const myRef = useRef(null)
-  // useEffect(() => {
-  //   if (!vantaEffect) {
-  //     setVantaEffect(BIRDS({
-  //       el: myRef.current,
-  //       birdModel: loadCustomBirdModel()
-  //     }))
-  //     loadCustomBirdModel()
-  //   }
-  //   return () => {
-  //     if (vantaEffect) vantaEffect.destroy()
-  //   }
-  // }, [vantaEffect])
-
-  
 
   const handleUrlSubmit = async (url) => {
     setIsLoading(true);
@@ -533,8 +453,6 @@ let once = false;
 
   }
 
-  //
-
   function animate() {
 
     render();
@@ -573,31 +491,8 @@ let once = false;
 
 
   return (
-  //   <Canvas>
-  //   <ambientLight intensity={Math.PI / 2} />
-  //   <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI} />
-  //   <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
-  //   <Box position={[-1.2, 0, 0]} />
-  //   <Box position={[1.2, 0, 0]} />
-  // </Canvas>
-    // <div>
-    //   <Canvas>
-    //     <ambientLight intensity={Math.PI / 2} />
-    //     <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI} />
-    //     <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
-    //     <Box position={[-1.2, 0, 0]} />
-    //     <Box position={[1.2, 0, 0]} />
-    //   </Canvas>
-    // <ThemeProvider theme={theme}>
-    //   <CssBaseline />
-    // </ThemeProvider>
-    // </div>
     <div></div>
   );
 }
-
-// createRoot(document.getElementById('root')).render(
-//   ,
-// )
 
 export default App;
