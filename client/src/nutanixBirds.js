@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef, use } from 'react';
 
 import * as THREE from 'three';
 
-import Stats from 'three/addons/libs/stats.module.js';
-import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+// import Stats from 'three/addons/libs/stats.module.js';
+// import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 import { GPUComputationRenderer } from 'three/addons/misc/GPUComputationRenderer.js';
 
@@ -188,7 +188,8 @@ verts_push(
 
   //
 
-  let container, stats;
+  let container;
+//   let stats;
   let camera, scene, renderer;
   let mouseX = 0, mouseY = 0;
 
@@ -241,15 +242,15 @@ let once = false;
 
     initComputeRenderer();
 
-    stats = new Stats();
-    container.appendChild( stats.dom );
+    // stats = new Stats();
+    // container.appendChild( stats.dom );
 
     container.style.touchAction = 'none';
     container.addEventListener( 'pointermove', onPointerMove );
 
     window.addEventListener( 'resize', onWindowResize );
 
-    const gui = new GUI();
+    // const gui = new GUI();
 
 
     const effectController = {
@@ -270,10 +271,10 @@ let once = false;
 
     valuesChanger();
 
-    gui.add( effectController, 'separation', 0.0, 100.0, 1.0 ).onChange( valuesChanger );
-    gui.add( effectController, 'alignment', 0.0, 100, 0.001 ).onChange( valuesChanger );
-    gui.add( effectController, 'cohesion', 0.0, 100, 0.025 ).onChange( valuesChanger );
-    gui.close();
+    // gui.add( effectController, 'separation', 0.0, 100.0, 1.0 ).onChange( valuesChanger );
+    // gui.add( effectController, 'alignment', 0.0, 100, 0.001 ).onChange( valuesChanger );
+    // gui.add( effectController, 'cohesion', 0.0, 100, 0.025 ).onChange( valuesChanger );
+    // gui.close();
 
     initBirds();
 
@@ -417,7 +418,7 @@ let once = false;
   function animate() {
 
     render();
-    stats.update();
+    // stats.update();
 
   }
 
