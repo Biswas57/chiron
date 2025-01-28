@@ -7,6 +7,8 @@ import Navbar from './components/Navbar';
 import MainPage from './pages/MainPage';
 import ScriptBox from "./pages/ScriptBox";
 import themes from './Theme';
+import NutanixBirds from "./nutanixBirds"
+import VideoBackground from "./components/VideoBackground"
 
 function App() {
   const [brainRot, setBrainRot] = useState(false);
@@ -28,8 +30,9 @@ function App() {
           }}
         >
           {/* These appear on all pages */}
-          
           <Navbar brainRot={brainRot} setBrainRot={setBrainRot} />
+
+          {brainRot ? <VideoBackground /> : <NutanixBirds />}
 
           {/* Page content */}
           <Routes>
