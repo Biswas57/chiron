@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+pip3 install -r requirements.txt
+python3 -m playwright install
+
+dnf install -y alsa-lib \
+at-spi2-atk \
+at-spi2-core \
+atk \
+bash \
+cairo \
+cups-libs \
+dbus-libs \
+expat \
+flac-libs \
+gdk-pixbuf2 \
+glib2 \
+glibc \
+gtk3 \
+libX11 \
+libXcomposite \
+libXdamage \
+libXext \
+libXfixes \
+libXrandr \
+libXtst \
+libcanberra-gtk3 \
+libdrm \
+libgcc \
+libstdc++ \
+libxcb \
+libxkbcommon \
+libxshmfence \
+libxslt \
+mesa-libgbm \
+nspr \
+nss \
+nss-util \
+pango \
+policycoreutils \
+policycoreutils-python-utils \
+zlib
