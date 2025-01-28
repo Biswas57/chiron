@@ -9,24 +9,17 @@ client = Groq(
 
 def generate_prompt(content):
     prompt = """
-###INSTRUCTION: 
-"Write a demonstration video script based on a Knowledge Base (KB) article. Include:
+### INSTRUCTION: 
+The following text is a Knowledge Base article for a Nutanix product. This article is to be converted to a video to assist users of the product run the steps outlined in the article themselves. Your task is to generate a script for this video, based on the article contents. 
 
-Intro: Brief title and purpose of the video.
-Steps: Highlight key processes and commands with corresponding visuals and timestamps.
-Usage: Show common examples and scenarios with clear explanations.
-Notes: Include key considerations, caveats, or advanced options.
-Outro: Summarize, thank viewers, and include a call to action.
+Where multiple options or scenarios are presented in the article, choose the most common path to be presented in the video.
 
-### NO PREAMBLE, ONLY GENERATE THE SCRIPT THAT IS TO BE FED DIRECTLY TO AN AI VOICE
-### DO NOT HALLUCINATE
-Keep the script simple and professional ensuring clarity and pacing. Below is the KB article content"
+Your script will be converted to speech using TTS, and someone will manually generate the visuals based on your script, you should account for this in the pacing of the script. For pauses, add “...” on a new line, however, do not include any additional annotation or direction (i.e. do NOT include annotations such as [Intro music plays]), just the script. Do not include any preamble, only generate the script that is to be fed directly to an AI TTS (i.e. do NOT include something like “here is your script”).
 
-### SCRAPED KB ARTICLE CONTENT:
-
+### KB ARTICLE CONTENT:
 """
 
-    return prompt + '\n' + content
+    return prompt + '\n\n' + content
 
 def write_script(prompt):
     completion = client.chat.completions.create(
