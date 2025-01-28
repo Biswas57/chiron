@@ -82,8 +82,7 @@ TimeoutStopSec=20
 WantedBy=multi-user.target
 ```
 
-## Configure Frontend (Nginx)
-
+## Configure Frontend Deploymen (Nginx)
 ### 1. Set Directory Permissions
 ```bash
 # Set correct permissions for directories
@@ -137,8 +136,7 @@ sudo setsebool -P httpd_can_network_connect 1
 sudo setsebool -P httpd_enable_homedirs 1
 ```
 
-## Start Services
-
+## Start Web Application
 ### 1. Enable and Start Nginx
 ```bash
 # Test nginx configuration
@@ -166,8 +164,7 @@ sudo firewall-cmd --reload
 sudo firewall-cmd --list-all
 ```
 
-## Verify Deployment
-
+## Verify Web App Deployment
 ### 1. Check Service Status
 ```bash
 # Check nginx status
@@ -294,26 +291,3 @@ sudo tail -f /var/log/nginx/error.log
 # Flask app logs
 sudo journalctl -u flask-app -f
 ```
-
-## Security Considerations
-
-1. Keep packages updated:
-```bash
-sudo dnf update -y
-```
-
-2. Monitor system logs:
-```bash
-sudo journalctl -f
-```
-
-3. Check failed login attempts:
-```bash
-sudo tail -f /var/log/secure
-```
-
-4. Monitor system resources:
-```bash
-top
-df -h
-free -m
