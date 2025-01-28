@@ -350,7 +350,7 @@ let once = false;
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color( 0x131313 );
-    scene.fog = new THREE.Fog( 0xffffff, 100, 1000 );
+    // scene.fog = new THREE.Fog( 0x111111, 200, 500 ); // doesn't work
 
     renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio( window.devicePixelRatio );
@@ -365,8 +365,6 @@ let once = false;
 
     container.style.touchAction = 'none';
     container.addEventListener( 'pointermove', onPointerMove );
-
-    //
 
     window.addEventListener( 'resize', onWindowResize );
 
