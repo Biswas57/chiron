@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import { BrowserRouter, Routes, Route } from "react-router";
 import { ThemeProvider } from '@mui/material/styles';
@@ -6,10 +6,15 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Navbar from './components/Navbar';
 import MainPage from './pages/MainPage';
 import ScriptBox from "./pages/ScriptBox";
-import theme from './Theme';
+import themes from './Theme';
 
 function App() {
   const [brainRot, setBrainRot] = useState(false);
+
+  const [theme, setTheme] = useState(themes.default);
+  useEffect(() => {
+    setTheme(brainRot ? themes.brainrot : themes.default);
+  }, [brainRot]);
 
   return (  
     <BrowserRouter>
