@@ -14,7 +14,7 @@ import { getKBfromLocalStorage } from '../utils/localStorage';
 import { Modal } from '@mui/material';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 
-const Navbar = () => {
+const Navbar = ({brainRot, setBrainRot}) => {
   const navigate = useNavigate();
 
   const [openAbout, setOpenAbout] = React.useState(false);
@@ -122,6 +122,16 @@ const Navbar = () => {
               // onClick={() => {placeholder}}
             >
               Instruction
+            </Button>
+
+            <Button
+              sx={{
+                fontSize: '1.1rem',
+                fontWeight: 'bold'
+              }}
+              onClick={() => {setBrainRot(!brainRot);}}
+            >
+              Funky mode: {brainRot ? "Enabled" : "Disabled"}
             </Button>
 
             <Divider />

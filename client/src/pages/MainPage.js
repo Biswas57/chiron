@@ -6,12 +6,13 @@ import LoadingAnimation from '../components/LoadingAnimation';
 import { useNavigate } from 'react-router';
 import { addKBtoLocalStorage } from '../utils/localStorage';
 import NutanixBirds from "../nutanixBirds"
+import VideoBackground from "../components/VideoBackground"
 
 const MotionBox = motion(Box);
 
 const API_URL = 'http://localhost:5000/api/extract-text';
 
-function MainPage() {
+function MainPage({brainRot}) {
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -52,9 +53,12 @@ function MainPage() {
 
   return (
     <div>
+
+    {
+      brainRot ? <VideoBackground /> : <NutanixBirds />
+    }
+
     <AnimatePresence mode="wait">
-      {/* <VideoBackground /> */}
-      <NutanixBirds />
       {!isLoading && (
         <MotionBox
           key="input"
@@ -85,7 +89,7 @@ function MainPage() {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <LoadingAnimation />
+          <LoadingAnimation brainRot={brainRot}/>
         </MotionBox>
       )}
     </AnimatePresence>
