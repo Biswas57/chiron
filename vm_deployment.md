@@ -39,10 +39,10 @@ npm run build
 
 # Change permission for backend dependency install script
 cd ../server
-chmod +x dep_script
+chmod +x dep_script_rocky
 
 # Install backend dependencies
-./dep_script
+./dep_script_rocky
 ```
 
 ## Configure Backend (Flask)
