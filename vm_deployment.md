@@ -1,4 +1,4 @@
-# Complete Deployment Guide for React + Flask Application on Rocky Linux
+# Complete Deployment Guide for Chiron on Rocky Linux
 
 ## Initial Setup and Prerequisites
 
