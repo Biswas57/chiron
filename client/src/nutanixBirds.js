@@ -221,6 +221,11 @@ let once = false;
     container = document.createElement( 'div' );
     document.body.appendChild( container );
 
+    container.style.position = 'absolute';
+    container.style.top = '0';
+    container.style.zIndex = '-100';
+    container.style.opacity = 0.4;
+
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 3000 );
     camera.position.z = 350;
 

@@ -6,8 +6,9 @@ import LoadingAnimation from './components/LoadingAnimation';
 import VideoBackground from './components/VideoBackground';
 import { useNavigate } from 'react-router';
 import { addKBtoLocalStorage } from './utils/localStorage';
-
 import NutanixBirds from "./nutanixBirds"
+
+const MotionBox = motion(Box);
 
 const API_URL = 'http://localhost:5000/api/extract-text';
 
@@ -51,8 +52,10 @@ function App() {
   };
 
   return (
+    <div>
     <AnimatePresence mode="wait">
-      <VideoBackground />
+      {/* <VideoBackground /> */}
+      <NutanixBirds />
       {!isLoading && (
         <MotionBox
           key="input"
@@ -87,6 +90,7 @@ function App() {
         </MotionBox>
       )}
     </AnimatePresence>
+    </div>
   );
 }
 
