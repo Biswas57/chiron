@@ -17,5 +17,8 @@ export function getKBfromLocalStorage() {
         localStorage.setItem(KB_LOCAL_STORAGE_KEY, JSON.stringify([]));
     }
 
-    return JSON.parse(localStorage.getItem(KB_LOCAL_STORAGE_KEY));
+    let savedKbs = JSON.parse(localStorage.getItem(KB_LOCAL_STORAGE_KEY));
+    savedKbs.reverse()
+
+    return savedKbs;
 }
