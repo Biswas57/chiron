@@ -9,11 +9,11 @@ import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import IconButton from '@mui/material/IconButton';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
-import { Divider, ListItem } from '@mui/material';
+import { Divider } from '@mui/material';
 import { getKBfromLocalStorage } from '../utils/localStorage';
 import { Modal } from '@mui/material';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import InstructionModal from './InstructionModal';
+import AboutModal from './AboutModal';
 
 const Navbar = ({brainRot, setBrainRot}) => {
   const navigate = useNavigate();
@@ -70,50 +70,7 @@ const Navbar = ({brainRot, setBrainRot}) => {
                 justifyContent: 'center'
               }}
             >
-              <Box
-                sx={{
-                  backgroundColor: 'gray',
-                  boxShadow: 24,
-                  padding: 4,
-                  borderRadius: 2,
-                  width: '400px',
-                }}
-              >
-                <Box>
-                  This application was developed by a passionate team of SRE interns at Sydney, Australia on Janurary 2025.
-                </Box>
-                <Divider />
-                <List>
-                  {[
-                    ["Adib Akbari", "https://www.linkedin.com/in/adibakbari"],
-                    ["Bill Nguyen", "https://www.linkedin.com/in/bill-nguyen-737061232"],
-                    ["Biswas Simkhada", "https://www.linkedin.com/in/biswas-simkhada"],
-                    ["Joseph Hayek", ""],
-                    ["Leo Li", "https://www.linkedin.com/in/leo-l-384b4b160"],
-                    ["Lucas Young", "https://www.linkedin.com/in/lyou02"],
-                    ["Sandin Jayasekera", "https://www.linkedin.com/in/sandin-j"],
-                    ["Elizabeth Pynadath", "https://www.linkedin.com/in/elizebethpynadath"]
-                  ].map((author) => {
-                    return (
-                      <ListItem
-                        secondaryAction={
-                          <IconButton
-                            edge="end"
-                            aria-label="comments"
-                            onClick={() => {
-                              window.open(author[1], "_blank");
-                            }}
-                          >
-                            <LinkedInIcon />
-                          </IconButton>
-                        }                      
-                      >
-                        {author[0]}
-                      </ListItem>
-                    )
-                  })}
-                </List>
-              </Box>
+              <AboutModal />
             </Modal>
 
             <Button
