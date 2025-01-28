@@ -233,6 +233,8 @@ http://<vm-ip>/
    - curl -X POST -H "Content-Type: application/json" \ 
   -d '{"url": "https://portal.nutanix.com/page/documents/kbs/details?targetId=kA0320000004H2NCAU"}' \
   http://localhost:5000/api/extract-text
+  - check AI API functions and API keys
+  - check backend functions output formatting
 
 ### Quick Fixes
 
