@@ -20,7 +20,7 @@ function NutanixBirds() {
 
       super();
 
-      const trianglesPerBird = 40;    //HERE
+      const trianglesPerBird = 38;    //HERE
       const triangles = BIRDS * trianglesPerBird;
       const points = triangles * 3;
 
