@@ -13,11 +13,13 @@ import { Divider, ListItem } from '@mui/material';
 import { getKBfromLocalStorage } from '../utils/localStorage';
 import { Modal } from '@mui/material';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import InstructionModal from './InstructionModal';
 
 const Navbar = ({brainRot, setBrainRot}) => {
   const navigate = useNavigate();
 
   const [openAbout, setOpenAbout] = React.useState(false);
+  const [openInstruction, setOpenInstruction] = React.useState(false);
   const [savedKbs, setSavedKbs] = React.useState(getKBfromLocalStorage());
 
   const [openDrawer, setOpenDrawer] = React.useState(false);
@@ -119,10 +121,21 @@ const Navbar = ({brainRot, setBrainRot}) => {
                 fontSize: '1.1rem',
                 fontWeight: 'bold'
               }}
-              // onClick={() => {placeholder}}
+              onClick={() => {setOpenInstruction(true)}}
             >
               Instruction
             </Button>
+            <Modal
+              open={openInstruction}
+              onClose={() => {setOpenInstruction(false)}}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <InstructionModal />
+            </Modal>
 
             <Button
               sx={{
