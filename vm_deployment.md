@@ -19,6 +19,7 @@ sudo dnf install git -y
 
 # Install nginx
 sudo dnf install nginx -y
+```
 
 ### 2. Clone Repository and Install Dependencies
 ```bash
@@ -42,7 +43,7 @@ chmod +x dep_script
 
 # Install backend dependencies
 ./dep_script
-
+```
 
 ## Configure Backend (Flask)
 ### 1. Update Flask Code
@@ -92,7 +93,7 @@ sudo chmod 755 /home/chiron/client
 sudo chmod 755 /home/chiron/client/build
 
 # Change ownership of build directory
-sudo chown -R nginx:nginx /home/chiron/react-app/client/build
+sudo chown -R nginx:nginx /home/chiron/client/build
 ```
 
 ### 2. Configure Nginx
