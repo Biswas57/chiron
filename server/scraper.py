@@ -1,50 +1,54 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from playwright.sync_api import sync_playwright
+import ollama_parse as op
 import time
+import re
+import platform
 
-def scrape_text(url):
-    PATH = "chromedriver-mac-x64/chromedriver"
-    service = Service(PATH)
-
-    options = Options()
-    options.add_argument("--headless") # Run browser in headless mode (no browser)
-    driver = webdriver.Chrome(service=service, options=options)
-
-    try:
-        driver.get(url) 
-        last_height = driver.execute_script("return document.body.scrollHeight")
-
-        while True:
-            time.sleep(1)
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+def scrape_title_and_text(url):
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        try:
+            page.goto(url)
             
-            new_height = driver.execute_script("return document.body.scrollHeight")
-            if new_height == last_height: #checking if scrolling further doesnt make a difference 
-                break
-            last_height = new_height
-
-        page_title = driver.title
-        content = driver.find_element(By.TAG_NAME, "body").text
-
-        return content
-    except:
-        print('Womp Womp')
-    finally:
-        driver.quit()
-
+            # Auto-scroll to load dynamic content
+            last_height = page.evaluate('document.body.scrollHeight')
+            while True:
+                time.sleep(1)
+                new_height = page.evaluate('document.body.scrollHeight')
+                if new_height == last_height:
+                    break
+                last_height = new_height
+                
+            content = page.evaluate('document.body.innerText')
+            return page.title(), content
+        except Exception as e:
+            print(f"Error scraping: {e}")
+            return None, None
+        finally:
+            browser.close()
 
 def parse(text):
-    res = text.split("Try Now")[1]
-    return res.strip()
+    if not text:
+        return None
+    try:
+        res = text.split("Try Now")[1]
+        return res.strip()
+    except:
+        return text  # Return full text if "Try Now" not found
+
+def scrape_kb_id(text):
+    if not text:
+        return None
+    
+    match = re.search(r"KB-[0-9]*", text)
+    if not match:
+        return "KB-????"
+    else:
+        return match.group()
 
 def scrape(url):
-    # url = "https://portal.nutanix.com/page/documents/kbs/details?targetId=kA0VO0000004een0AA"
-    # url = "https://portal.nutanix.com/page/documents/kbs/details?targetId=kA0320000004H2NCAU"
-
-    text = scrape_text(url)
-    res = parse(text)
-    return res
+    title, text = scrape_title_and_text(url)
+    parsed_text = parse(text)
+    kb_id = scrape_kb_id(parsed_text)
+    return kb_id, title, op.generate_script(parsed_text)

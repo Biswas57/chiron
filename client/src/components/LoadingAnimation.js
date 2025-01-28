@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashLoader } from 'react-spinners';
+import { RingLoader } from 'react-spinners';
 import Box from '@mui/material/Box';
 import { motion } from 'framer-motion';
 
@@ -40,7 +40,7 @@ const LoadingAnimation = () => {
             }
           }}
         >
-          <HashLoader 
+          <RingLoader 
             color="#7855fb"
             size={90}
             speedMultiplier={0.9}
