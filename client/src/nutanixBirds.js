@@ -9,7 +9,7 @@ import { GPUComputationRenderer } from 'three/addons/misc/GPUComputationRenderer
 
 function NutanixBirds() {
     /* TEXTURE WIDTH FOR SIMULATION */
-  const WIDTH = 32;
+  const WIDTH = 16;
 
   const BIRDS = WIDTH * WIDTH;
 
@@ -278,7 +278,7 @@ let once = false;
     window.addEventListener('resize', onWindowResize);
 
     const effectController = {
-      separation: 64.0,
+      separation: 95.0,
       alignment: 37.0,
       cohesion: 60.0,
       freedom: 0.75
