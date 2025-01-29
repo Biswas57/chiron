@@ -12,8 +12,11 @@ import VideoBackground from "./components/VideoBackground"
 import Game from "./pages/Game"
 
 function App() {
-  const [brainRot, setBrainRot] = useState(false);
+  // This needs to be a global state to disable the navbar during AI generation
+  // Navigating during generation leads to a bunch of weirdness.
+  const [isLoading, setIsLoading] = useState(false);
 
+  const [brainRot, setBrainRot] = useState(false);
   const [theme, setTheme] = useState(themes.default);
   useEffect(() => {
     setTheme(brainRot ? themes.brainrot : themes.default);
@@ -31,13 +34,17 @@ function App() {
           }}
         >
           {/* These appear on all pages */}
-          <Navbar brainRot={brainRot} setBrainRot={setBrainRot} />
+          <Navbar
+            brainRot={brainRot}
+            setBrainRot={setBrainRot}
+            isLoading={isLoading}
+          />
 
           {brainRot ? <VideoBackground /> : <NutanixBirds />}
 
           {/* Page content */}
           <Routes>
-            <Route path="/" element={<MainPage brainRot={brainRot} />} />
+            <Route path="/" element={<MainPage brainRot={brainRot} isLoading={isLoading} setIsLoading={setIsLoading} />} />
             <Route path="/result" element={<ScriptBox brainRot={brainRot} />} />
             <Route path="/game" element={<Game />} />
           </Routes>
