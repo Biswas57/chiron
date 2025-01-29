@@ -48,7 +48,10 @@ const Navbar = ({brainRot, setBrainRot}) => {
       >
         <Box>
           {/* Sidebar components */}
-          <IconButton onClick={toggleDrawer(true)}>
+          <IconButton
+            onClick={toggleDrawer(true)}
+            onKeyDown={(e) => {e.preventDefault()}}
+          >
             <DensityMediumIcon />
           </IconButton>
           <Drawer open={openDrawer} onClose={toggleDrawer(false)}>
