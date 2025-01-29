@@ -7,6 +7,8 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import '@fontsource/inter';
 import { useLocation } from 'react-router';
+import { Divider, Typography } from '@mui/material';
+import Button from '@mui/material/Button';
 
 function ScriptBox({brainRot}) {
   // Get the result from App.js
@@ -98,6 +100,26 @@ function ScriptBox({brainRot}) {
           {scriptText.split('\n').map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}
+        </Box>
+
+        <Divider />
+
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            marginTop: '10px'
+          }}
+        >
+          <Typography>
+            Done reading?
+          </Typography>
+          <Button
+            onClick={() => {window.open("https://app.synthesia.io/", "_blank")}}
+          >
+            Open Synthesia
+          </Button>
         </Box>
       </motion.div>
     </Box>
