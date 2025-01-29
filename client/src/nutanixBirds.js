@@ -9,7 +9,7 @@ import { GPUComputationRenderer } from 'three/addons/misc/GPUComputationRenderer
 
 function NutanixBirds() {
     /* TEXTURE WIDTH FOR SIMULATION */
-  const WIDTH = 28;
+  const WIDTH = 32;
 
   const BIRDS = WIDTH * WIDTH;
 
@@ -218,13 +218,32 @@ let once = false;
 
     // Cleanup function
     return () => {
+      // Remove event listeners
       document.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('resize', onWindowResize);
+      
+      // Dispose of Three.js resources
+      if (renderer) {
+        renderer.dispose();
+      }
+      if (scene) {
+        scene.clear();
+      }
+      
+      // Remove container from DOM
+      if (container && container.parentNode) {
+        container.parentNode.removeChild(container);
+      }
     };
   }, []);
 
   
   function init() {
+    const existingContainer = document.querySelector('.nutanix-birds-container');
+    if (existingContainer) {
+      existingContainer.parentNode.removeChild(existingContainer);
+    }
+
     container = document.createElement('div');
     document.body.appendChild(container);
 
