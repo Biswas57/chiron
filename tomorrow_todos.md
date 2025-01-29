@@ -1,6 +1,0 @@
-- Change Web app title font
-- Brain rot:
-    - Comic sans navbar font
-    - Brain rot vid
-- Mouse cursor Nutanix Birds
-- Instructions Page
