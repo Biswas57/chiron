@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, use } from 'react';
+import React, { useEffect } from 'react';
 
 import * as THREE from 'three';
 
@@ -46,7 +46,7 @@ function NutanixBirds() {
 
       }
 
-      const wingsSpan = 20;
+      // const wingsSpan = 20;
 
       for ( let f = 0; f < BIRDS; f ++ ) {
 
@@ -211,6 +211,7 @@ let once = false;
 
   useEffect(() => {
     if (!once) {
+      // eslint-disable-next-line
       once = true;
       init();
     }
@@ -276,27 +277,27 @@ let once = false;
   }
 
   // Update pointer move handler to check element classes
-  function onPointerMove(event) {
-    if (event.isPrimary === false) return;
+  // function onPointerMove(event) {
+  //   if (event.isPrimary === false) return;
 
-    // Get the element under the cursor
-    const elementsUnderCursor = document.elementsFromPoint(event.clientX, event.clientY);
+  //   // Get the element under the cursor
+  //   const elementsUnderCursor = document.elementsFromPoint(event.clientX, event.clientY);
     
-    // Check if any UI elements are being interacted with
-    const isOverUI = elementsUnderCursor.some(element => {
-      const hasUIClass = element.classList.contains('url-input-container') || 
-                        element.classList.contains('loading-animation') ||
-                        element.classList.contains('MuiBox-root') ||
-                        element.classList.contains('MuiInputBase-root');
-      return hasUIClass;
-    });
+  //   // Check if any UI elements are being interacted with
+  //   const isOverUI = elementsUnderCursor.some(element => {
+  //     const hasUIClass = element.classList.contains('url-input-container') || 
+  //                       element.classList.contains('loading-animation') ||
+  //                       element.classList.contains('MuiBox-root') ||
+  //                       element.classList.contains('MuiInputBase-root');
+  //     return hasUIClass;
+  //   });
 
-    // Only update bird movement if not over UI elements
-    if (!isOverUI) {
-      mouseX = event.clientX - windowHalfX;
-      mouseY = event.clientY - windowHalfY;
-    }
-  }
+  //   // Only update bird movement if not over UI elements
+  //   if (!isOverUI) {
+  //     mouseX = event.clientX - windowHalfX;
+  //     mouseY = event.clientY - windowHalfY;
+  //   }
+  // }
 
   function initComputeRenderer() {
 
