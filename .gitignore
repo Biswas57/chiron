@@ -1,4 +1,17 @@
+# Node
 node_modules/
-server/venv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+server/__pycache__/
+server/venv/
+venv/
+
+# Environment variables
 .env
+.env.*
+
+# System files
 .DS_Store

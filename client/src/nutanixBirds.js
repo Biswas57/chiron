@@ -9,7 +9,7 @@ import { GPUComputationRenderer } from 'three/addons/misc/GPUComputationRenderer
 
 function NutanixBirds() {
     /* TEXTURE WIDTH FOR SIMULATION */
-  const WIDTH = 32;
+  const WIDTH = 28;
 
   const BIRDS = WIDTH * WIDTH;
 
@@ -180,7 +180,7 @@ verts_push(
 
       }
 
-      this.scale( 0.2, 0.2, 0.2 );
+      this.scale( 0.3, 0.3, 0.3 );
 
     }
 
@@ -210,51 +210,52 @@ verts_push(
 let once = false;
 
   useEffect(() => {
-			if(once == false){
-        once = true;
-        init();
-      } 
-      // console.log("once")
-  }, [])
+    if (!once) {
+      once = true;
+      init();
+    }
+
+    // Cleanup function
+    return () => {
+      document.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('resize', onWindowResize);
+    };
+  }, []);
+
   
   function init() {
-
-    container = document.createElement( 'div' );
-    document.body.appendChild( container );
+    container = document.createElement('div');
+    document.body.appendChild(container);
 
     container.style.position = 'fixed';
     container.style.top = '0';
+    container.style.left = '0';
+    container.style.width = '100vw';
+    container.style.height = '100vh';
     container.style.zIndex = '-100';
-    // container.style.opacity = 0.4;
+    container.style.opacity = '0.3';
+    
+    // Add class for styling
+    container.className = "nutanix-birds-container";
 
-    //set classname
-    container.className = "nutanix-birds";
-
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 3000 );
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 3000);
     camera.position.z = 350;
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color( 0x131313 );
-    // scene.fog = new THREE.Fog( 0x111111, 200, 500 ); // doesn't work
+    scene.background = new THREE.Color(0x131313);
 
     renderer = new THREE.WebGLRenderer();
-    renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    renderer.setAnimationLoop( animate );
-    container.appendChild( renderer.domElement );
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setAnimationLoop(animate);
+    container.appendChild(renderer.domElement);
 
     initComputeRenderer();
 
-    // stats = new Stats();
-    // container.appendChild( stats.dom );
+    // Remove direct event listener from container
+    document.addEventListener('pointermove', onPointerMove);
 
-    container.style.touchAction = 'none';
-    container.addEventListener( 'pointermove', onPointerMove );
-
-    window.addEventListener( 'resize', onWindowResize );
-
-    // const gui = new GUI();
-
+    window.addEventListener('resize', onWindowResize);
 
     const effectController = {
       separation: 64.0,
@@ -263,24 +264,38 @@ let once = false;
       freedom: 0.75
     };
 
-    const valuesChanger = function () {
-
-      velocityUniforms[ 'separationDistance' ].value = effectController.separation;
-      velocityUniforms[ 'alignmentDistance' ].value = effectController.alignment;
-      velocityUniforms[ 'cohesionDistance' ].value = effectController.cohesion;
-      velocityUniforms[ 'freedomFactor' ].value = effectController.freedom;
-
+    const valuesChanger = function() {
+      velocityUniforms['separationDistance'].value = effectController.separation;
+      velocityUniforms['alignmentDistance'].value = effectController.alignment;
+      velocityUniforms['cohesionDistance'].value = effectController.cohesion;
+      velocityUniforms['freedomFactor'].value = effectController.freedom;
     };
 
     valuesChanger();
-
-    // gui.add( effectController, 'separation', 0.0, 100.0, 1.0 ).onChange( valuesChanger );
-    // gui.add( effectController, 'alignment', 0.0, 100, 0.001 ).onChange( valuesChanger );
-    // gui.add( effectController, 'cohesion', 0.0, 100, 0.025 ).onChange( valuesChanger );
-    // gui.close();
-
     initBirds();
+  }
 
+  // Update pointer move handler to check element classes
+  function onPointerMove(event) {
+    if (event.isPrimary === false) return;
+
+    // Get the element under the cursor
+    const elementsUnderCursor = document.elementsFromPoint(event.clientX, event.clientY);
+    
+    // Check if any UI elements are being interacted with
+    const isOverUI = elementsUnderCursor.some(element => {
+      const hasUIClass = element.classList.contains('url-input-container') || 
+                        element.classList.contains('loading-animation') ||
+                        element.classList.contains('MuiBox-root') ||
+                        element.classList.contains('MuiInputBase-root');
+      return hasUIClass;
+    });
+
+    // Only update bird movement if not over UI elements
+    if (!isOverUI) {
+      mouseX = event.clientX - windowHalfX;
+      mouseY = event.clientY - windowHalfY;
+    }
   }
 
   function initComputeRenderer() {

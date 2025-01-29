@@ -186,11 +186,11 @@ const Navbar = ({brainRot, setBrainRot}) => {
             sx={{
                 fontSize: '1.4rem',
                 fontWeight: 'bold',
-                textShadow: `0 0 25px rgba(255, 255, 255, 0.35)`,    
+                // textShadow: `0 0 25px rgba(255, 255, 255, 0.35)`,    
             }}
             onClick={() => {navigate('/');}}
           >
-            Chiron Framework
+            Chiron
           </Button>
         </Box>
 

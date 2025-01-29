@@ -52,47 +52,56 @@ function MainPage({brainRot}) {
   };
 
   return (
-    <div>
-
-    {
-      brainRot ? <VideoBackground /> : <NutanixBirds />
-    }
-
-    <AnimatePresence mode="wait">
-      {!isLoading && (
-        <MotionBox
-          key="input"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <InputBox onSubmit={handleUrlSubmit} />
-          {error && (
-            <Box sx={{ 
-              color: 'error.main',
-              textAlign: 'center',
-              mt: 2,
-              p: 2,
-              bgcolor: 'error.light',
-              borderRadius: 1
-            }}>
-              {error}
-            </Box>
-          )}
-        </MotionBox>
-      )}
-      {isLoading && (
-        <MotionBox
-          key="loading"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <LoadingAnimation brainRot={brainRot}/>
-        </MotionBox>
-      )}
-    </AnimatePresence>
+    <div style={{ position: 'relative' }}>
+      {brainRot ? <VideoBackground /> : <NutanixBirds />}
+      
+      <AnimatePresence mode="wait">
+        {!isLoading && (
+          <MotionBox
+            key="input"
+            className="url-input-container"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            sx={{
+              position: 'relative',
+              zIndex: 1
+            }}
+          >
+            <InputBox onSubmit={handleUrlSubmit} />
+            {error && (
+              <Box sx={{ 
+                position: 'relative',
+                zIndex: 1,
+                color: 'error.main',
+                textAlign: 'center',
+                mt: 2,
+                p: 2,
+                bgcolor: 'error.light',
+                borderRadius: 1
+              }}>
+                {error}
+              </Box>
+            )}
+          </MotionBox>
+        )}
+        {isLoading && (
+          <MotionBox
+            key="loading"
+            className="loading-animation"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            sx={{
+              position: 'relative',
+              zIndex: 1
+            }}
+          >
+            <LoadingAnimation brainRot={brainRot}/>
+          </MotionBox>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

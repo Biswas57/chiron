@@ -1,5 +1,5 @@
 import React from 'react';
-import { RingLoader } from 'react-spinners';
+import { SyncLoader } from 'react-spinners';
 import Box from '@mui/material/Box';
 import { motion } from 'framer-motion';
 import brainRotGif from '../assets/brainrot/loading.gif'
@@ -15,7 +15,7 @@ const LoadingAnimation = ({brainRot}) => {
           justifyContent: 'center',
           height: '60vh',
           color: 'white',
-          gap: 4
+          gap: 4,
         }}
       >
         <Box
@@ -70,13 +70,13 @@ const LoadingAnimation = ({brainRot}) => {
               }
             }}
           >
-            <RingLoader 
+            <SyncLoader 
               color="#7855fb"
-              size={90}
-              speedMultiplier={0.9}
-              cssOverride={{
-                filter: 'drop-shadow(0 0 10px rgba(120,85,251,0.3))'
-              }}
+              size={15}
+              speedMultiplier={1}
+              // cssOverride={{
+              //   filter: 'drop-shadow(0 0 10px rgba(120,85,251,0.2))'
+              // }}
             />
           </Box>
           <Box
@@ -94,7 +94,7 @@ const LoadingAnimation = ({brainRot}) => {
                 fontFamily: 'Inter, sans-serif',
                 textAlign: 'center',
                 mb: 1,
-                textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 2px rgba(0,0,0,0.4)'
+                // textShadow: '0 30px 30px rgba(0,0,0,1), 0 30px 30px rgba(0,0,0,1)'
               }}
             >
               Processing your article
@@ -105,7 +105,7 @@ const LoadingAnimation = ({brainRot}) => {
                 fontSize: '0.9rem',
                 fontFamily: 'Inter, sans-serif',
                 textAlign: 'center',
-                textShadow: '0 1px 3px rgba(0,0,0,0.4), 0 0 1px rgba(0,0,0,0.3)'
+                // textShadow: '0 30px 30px rgba(0,0,0,1), 0 30px 30px rgba(0,0,0,1)'
               }}
             >
               This may take a few minutes...

@@ -53,6 +53,7 @@ const InputBox = ({ onSubmit }) => {
             autoComplete: 'off',
           }}
           sx={{
+            borderRadius: '4px',
             backgroundColor: 'rgba(0, 0, 0, 0.8)',
             width: '100%',
             '& .MuiOutlinedInput-root': {
