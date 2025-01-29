@@ -13,10 +13,9 @@ const MotionBox = motion(Box);
 
 const API_URL = 'http://localhost:5000/api/extract-text';
 
-function MainPage({brainRot}) {
+function MainPage({brainRot, isLoading, setIsLoading}) {
   const navigate = useNavigate();
 
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const handleUrlSubmit = async (url) => {

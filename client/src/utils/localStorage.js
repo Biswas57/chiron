@@ -2,7 +2,7 @@ const KB_LOCAL_STORAGE_KEY = "KBs"
 
 export function addKBtoLocalStorage(kb_id, title, data) {
     let kbs = getKBfromLocalStorage();
-    kbs.push({
+    kbs.unshift({
         kbId: kb_id,
         title: title,
         timeGenerated: new Date().toLocaleString(),
@@ -18,7 +18,6 @@ export function getKBfromLocalStorage() {
     }
 
     let savedKbs = JSON.parse(localStorage.getItem(KB_LOCAL_STORAGE_KEY));
-    savedKbs.reverse()
 
     return savedKbs;
 }
