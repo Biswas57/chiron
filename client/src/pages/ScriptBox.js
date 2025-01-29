@@ -15,6 +15,7 @@ function ScriptBox({brainRot}) {
   const location = useLocation();
   const { state } = location;
   const scriptText = state.scriptText;
+  const this_idx = state.idx;
 
   const [copied, setCopied] = useState(false);
 
@@ -100,26 +101,34 @@ function ScriptBox({brainRot}) {
           {scriptText.split('\n').map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}
-        </Box>
 
-        <Divider />
+          <Divider />
 
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            marginTop: '10px'
-          }}
-        >
-          <Typography>
-            Done reading?
-          </Typography>
-          <Button
-            onClick={() => {window.open("https://app.synthesia.io/", "_blank")}}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center'
+            }}
           >
-            Open Synthesia
-          </Button>
+            <Typography
+              sx={{
+                fontSize: '1.125rem',
+                width: '100%'
+              }}
+            >
+              Everything looks good?
+            </Typography>
+            <Button
+              onClick={() => {window.open("https://app.synthesia.io/", "_blank")}}
+              sx={{
+                fontSize: '1.2rem',
+                fontWeight: 'bold'
+              }}
+            >
+              Open Synthesia
+            </Button>
+          </Box>
         </Box>
       </motion.div>
     </Box>

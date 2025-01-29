@@ -9,7 +9,7 @@ import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import IconButton from '@mui/material/IconButton';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
-import { CircularProgress, Divider } from '@mui/material';
+import { CircularProgress, Divider, ListItem } from '@mui/material';
 import { getKBfromLocalStorage } from '../utils/localStorage';
 import { Modal } from '@mui/material';
 import InstructionModal from './InstructionModal';
@@ -149,18 +149,22 @@ const Navbar = ({brainRot, setBrainRot, isLoading}) => {
               role='presentation'
             >
               <List>
-                {savedKbs.map((pastKb) => {
+                {savedKbs.map((pastKb, idx) => {
                   return (
-                    <Button
-                      sx={{
-                        textAlign: 'start'
-                      }}
-                      onClick={() => {
-                        navigate('/result', { state: { scriptText: pastKb.data}})
-                      }}
+                    <ListItem
+                      key={idx}
                     >
-                      {pastKb.kbId + ' - ' + pastKb.timeGenerated + ' - ' + pastKb.title}
-                    </Button>
+                      <Button
+                        sx={{
+                          textAlign: 'start'
+                        }}
+                        onClick={() => {
+                          navigate('/result', { state: { scriptText: pastKb.data, idx: idx }})
+                        }}
+                      >
+                        {pastKb.kbId + ' - ' + pastKb.timeGenerated + ' - ' + pastKb.title}
+                      </Button>
+                    </ListItem>
                   )
                 })}
               </List>
