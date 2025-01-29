@@ -9,6 +9,7 @@ import ScriptBox from "./pages/ScriptBox";
 import themes from './Theme';
 import NutanixBirds from "./nutanixBirds"
 import VideoBackground from "./components/VideoBackground"
+import Game from "./pages/Game"
 
 function App() {
   const [brainRot, setBrainRot] = useState(false);
@@ -38,6 +39,7 @@ function App() {
           <Routes>
             <Route path="/" element={<MainPage brainRot={brainRot} />} />
             <Route path="/result" element={<ScriptBox brainRot={brainRot} />} />
+            <Route path="/game" element={<Game />} />
           </Routes>
 
         </Box>

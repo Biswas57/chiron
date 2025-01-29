@@ -104,7 +104,15 @@ const Navbar = ({brainRot, setBrainRot}) => {
               Funky mode: {brainRot ? "Enabled" : "Disabled"}
             </Button>
 
-            <Divider />
+            <Button
+              sx={{
+                fontSize: '1.1rem',
+                fontWeight: 'bold'
+              }}
+              onClick={() => {navigate("/game")}}
+            >
+              Dino
+            </Button>
 
             <Button
               sx={{
