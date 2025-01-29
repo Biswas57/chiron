@@ -9,13 +9,13 @@ import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import IconButton from '@mui/material/IconButton';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
-import { Divider } from '@mui/material';
+import { CircularProgress, Divider } from '@mui/material';
 import { getKBfromLocalStorage } from '../utils/localStorage';
 import { Modal } from '@mui/material';
 import InstructionModal from './InstructionModal';
 import AboutModal from './AboutModal';
 
-const Navbar = ({brainRot, setBrainRot}) => {
+const Navbar = ({brainRot, setBrainRot, isLoading}) => {
   const navigate = useNavigate();
 
   const [openAbout, setOpenAbout] = React.useState(false);
@@ -26,6 +26,13 @@ const Navbar = ({brainRot, setBrainRot}) => {
   const toggleDrawer = (newOpen) => () => {
     setOpenDrawer(newOpen);
   };
+
+  // Prevents the sidebar from being opened during loading
+  const handleDrawerClick = () => {
+    if (!isLoading) {
+      toggleDrawer(true);
+    }
+  }
 
   // Close the sidebar on navigation event, and refresh the saved KBs
   const location = useLocation();
@@ -48,8 +55,12 @@ const Navbar = ({brainRot, setBrainRot}) => {
       >
         <Box>
           {/* Sidebar components */}
-          <IconButton onClick={toggleDrawer(true)}>
-            <DensityMediumIcon />
+          <IconButton
+            onClick={toggleDrawer(true)}
+            onKeyDown={(e) => {e.preventDefault()}}
+            disabled={isLoading ? true : false}
+          >
+            {isLoading ? (<CircularProgress />) : (<DensityMediumIcon />)}
           </IconButton>
           <Drawer open={openDrawer} onClose={toggleDrawer(false)}>
             <Button
@@ -166,7 +177,11 @@ const Navbar = ({brainRot, setBrainRot}) => {
                 fontWeight: 'bold',
                 // textShadow: `0 0 25px rgba(255, 255, 255, 0.35)`,    
             }}
-            onClick={() => {navigate('/');}}
+            onClick={() => {
+              if (!isLoading) {
+                navigate('/');
+              }
+            }}
           >
             Chiron
           </Button>

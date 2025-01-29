@@ -253,7 +253,7 @@ let once = false;
     container.style.width = '100vw';
     container.style.height = '100vh';
     container.style.zIndex = '-100';
-    container.style.opacity = '0.3';
+    // container.style.opacity = '0';
     
     // Add class for styling
     container.className = "nutanix-birds-container";
