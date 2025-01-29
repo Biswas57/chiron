@@ -107,14 +107,14 @@ function ScriptBox({brainRot}) {
           <Box
             sx={{
               display: 'flex',
-              flexDirection: 'column',
+              flexDirection: 'column', 
               justifyContent: 'center'
             }}
           >
             <Typography
               sx={{
                 fontSize: '1.125rem',
-                width: '100%'
+                textAlign: 'center'
               }}
             >
               Everything looks good?
