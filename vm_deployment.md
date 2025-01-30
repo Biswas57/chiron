@@ -34,6 +34,7 @@ cd chiron
 cd client
 npm install
 
+# Ensure the API call URL in pages/MainPage.js has relative route: "api/extract-text"
 # Build frontend
 npm run build
 
@@ -49,7 +50,7 @@ chmod +x dep_script_rocky
 ### 1. Update Flask Code
 Navigate to your server directory and ensure your Flask app has the correct host setting in app.py:
 ```bash
-cd /home/chiron/react-app/server
+cd /home/chiron/server
 
 # Ensure app.py has the following block:
 if __name__ == "__main__":
@@ -83,6 +84,7 @@ WantedBy=multi-user.target
 ```
 
 ## Configure Frontend Deploymen (Nginx)
+
 ### 1. Set Directory Permissions
 ```bash
 # Set correct permissions for directories
@@ -126,8 +128,8 @@ server {
 sudo dnf install policycoreutils-python-utils -y
 
 # Set SELinux context for build directory
-sudo semanage fcontext -a -t httpd_sys_content_t "/home/chiron/react-app/client/build(/.*)?"
-sudo restorecon -Rv /home/chiron/react-app/client/build
+sudo semanage fcontext -a -t httpd_sys_content_t "/home/chiron/client/build(/.*)?"
+sudo restorecon -Rv /home/chiron/client/build
 
 # Allow nginx to connect to Flask backend
 sudo setsebool -P httpd_can_network_connect 1
@@ -211,7 +213,6 @@ http://<vm-ip>/
 ```
 
 ## Troubleshooting
-
 ### Common Issues and Solutions
 
 1. 500 Internal Server Error:
@@ -297,3 +298,4 @@ sudo tail -f /var/log/nginx/error.log
 # Flask app logs
 sudo journalctl -u flask-app -f
 ```
+

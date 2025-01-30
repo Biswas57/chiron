@@ -1,13 +1,11 @@
-from groq import Groq
-import os
-from dotenv import load_dotenv
+#!/usr/bin/env python3
 
-load_dotenv(dotenv_path=".env")
-client = Groq(
-  api_key=os.getenv('GROQ_API_KEY')
-)
+import subprocess
 
 def generate_prompt(content):
+    """
+    Build the text prompt you want to send to Ollama.
+    """
     prompt = """
 ### INSTRUCTION: 
 The following text is a Knowledge Base article for a Nutanix product. This article is to be converted to a video to assist users of the product run the steps outlined in the article themselves. Your task is to generate a script for this video, based on the article contents. 
@@ -18,24 +16,44 @@ Your script will be converted to speech using TTS, and someone will manually gen
 
 ### KB ARTICLE CONTENT:
 """
-
-    return prompt + '\n\n' + content
+    return prompt + "\n\n" + content
 
 def write_script(prompt):
-    completion = client.chat.completions.create(
-        messages=[
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ],
-        model="llama-3.3-70b-versatile",
-        stream=False,
+    """
+    Pass the prompt to Ollama via subprocess.
+    Capture the model's response from stdout.
+    """
+    # Command and model name you'd like to run
+    model_cmd = ["ollama", "run", "llama3.1:8b"]
+
+    # Run the command, sending `prompt` to its stdin
+    # `capture_output=True` captures the response
+    result = subprocess.run(
+        model_cmd,
+        input=prompt,
+        capture_output=True,
+        text=True
     )
 
-    return completion.choices[0].message.content
-
+    # Ollama’s output comes from stdout
+    return result.stdout
 
 def generate_script(content):
+    """
+    High-level function that builds the prompt,
+    calls Ollama, and returns the AI’s completion.
+    """
     prompt = generate_prompt(content)
-    return write_script(prompt)
+    completion_text = write_script(prompt)
+    return completion_text
+
+# Example usage:
+if __name__ == "__main__":
+    kb_content = """
+    Description:
+The cvm_shutdown script signals HA when shutting down the CVM (Controller VM) to forward the storage traffic to another healthy CVM. Instead of using sudo shutdown or sudo reboot commands, this script should be used to minimize I/O hits in user VMs running on the present hypervisor host.
+
+In AOS 5.20.1, 6.0.1 and later, if Genesis fails to set up HA routes to other nodes in the cluster, the script will not proceed with the shutdown. If you still want to shut down the CVM, use the force_reboot option."
+"""  
+    script_result = generate_script(kb_content)
+    print(script_result)
