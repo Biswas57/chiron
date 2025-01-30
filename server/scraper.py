@@ -1,5 +1,5 @@
 from playwright.sync_api import sync_playwright
-import groq_parse as gp
+import ollama_parse as op
 import time
 import re
 import platform
@@ -51,4 +51,4 @@ def scrape(url):
     title, text = scrape_title_and_text(url)
     parsed_text = parse(text)
     kb_id = scrape_kb_id(parsed_text)
-    return kb_id, title, gp.generate_script(parsed_text)
+    return kb_id, title, op.generate_script(parsed_text)
