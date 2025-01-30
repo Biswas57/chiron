@@ -30,7 +30,7 @@ def write_script(prompt):
     # `capture_output=True` captures the response
     result = subprocess.run(
         model_cmd,
-        input=prompt.encode("utf-8"),
+        input=prompt,
         capture_output=True,
         text=True
     )
@@ -49,6 +49,11 @@ def generate_script(content):
 
 # Example usage:
 if __name__ == "__main__":
-    kb_content = "Here is the content of a Nutanix KB article..."
+    kb_content = """
+    Description:
+The cvm_shutdown script signals HA when shutting down the CVM (Controller VM) to forward the storage traffic to another healthy CVM. Instead of using sudo shutdown or sudo reboot commands, this script should be used to minimize I/O hits in user VMs running on the present hypervisor host.
+
+In AOS 5.20.1, 6.0.1 and later, if Genesis fails to set up HA routes to other nodes in the cluster, the script will not proceed with the shutdown. If you still want to shut down the CVM, use the force_reboot option."
+"""  
     script_result = generate_script(kb_content)
     print(script_result)
