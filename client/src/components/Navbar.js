@@ -165,7 +165,7 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs}) =
           </Drawer>
 
           {/* Chiron framework button */}
-          <Button
+          {/* <Button
             color='primary'
             variant='text'
             component='div'
@@ -181,7 +181,7 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs}) =
             }}
           >
             Chiron
-          </Button>
+          </Button> */}
         </Box>
 
         {/* NTNX logo */}
