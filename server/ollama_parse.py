@@ -24,7 +24,7 @@ def write_script(prompt):
     Capture the model's response from stdout.
     """
     # Command and model name you'd like to run
-    model_cmd = ["ollama", "run", "llama3.1-vision:8b"]
+    model_cmd = ["ollama", "run", "llama3.1:8b"]
 
     # Run the command, sending `prompt` to its stdin
     # `capture_output=True` captures the response
