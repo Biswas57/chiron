@@ -1,8 +1,9 @@
 const KB_LOCAL_STORAGE_KEY = "KBs"
 
-export function addKBtoLocalStorage(kb_id, title, data) {
+export function addKBtoLocalStorage(url, kb_id, title, data) {
     let kbs = getAllKBfromLocalStorage();
     kbs.unshift({
+        url: url,
         kbId: kb_id,
         title: title,
         timeGenerated: new Date().toLocaleString(),

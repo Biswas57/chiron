@@ -5,9 +5,6 @@ import InputBox from '../components/URLInput';
 import LoadingAnimation from '../components/LoadingAnimation';
 import { useNavigate } from 'react-router';
 import { addKBtoLocalStorage } from '../utils/localStorage';
-import NutanixBirds from '../nutanixBirds';
-import VideoBackground from '../components/VideoBackground';
-
 
 const MotionBox = motion(Box);
 
@@ -38,7 +35,7 @@ function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs}) {
       const data = await response.json();
       
       if (data.success) {
-        addKBtoLocalStorage(data.kb_id, data.title, data.data);
+        addKBtoLocalStorage(url, data.kb_id, data.title, data.data);
         refreshSavedKbs();
         navigate("/result", { state: { idx: 0, scriptText: data.data } });
       } else {

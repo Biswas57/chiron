@@ -13,6 +13,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import { editKBtoLocalStorage, getKBfromLocalStorage } from '../utils/localStorage';
 import TextField from '@mui/material/TextField';
+import LaunchIcon from '@mui/icons-material/Launch';
 
 function ScriptBox({brainRot, refreshSavedKbs}) {
   // Get the result from App.js
@@ -137,6 +138,22 @@ function ScriptBox({brainRot, refreshSavedKbs}) {
               </motion.div>
             )}
           </AnimatePresence>
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Go to original KB article">
+        <IconButton
+          onClick={() => {window.open(getKBfromLocalStorage(state.idx).url, '_blank')}}
+          sx={{
+            position: 'absolute',
+            top: 16,
+            right: 112,
+            color: 'grey.400',
+            '&:hover': {
+              color: 'grey.100'
+            }
+          }}
+        >
+          <LaunchIcon />
         </IconButton>
       </Tooltip>
       <motion.div
