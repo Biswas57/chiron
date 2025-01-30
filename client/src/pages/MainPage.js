@@ -13,7 +13,7 @@ const MotionBox = motion(Box);
 
 const API_URL = 'http://localhost:5000/api/extract-text';
 
-function MainPage({brainRot, isLoading, setIsLoading}) {
+function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs}) {
   const navigate = useNavigate();
 
   const [error, setError] = useState(null);
@@ -39,7 +39,8 @@ function MainPage({brainRot, isLoading, setIsLoading}) {
       
       if (data.success) {
         addKBtoLocalStorage(data.kb_id, data.title, data.data);
-        navigate("/result", { state: { scriptText: data.data } });
+        refreshSavedKbs();
+        navigate("/result", { state: { idx: 0, scriptText: data.data } });
       } else {
         throw new Error(data.error || 'Failed to extract text');
       }
