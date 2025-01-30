@@ -54,8 +54,8 @@ function App() {
 
           {/* Page content */}
           <Routes className="url-input-container">
-            <Route path="/" element={<MainPage brainRot={brainRot} isLoading={isLoading} setIsLoading={setIsLoading} />} />
-            <Route path="/result" element={<ScriptBox brainRot={brainRot} />} />
+            <Route path="/" element={<MainPage brainRot={brainRot} isLoading={isLoading} setIsLoading={setIsLoading} refreshSavedKbs={refreshSavedKbs}/>} />
+            <Route path="/result" element={<ScriptBox brainRot={brainRot} refreshSavedKbs={refreshSavedKbs}/>} />
             <Route path="/game" element={<Game />} />
             <Route path="/instructions" element={<InstructionPage/>} />
           </Routes>
