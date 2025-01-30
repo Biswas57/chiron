@@ -1,4 +1,4 @@
-# Complete Deployment Guide for Chiron on Rocky Linux
+# Complete Deployment Guide for Chiron + Ollama on Rocky Linux
 
 ## Initial Setup and Prerequisites
 
@@ -21,7 +21,28 @@ sudo dnf install git -y
 sudo dnf install nginx -y
 ```
 
-### 2. Clone Repository and Install Dependencies
+### 3. Install Ollama AI model
+```bash
+# Install tar package
+dnf install tar -y
+
+# Fetch Ollama model from website
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Check Ollama model runs properly
+ollama run llama3.2-vision:90b
+
+# Create Modelfile to increase context window allowing for larger article
+echo "# Modelfile
+FROM llama3.2-vision:90b
+PARAMETER num_ctx 128000" > Modelfile
+
+# Apply Modelfile
+ollama create -f Modelfile llama3.2-vision:90b
+```
+
+
+### 3. Clone Repository and Install Dependencies
 ```bash
 # Navigate to home directory
 cd /home
@@ -34,7 +55,7 @@ cd chiron
 cd client
 npm install
 
-# Ensure the API call URL in pages/MainPage.js has relative route: "api/extract-text"
+# Ensure the API call URL in pages/MainPage.js has relative route: "api/generate"
 # Build frontend
 npm run build
 
@@ -195,9 +216,6 @@ ip addr show
 ```bash
 # Test nginx
 curl http://localhost
-
-# Test Flask API
-curl http://localhost/api/health  # If you have a health endpoint
 ```
 
 3. Test from external machine:
@@ -231,7 +249,7 @@ http://<vm-ip>/
    - Check file permissions in server directory
 
 4. Backend not responding:
-   - curl -X POST -H "Content-Type: application/json" -d '{"url":"https://portal.nutanix.com/page/documents/kbs/details?targetId=kA0320000004H2NCAU"}' http://localhost:5000/api/extract-text
+   - curl -X POST -H "Content-Type: application/json" -d '{"url":"https://portal.nutanix.com/page/documents/kbs/details?targetId=kA0320000004H2NCAU"}' http://localhost:5000/api/generate
 
   - check AI API functions and API keys
   - check backend functions output formatting
@@ -260,7 +278,7 @@ sudo systemctl restart nginx
 
 1. Pull new code:
 ```bash
-cd /home/chiron/react-app
+cd /home/chiron
 git pull
 ```
 
@@ -280,13 +298,17 @@ sudo systemctl restart flask-app
 ```
 
 ### Monitoring
+1. Check Ollama is performing inference:
+```bash
+btop
+```
 
-1. Check service health:
+2. Check service health:
 ```bash
 sudo systemctl status nginx flask-app
 ```
 
-2. Monitor logs:
+3. Monitor logs:
 ```bash
 # Nginx access logs
 sudo tail -f /var/log/nginx/access.log
