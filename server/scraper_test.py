@@ -1,5 +1,5 @@
 from playwright.sync_api import sync_playwright
-import groq_parse as gp
+# import groq_parse as gp
 import time
 import re
 import platform
@@ -47,11 +47,11 @@ def scrape_kb_id(text):
     else:
         return match.group()
 
-def scrape(url):
-    title, text = scrape_title_and_text(url)
-    parsed_text = parse(text)
-    kb_id = scrape_kb_id(parsed_text)
-    return kb_id, title, gp.generate_script(parsed_text)
+# def scrape(url):
+#     title, text = scrape_title_and_text(url)
+#     parsed_text = parse(text)
+#     kb_id = scrape_kb_id(parsed_text)
+#     return kb_id, title, gp.generate_script(parsed_text)
 
 if __name__ == '__main__':
     url = 'https://portal.nutanix.com/page/documents/kbs/details?targetId=kA0600000008dpDCAQ'
