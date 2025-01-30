@@ -5,9 +5,6 @@ import InputBox from '../components/URLInput';
 import LoadingAnimation from '../components/LoadingAnimation';
 import { useNavigate } from 'react-router';
 import { addKBtoLocalStorage } from '../utils/localStorage';
-import NutanixBirds from '../nutanixBirds';
-import VideoBackground from '../components/VideoBackground';
-
 
 const MotionBox = motion(Box);
 
@@ -53,9 +50,7 @@ function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs}) {
   };
 
   return (
-    <div style={{ position: 'relative' }}>
-      {brainRot ? <VideoBackground /> : <NutanixBirds />}
-      
+    <div style={{ position: 'relative' }}>      
       <AnimatePresence mode="wait">
         {!isLoading && (
           <MotionBox

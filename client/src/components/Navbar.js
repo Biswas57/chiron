@@ -96,7 +96,7 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs}) =
               <InstructionModal />
             </Modal>
 
-            <Button
+            {/* <Button
               sx={{
                 fontSize: '1.1rem',
                 fontWeight: 'bold'
@@ -114,7 +114,7 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs}) =
               onClick={() => {navigate("/game")}}
             >
               Dino
-            </Button>
+            </Button> */}
 
             <Button
               sx={{

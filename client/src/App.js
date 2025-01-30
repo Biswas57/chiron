@@ -48,7 +48,7 @@ function App() {
             refreshSavedKbs={refreshSavedKbs}
           />
 
-          {brainRot ? <VideoBackground /> : <NutanixBirds />}
+          {/* {brainRot ? <VideoBackground /> : <NutanixBirds />} */}
 
           {/* Page content */}
           <Routes>

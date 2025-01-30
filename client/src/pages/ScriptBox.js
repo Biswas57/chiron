@@ -63,7 +63,7 @@ function ScriptBox({brainRot, refreshSavedKbs}) {
         position: 'relative'
       }}
     >
-      <Tooltip title={copied ? "Copied!" : "Copy to clipboard"}>
+      {/* <Tooltip title={copied ? "Copied!" : "Copy to clipboard"}>
         <IconButton
           onClick={handleCopy}
           sx={{
@@ -138,7 +138,7 @@ function ScriptBox({brainRot, refreshSavedKbs}) {
             )}
           </AnimatePresence>
         </IconButton>
-      </Tooltip>
+      </Tooltip> */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
