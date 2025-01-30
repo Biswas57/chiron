@@ -56,4 +56,4 @@ def scrape(url):
 if __name__ == '__main__':
     url = 'https://portal.nutanix.com/page/documents/kbs/details?targetId=kA0600000008dpDCAQ'
 
-    print(scrape(url))
+    print(scrape_title_and_text(url))
