@@ -17,7 +17,7 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs}) =
   const navigate = useNavigate();
 
   const [openAbout, setOpenAbout] = React.useState(false);
-  const [savedKbs, setSavedKbs] = React.useState(getKBfromLocalStorage());
+  // const [savedKbs, setSavedKbs] = React.useState(getKBfromLocalStorage());
 
   const [openDrawer, setOpenDrawer] = React.useState(false);
   const toggleDrawer = (newOpen) => () => {
