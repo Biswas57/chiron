@@ -25,7 +25,7 @@ function InstructionPage() {
     {
       title: "Create Your Video",
       details: [
-        <><Link href="https://www.synthesia.io/" target="_blank" rel="noopener noreferrer" sx={{ color: 'primary.main' }}>Open Synthesia</Link></>,
+        <><Link href="https://app.synthesia.io/" target="_blank" rel="noopener noreferrer" sx={{ color: 'primary.main' }}>Open Synthesia</Link></>,
         "Create a new scene for each section",
         "Record with professional AI voiceover",
         "Add your screen recordings"
