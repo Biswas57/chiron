@@ -52,9 +52,7 @@ function MainPage({brainRot, isLoading, setIsLoading}) {
   };
 
   return (
-    <div style={{ position: 'relative' }}>
-      {brainRot ? <VideoBackground /> : <NutanixBirds />}
-      
+    <div>      
       <AnimatePresence mode="wait">
         {!isLoading && (
           <MotionBox
