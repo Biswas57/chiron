@@ -10,11 +10,10 @@ import List from '@mui/material/List';
 import IconButton from '@mui/material/IconButton';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
 import { CircularProgress, Divider, ListItem } from '@mui/material';
-import { getKBfromLocalStorage } from '../utils/localStorage';
 import { Modal } from '@mui/material';
 import AboutModal from './AboutModal';
 
-const Navbar = ({brainRot, setBrainRot, isLoading}) => {
+const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs}) => {
   const navigate = useNavigate();
 
   const [openAbout, setOpenAbout] = React.useState(false);
@@ -25,18 +24,11 @@ const Navbar = ({brainRot, setBrainRot, isLoading}) => {
     setOpenDrawer(newOpen);
   };
 
-  // Prevents the sidebar from being opened during loading
-  const handleDrawerClick = () => {
-    if (!isLoading) {
-      toggleDrawer(true);
-    }
-  }
-
   // Close the sidebar on navigation event, and refresh the saved KBs
   const location = useLocation();
   React.useEffect(() => {
     setOpenDrawer(false);
-    setSavedKbs(getKBfromLocalStorage());
+    refreshSavedKbs();
   }, [location.pathname]);
 
   return (
@@ -118,9 +110,10 @@ const Navbar = ({brainRot, setBrainRot, isLoading}) => {
                 fontWeight: 'bold'
               }}
               onClick={() => {
-                if (window.confirm('Clearing all previous script generations, are you sure?') === true) {
+                if (window.confirm('Clearing all previous script generations and return to home page, are you sure?') === true) {
                   localStorage.clear();
-                  setSavedKbs(getKBfromLocalStorage());
+                  refreshSavedKbs();
+                  navigate('/');
                 }
               }}
             >
@@ -143,10 +136,11 @@ const Navbar = ({brainRot, setBrainRot, isLoading}) => {
                     >
                       <Button
                         sx={{
-                          textAlign: 'start'
+                          textAlign: 'start',
+                          overflowWrap: 'anywhere'
                         }}
                         onClick={() => {
-                          navigate('/result', { state: { scriptText: pastKb.data, idx: idx }})
+                          navigate('/result', { state: { idx: idx, scriptText: pastKb.data }});
                         }}
                       >
                         {pastKb.kbId + ' - ' + pastKb.timeGenerated + ' - ' + pastKb.title}

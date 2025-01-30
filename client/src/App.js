@@ -11,6 +11,7 @@ import NutanixBirds from "./nutanixBirds"
 import VideoBackground from "./components/VideoBackground"
 import InstructionPage from "./pages/InstructionPage"
 import Game from "./pages/Game"
+import { getAllKBfromLocalStorage } from './utils/localStorage';
 
 function App() {
   // This needs to be a global state to disable the navbar during AI generation
@@ -22,6 +23,11 @@ function App() {
   useEffect(() => {
     setTheme(brainRot ? themes.brainrot : themes.default);
   }, [brainRot]);
+
+  const [savedKbs, setSavedKbs] = React.useState(getAllKBfromLocalStorage());
+  const refreshSavedKbs = () => {
+    setSavedKbs(getAllKBfromLocalStorage());
+  }
 
   return (  
     <BrowserRouter>
@@ -40,6 +46,8 @@ function App() {
             brainRot={brainRot}
             setBrainRot={setBrainRot}
             isLoading={isLoading}
+            savedKbs={savedKbs}
+            refreshSavedKbs={refreshSavedKbs}
           />
 
           {brainRot ? <VideoBackground /> : <NutanixBirds />}
