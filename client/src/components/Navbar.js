@@ -11,14 +11,13 @@ import IconButton from '@mui/material/IconButton';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
 import { CircularProgress, Divider, ListItem } from '@mui/material';
 import { Modal } from '@mui/material';
-import InstructionModal from './InstructionModal';
 import AboutModal from './AboutModal';
 
 const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs}) => {
   const navigate = useNavigate();
 
   const [openAbout, setOpenAbout] = React.useState(false);
-  const [openInstruction, setOpenInstruction] = React.useState(false);
+  const [savedKbs, setSavedKbs] = React.useState(getKBfromLocalStorage());
 
   const [openDrawer, setOpenDrawer] = React.useState(false);
   const toggleDrawer = (newOpen) => () => {
@@ -80,21 +79,10 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs}) =
                 fontSize: '1.1rem',
                 fontWeight: 'bold'
               }}
-              onClick={() => {setOpenInstruction(true)}}
+              onClick={() => {navigate('/instructions')}}
             >
               Instruction
             </Button>
-            <Modal
-              open={openInstruction}
-              onClose={() => {setOpenInstruction(false)}}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <InstructionModal />
-            </Modal>
 
             <Button
               sx={{
@@ -172,7 +160,6 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs}) =
             sx={{
                 fontSize: '1.4rem',
                 fontWeight: 'bold',
-                // textShadow: `0 0 25px rgba(255, 255, 255, 0.35)`,    
             }}
             onClick={() => {
               if (!isLoading) {

@@ -9,6 +9,7 @@ import ScriptBox from "./pages/ScriptBox";
 import themes from './Theme';
 import NutanixBirds from "./nutanixBirds"
 import VideoBackground from "./components/VideoBackground"
+import InstructionPage from "./pages/InstructionPage"
 import Game from "./pages/Game"
 import { getAllKBfromLocalStorage } from './utils/localStorage';
 
@@ -36,7 +37,8 @@ function App() {
           sx={{
             minHeight: '100vh',
             position: 'relative',
-            backgroundColor: 'transparent'
+            backgroundColor: 'transparent',
+            position: 'relative'
           }}
         >
           {/* These appear on all pages */}
@@ -51,10 +53,11 @@ function App() {
           {brainRot ? <VideoBackground /> : <NutanixBirds />}
 
           {/* Page content */}
-          <Routes>
-            <Route path="/" element={<MainPage brainRot={brainRot} isLoading={isLoading} setIsLoading={setIsLoading} refreshSavedKbs={refreshSavedKbs} />} />
-            <Route path="/result" element={<ScriptBox brainRot={brainRot} refreshSavedKbs={refreshSavedKbs} />} />
+          <Routes className="url-input-container">
+            <Route path="/" element={<MainPage brainRot={brainRot} isLoading={isLoading} setIsLoading={setIsLoading} />} />
+            <Route path="/result" element={<ScriptBox brainRot={brainRot} />} />
             <Route path="/game" element={<Game />} />
+            <Route path="/instructions" element={<InstructionPage/>} />
           </Routes>
 
         </Box>
