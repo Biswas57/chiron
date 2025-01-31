@@ -47,7 +47,7 @@ def scrape_kb_id(text):
     else:
         return match.group()
 
-def scrape(url):
+def generate(url):
     title, text = scrape_title_and_text(url)
     parsed_text = parse(text)
     kb_id = scrape_kb_id(parsed_text)
