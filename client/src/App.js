@@ -35,6 +35,7 @@ function App() {
   // Global state to disable navigation during edit mode
   const [editing, setEditing] = useState(false);
 
+  // TODO: clicking back still triggers a navigation during edit mode. Need to fix
   useEffect(() => {
     const handleBeforeUnload = (event) => {
       if (editing) {
