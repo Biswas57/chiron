@@ -8,7 +8,8 @@ import { addKBtoLocalStorage } from '../utils/localStorage';
 
 const MotionBox = motion(Box);
 
-const API_URL = 'http://localhost:5000/api/url-generate';
+const API_URL_UP = 'http://localhost:5000/api/url-generate';
+const API_FILE_UP = 'http://localhost:5000/api/pdf-generate';
 
 function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs}) {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs}) {
     setError(null);
     
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(API_URL_UP, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,6 +54,34 @@ function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs}) {
     setIsLoading(true);
     setError(null);
     
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch(API_FILE_UP, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        addKBtoLocalStorage(null, data.kb_id, data.title, data.data);
+        refreshSavedKbs();
+        navigate("/result", { state: { idx: 0, scriptText: data.data } });
+      } else {
+        throw new Error(data.error || 'Failed to extract text');
+      }
+    } catch (error) {
+      console.error('Error fetching script:', error);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (

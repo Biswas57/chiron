@@ -139,9 +139,15 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing}) {
           </AnimatePresence>
         </IconButton>
       </Tooltip>
-      <Tooltip title="Go to original KB article">
+      <Tooltip title={
+        getKBfromLocalStorage(state.idx).url !== null ? "Go to original KB article" : "Going to article source disabled as this script was generated from a PDF."
+      }>
         <IconButton
-          onClick={() => {window.open(getKBfromLocalStorage(state.idx).url, '_blank')}}
+          onClick={() => {
+            if (getKBfromLocalStorage(state.idx).url !== null) {
+              window.open(getKBfromLocalStorage(state.idx).url, '_blank');
+            }
+          }}
           sx={{
             position: 'absolute',
             top: 16,

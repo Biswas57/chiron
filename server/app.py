@@ -7,6 +7,9 @@ from urllib.parse import urlparse
 app = Flask(__name__)
 CORS(app)
 
+app.config['ALLOWED_EXTENSIONS'] = {'pdf'}
+
+
 def is_valid_url(url):
     """Basic URL validation"""
     try:
@@ -62,42 +65,30 @@ def extract_text_endpoint():
 def extract_pdf_endpoint():
     """
     POST /api/pdf-generate
-    Expects JSON body like: { "pdf": <example.pdf>, "filename": "example.pdf" }
+    Expects JSON body like: { "file": <file object> }
     Returns JSON with the extracted text data.
     """
-    data = request.get_json()
-    if not data or "pdf" not in data:
-        return jsonify({
-            "success": False,
-            "error": "Missing pdf in request body"
-        }), 400
+    if 'file' not in request.files:
+        return jsonify({"error": "No file key in request body"}), 400
 
-    if "filename" not in data:
-        return jsonify({
-            "success": False,
-            "error": "Missing filename in request body"
-        }), 400
+    file = request.files['file']
 
-    pdf = data["pdf"]
-    filename = data["filename"]
-    print(pdf)
+    if file.filename == '':
+        return jsonify({"error": "No uploaded file"}), 400
+
     try:
-        kb_id, title, result = pr.generate(pdf, filename)
-        if not result:
-            return jsonify({
-                "success": False,
-                "error": "Failed to extract content from PDF"
-            }), 404
-            
+        file.stream.seek(0)
+        kb_id, title, text = pr.generate(file.stream, file.filename)
+
         return jsonify({
             "success": True,
             "kb_id": kb_id,
             "title": title,
-            "data": result
+            "data": text
         }), 200
         
     except Exception as e:
-        print("extract_text_endpoint(): exception thrown: " + str(e))
+        print("extract_pdf_endpoint(): exception thrown: " + str(e))
         return jsonify({
             "success": False,
             "error": str(e)
