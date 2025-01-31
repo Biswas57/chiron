@@ -35,10 +35,10 @@ def generate(pdf, filename):
     return kb_id, title, gp.generate_script(text)
 
 
-pdf_file = "How to use the cvm_shutdown script to shutdown or restart a CVM.pdf"
-with open(pdf_file, 'rb') as f:
-    kb_id, title, text = generate(f, pdf_file)
+# pdf_file = "How to use the cvm_shutdown script to shutdown or restart a CVM.pdf"
+# with open(pdf_file, 'rb') as f:
+#     kb_id, title, text = generate(f, pdf_file)
 
-print('Script:', text)
-print("Title:", title)
-print("KB ID", kb_id)
+# print('Script:', text)
+# print("Title:", title)
+# print("KB ID", kb_id)

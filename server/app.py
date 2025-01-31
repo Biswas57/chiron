@@ -59,7 +59,7 @@ def extract_text_endpoint():
         }), 500
     
 @app.route("/api/pdf-generate", methods=["POST"])
-def extract_text_endpoint():
+def extract_pdf_endpoint():
     """
     POST /api/pdf-generate
     Expects JSON body like: { "pdf": <example.pdf>, "filename": "example.pdf" }

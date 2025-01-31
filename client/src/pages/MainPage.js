@@ -8,7 +8,7 @@ import { addKBtoLocalStorage } from '../utils/localStorage';
 
 const MotionBox = motion(Box);
 
-const API_URL = 'http://localhost:5000/api/extract-text';
+const API_URL = 'http://localhost:5000/api/url-generate';
 
 function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs}) {
   const navigate = useNavigate();
