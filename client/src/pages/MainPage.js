@@ -49,6 +49,12 @@ function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs}) {
     }
   };
 
+  const handleFileSubmit = async (file) => {
+    setIsLoading(true);
+    setError(null);
+    
+  }
+
   return (
     <div>      
       <AnimatePresence mode="wait">
@@ -61,10 +67,16 @@ function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs}) {
             transition={{ duration: 0.3 }}
             sx={{
               position: 'relative',
-              zIndex: 1
+              zIndex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              height: '80vh',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '100vw'
             }}
           >
-            <InputBox onSubmit={handleUrlSubmit} />
+            <InputBox onSubmitURL={handleUrlSubmit} onSubmitFile={handleFileSubmit} />
             {error && (
               <Box sx={{ 
                 position: 'relative',

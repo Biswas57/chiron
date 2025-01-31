@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router";
+import { BrowserRouter, Routes, Route } from "react-router";
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Navbar from './components/Navbar';
@@ -76,7 +76,6 @@ function App() {
             minHeight: '100vh',
             position: 'relative',
             backgroundColor: 'transparent',
-            position: 'relative'
           }}
         >
           {/* These appear on all pages */}
