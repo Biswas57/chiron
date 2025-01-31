@@ -15,14 +15,13 @@ import { editKBtoLocalStorage, getKBfromLocalStorage } from '../utils/localStora
 import TextField from '@mui/material/TextField';
 import LaunchIcon from '@mui/icons-material/Launch';
 
-function ScriptBox({brainRot, refreshSavedKbs}) {
+function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing}) {
   // Get the result from App.js
   const location = useLocation();
   const { state } = location;
 
   const [scriptText, setScriptText] = useState("");
   const [copied, setCopied] = useState(false);
-  const [editing, setEditing] = useState(false);
 
   useEffect(() => {
     setScriptText(state.scriptText);

@@ -13,16 +13,13 @@ import { CircularProgress, Divider, ListItem } from '@mui/material';
 import { Modal } from '@mui/material';
 import AboutModal from './AboutModal';
 
-const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs}) => {
+const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, editing}) => {
   const navigate = useNavigate();
 
   const [openAbout, setOpenAbout] = React.useState(false);
   // const [savedKbs, setSavedKbs] = React.useState(getKBfromLocalStorage());
 
   const [openDrawer, setOpenDrawer] = React.useState(false);
-  const toggleDrawer = (newOpen) => () => {
-    setOpenDrawer(newOpen);
-  };
 
   // Close the sidebar on navigation event, and refresh the saved KBs
   const location = useLocation();
@@ -46,13 +43,19 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs}) =
         <Box>
           {/* Sidebar components */}
           <IconButton
-            onClick={toggleDrawer(true)}
+            onClick={() => {
+              if (editing) {
+                alert('You are in editing mode, you will lose your changes if you navigate away. Save your work first!');
+              } else {
+                setOpenDrawer(true);
+              }
+            }}
             onKeyDown={(e) => {e.preventDefault()}}
             disabled={isLoading ? true : false}
           >
             {isLoading ? (<CircularProgress />) : (<DensityMediumIcon />)}
           </IconButton>
-          <Drawer open={openDrawer} onClose={toggleDrawer(false)}>
+          <Drawer open={openDrawer} onClose={() => {setOpenDrawer(false)}}>
             <Button
               sx={{
                 fontSize: '1.1rem',
@@ -162,7 +165,11 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs}) =
                 fontWeight: 'bold',
             }}
             onClick={() => {
-              if (!isLoading) {
+              if (isLoading) {
+                alert('You cannot navigate to a different page while the script is generating.');
+              } else if (editing) {
+                alert('You are in editing mode, you will lose your work if you navigate away. Save your work first!')
+              } else {
                 navigate('/');
               }
             }}
