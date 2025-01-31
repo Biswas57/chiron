@@ -22,9 +22,11 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing}) {
 
   const [scriptText, setScriptText] = useState("");
   const [copied, setCopied] = useState(false);
+  const [sourceFromURL, setSourceFromURL] = useState(false);
 
   useEffect(() => {
     setScriptText(state.scriptText);
+    setSourceFromURL(getKBfromLocalStorage(state.idx).url !== null);
   }, [location.state]);
 
   const handleCopy = async () => {
@@ -140,11 +142,11 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing}) {
         </IconButton>
       </Tooltip>
       <Tooltip title={
-        getKBfromLocalStorage(state.idx).url !== null ? "Go to original KB article" : "Going to article source disabled as this script was generated from a PDF."
+        sourceFromURL ? "Go to original KB article" : "Going to article source disabled as this script was generated from a PDF."
       }>
         <IconButton
           onClick={() => {
-            if (getKBfromLocalStorage(state.idx).url !== null) {
+            if (sourceFromURL) {
               window.open(getKBfromLocalStorage(state.idx).url, '_blank');
             }
           }}
