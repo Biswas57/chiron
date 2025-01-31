@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import { AnimatePresence, motion } from 'framer-motion';
-import InputBox from '../components/URLInput';
+import InputBox from '../components/InputBox';
 import LoadingAnimation from '../components/LoadingAnimation';
 import { useNavigate } from 'react-router';
 import { addKBtoLocalStorage } from '../utils/localStorage';

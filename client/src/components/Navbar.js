@@ -8,6 +8,8 @@ import { useNavigate, useLocation } from 'react-router';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import IconButton from '@mui/material/IconButton';
+import { Tooltip } from '@mui/material';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
 import { CircularProgress, Divider, ListItem } from '@mui/material';
 import { Modal } from '@mui/material';
@@ -84,7 +86,7 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
               }}
               onClick={() => {navigate('/instructions')}}
             >
-              Instruction
+              Instructions
             </Button>
 
             <Button
@@ -178,9 +180,33 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
           </Button>
         </Box>
 
-        {/* NTNX logo */}
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <img src={ntxLogo} alt='Nutanix Logo' style={{ height: 20, width: 'auto' }} />
+        <Box sx={{display: 'flex', }}>
+        <Tooltip title="Instructions" arrow>
+          <IconButton
+            onClick={() => {
+              if (isLoading) {
+                alert('You cannot navigate to a different page while the script is generating.');
+              } else if (editing) {
+                alert('You are in editing mode, you will lose your work if you navigate away. Save your work first!')
+              } else {
+                navigate('/instructions');
+              }
+            }}
+            sx={{
+              color: 'white',
+              mr: 3,
+              transition: 'all 0.2s ease-in-out',
+            }}
+          >
+            <HelpOutlineIcon sx={{ fontSize: 40 }} /> {/* Increased from default size */}
+          </IconButton>
+        </Tooltip>
+
+
+          {/* NTNX logo */}
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <img src={ntxLogo} alt='Nutanix Logo' style={{ height: 20, width: 'auto' }} />
+          </Box>
         </Box>
       </Toolbar>
     </AppBar>
