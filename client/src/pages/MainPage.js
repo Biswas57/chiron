@@ -29,11 +29,11 @@ function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs}) {
         body: JSON.stringify({ url }),
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(`${data.error}`);
+      }
       
       if (data.success) {
         addKBtoLocalStorage(url, data.kb_id, data.title, data.data);
@@ -62,12 +62,12 @@ function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs}) {
         method: 'POST',
         body: formData,
       });
+      
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`${data.error}`);
       }
-
-      const data = await response.json();
       
       if (data.success) {
         addKBtoLocalStorage(null, data.kb_id, data.title, data.data);
@@ -105,16 +105,17 @@ function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs}) {
               width: '100vw'
             }}
           >
-            <InputBox onSubmitURL={handleUrlSubmit} onSubmitFile={handleFileSubmit} />
+            <InputBox onSubmitURL={handleUrlSubmit} onSubmitFile={handleFileSubmit} setHttpErrorMsg={setError}/>
             {error && (
               <Box sx={{ 
                 position: 'relative',
                 zIndex: 1,
                 color: 'error.main',
+                backdropFilter: 'blur(5px)',
                 textAlign: 'center',
+                border: '1px solid red',
                 mt: 2,
                 p: 2,
-                bgcolor: 'error.light',
                 borderRadius: 1
               }}>
                 {error}

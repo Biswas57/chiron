@@ -5,7 +5,7 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import ErrorModal from './ErrorModal';
 
-const InputBox = ({ onSubmitURL, onSubmitFile }) => {
+const InputBox = ({ onSubmitURL, onSubmitFile, setHttpErrorMsg }) => {
   const [url, setUrl] = useState('');
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -111,7 +111,10 @@ const InputBox = ({ onSubmitURL, onSubmitFile }) => {
           title="Enter URL"
           subtitle="Only Public KBs"
           isExpanded={expandedSection === 'public'}
-          onClick={() => setExpandedSection('public')}
+          onClick={() => {
+            setHttpErrorMsg("")
+            setExpandedSection('public')}
+          }
         />
         
         <Collapse in={expandedSection === 'public'}>
@@ -184,9 +187,12 @@ const InputBox = ({ onSubmitURL, onSubmitFile }) => {
         {/* Internal KB Section */}
         <SectionHeader 
           title="Upload PDF"
-          subtitle="All KBs"
+          subtitle="All KBs and Confluence Articles"
           isExpanded={expandedSection === 'internal'}
-          onClick={() => setExpandedSection('internal')}
+          onClick={() => {
+            setHttpErrorMsg("")
+            setExpandedSection('internal')
+          }}
         />
         
         <Collapse in={expandedSection === 'internal'}>
