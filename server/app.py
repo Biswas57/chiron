@@ -9,7 +9,6 @@ CORS(app)
 
 app.config['ALLOWED_EXTENSIONS'] = {'pdf'}
 
-
 def is_valid_url(url):
     """Basic URL validation"""
     try:
