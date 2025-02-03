@@ -15,7 +15,7 @@ import { getAllKBfromLocalStorage } from './utils/localStorage';
 import io from 'socket.io-client';
 import { Typography } from '@mui/material';
 
-const API_URL = 'http://localhost:4200/';
+const API_URL = 'http://10.134.83.201:6969/';
 
 let socket = null;
 const SOCKET_CONNECTING = 0;
@@ -157,7 +157,7 @@ function App() {
                     fontSize: '200%'
                   }}
                 >
-                  Cannot connect to server, reattempting connection in backgroun. In the meantime you can only view previous generations.
+                  Cannot connect to server, reattempting connection in background. In the meantime you can only view previous generations.
                 </Typography>
               ) : (
                 <Typography
