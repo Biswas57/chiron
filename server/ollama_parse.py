@@ -41,12 +41,17 @@ def write_script(prompt):
 
     try:
         process.stdin.write(prompt + "\n")
+        process.stdin.flush()
         process.stdin.close()
-    except:
+
         for line in process.stdout:
             app.logger.debug(line)
             emit("tokens", {"tokens": line})
         emit("complete", {})
+
+    except:
+        emit("error", {"error": "Internal server error"})
+
     finally:
         process.wait()
 

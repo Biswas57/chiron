@@ -126,4 +126,4 @@ def handle_url_generate(data):
 
 if __name__ == "__main__":
     # Run the Flask development server (not for production use)
-    socketio.run(app, debug=True, host='0.0.0.0', port=4200)
+    socketio.run(app, debug=True, host='0.0.0.0', port=6969)
