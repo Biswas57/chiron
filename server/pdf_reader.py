@@ -1,6 +1,7 @@
-import groq_parse as gp
+import ollama_parse as op
 import PyPDF2
 import re
+from flask_socketio import emit
 
 def scrape_text(pdf_file):    
     reader = PyPDF2.PdfReader(pdf_file)
@@ -24,7 +25,18 @@ def scrape_kb_id(text):
     else:
         return match.group()
 
-def generate(pdf, filename):
+def begin_tokens_stream(pdf, filename):
     text = scrape_text(pdf)
+
     kb_id = scrape_kb_id(text)
-    return kb_id, filename, gp.generate_script(text)
+    title = filename
+
+    # first response returned is the kb_id and title before the first tokens
+    # the double newline is the "delimiter" between events
+    emit("response", {"kb_id": kb_id, "title": title})
+    
+    # then send back tokens as a series of responses
+    op.generate(text)
+
+    # finally send the completion response
+    emit("response", {"success": True, "error": ""})

@@ -1,6 +1,9 @@
-#!/usr/bin/env python3
-
+import time
 import subprocess
+from flask_socketio import emit
+from ollama import chat
+
+MODEL = "llama3.1:8b"
 
 def generate_prompt(content):
     """
@@ -20,34 +23,22 @@ Your script will be converted to speech using TTS, and someone will manually gen
 
 def write_script(prompt):
     """
-    Pass the prompt to Ollama via subprocess.
-    Capture the model's response from stdout.
+    Pass the prompt to Ollama and capture tokens as they are generated.
     """
-    # Command and model name you'd like to run
-    model_cmd = ["ollama", "run", "llama3.1:8b"]
 
-    # Run the command, sending `prompt` to its stdin
-    # `capture_output=True` captures the response
-    result = subprocess.run(
-        model_cmd,
-        input=prompt,
-        capture_output=True,
-        text=True
+    stream = chat(
+        model=MODEL,
+        messages=[{'role': 'user', 'content': prompt}],
+        stream=True
     )
 
-    # Ollama’s output comes from stdout
-    return result.stdout
+    for chunk in stream:
+        print(chunk['message']['content'], end='', flush=True)
 
-def generate_script(content):
+def generate(content):
     """
     High-level function that builds the prompt,
     calls Ollama, and returns the AI's completion.
     """
     prompt = generate_prompt(content)
-    completion_text = write_script(prompt)
-    return completion_text
-
-# Example usage:
-def generate(content):
-    script_result = generate_script(content)
-    return script_result
+    write_script(prompt)

@@ -12,6 +12,15 @@ import VideoBackground from "./components/VideoBackground"
 import InstructionPage from "./pages/InstructionPage"
 import Game from "./pages/Game"
 import { getAllKBfromLocalStorage } from './utils/localStorage';
+import io from 'socket.io-client';
+import { Typography } from '@mui/material';
+
+const API_URL = 'http://localhost:4200/';
+
+let socket = null;
+const SOCKET_CONNECTING = 0;
+const SOCKET_CONNECTED = 1;
+const SOCKET_ERROR = 2;
 
 function App() {
   // Technical TODO: this is a lot of global states, better if we use something 
@@ -35,8 +44,12 @@ function App() {
   // Global state to disable navigation during edit mode
   const [editing, setEditing] = useState(false);
 
+  // Server connection status.
+  const [connection, setConnection] = useState(SOCKET_CONNECTING);
+
   // TODO: clicking back still triggers a navigation during edit mode. Need to fix
   useEffect(() => {
+    // Prevent navigation during generation
     const handleBeforeUnload = (event) => {
       if (editing) {
         event.preventDefault();
@@ -60,10 +73,24 @@ function App() {
       window.removeEventListener("popstate", handleBrowserNavigation);
     }
 
+    // Open a socket to the server
+    socket = io(API_URL, {
+      transports: ['websocket'],
+    });
+
+    socket.on('connect_error', () => {
+      setConnection(SOCKET_ERROR);
+    });
+
+    socket.on('connect', () => {
+      setConnection(SOCKET_CONNECTED);
+    });
+
     // Cleanup event listener on unmount
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("popstate", handleBrowserNavigation);
+      socket.disconnect();
     };
   }, [editing])
 
@@ -91,26 +118,58 @@ function App() {
           {brainRot ? <VideoBackground /> : <NutanixBirds />}
 
           {/* Page content */}
-          <Routes className="url-input-container">
-            <Route path="/" element={
-              <MainPage
-                brainRot={brainRot}
-                isLoading={isLoading}
-                setIsLoading={setIsLoading}
-                refreshSavedKbs={refreshSavedKbs}
-              />
-            }/>
-            <Route path="/result" element={
-              <ScriptBox
-                brainRot={brainRot}
-                refreshSavedKbs={refreshSavedKbs}
-                editing={editing}
-                setEditing={setEditing}
-              />
-            }/>
-            <Route path="/game" element={<Game />} />
-            <Route path="/instructions" element={<InstructionPage/>} />
-          </Routes>
+          { connection === SOCKET_CONNECTED ? (
+            <Routes className="url-input-container">
+              <Route path="/" element={
+                <MainPage
+                  brainRot={brainRot}
+                  isLoading={isLoading}
+                  setIsLoading={setIsLoading}
+                  refreshSavedKbs={refreshSavedKbs}
+                  socket={socket}
+                />
+              }/>
+              <Route path="/result" element={
+                <ScriptBox
+                  brainRot={brainRot}
+                  refreshSavedKbs={refreshSavedKbs}
+                  editing={editing}
+                  setEditing={setEditing}
+                  socket={socket}
+                />
+              }/>
+              <Route path="/game" element={<Game />} />
+              <Route path="/instructions" element={<InstructionPage/>} />
+            </Routes>
+          ) : (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                textAlign: 'center',
+              }}
+            >
+              { connection === SOCKET_ERROR ? (                  
+                <Typography
+                  sx={{
+                    fontSize: '200%'
+                  }}
+                >
+                  Cannot connect to server, reattempting connection in backgroun. In the meantime you can only view previous generations.
+                </Typography>
+              ) : (
+                <Typography
+                  sx={{
+                    fontSize: '200%'
+                  }}
+                >
+                  Connecting to server...
+                </Typography>
+              )}
+            </Box>
+          )}
         </Box>
       </ThemeProvider>
     </BrowserRouter>

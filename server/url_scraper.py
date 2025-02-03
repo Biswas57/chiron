@@ -1,8 +1,8 @@
 from playwright.sync_api import sync_playwright
-import groq_parse as gp
+import ollama_parse as op
 import time
 import re
-import platform
+from flask_socketio import emit
 
 def scrape_title_and_text(url):
     with sync_playwright() as p:
@@ -51,4 +51,9 @@ def generate(url):
     title, text = scrape_title_and_text(url)
     parsed_text = parse(text)
     kb_id = scrape_kb_id(parsed_text)
-    return kb_id, title, gp.generate_script(parsed_text)
+
+    # Step 2 of protocol: return metadata for creating local storage on frontend
+    emit("metadata", {"kb_id": kb_id, "title": title})
+
+    # Step 3 of protocol: stream back tokens as they are generated.
+    script = op.generate(parsed_text)

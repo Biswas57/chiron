@@ -15,7 +15,7 @@ import { editKBtoLocalStorage, getKBfromLocalStorage } from '../utils/localStora
 import TextField from '@mui/material/TextField';
 import LaunchIcon from '@mui/icons-material/Launch';
 
-function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing}) {
+function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, socket}) {
   // Get the result from App.js
   const location = useLocation();
   const { state } = location;
@@ -25,8 +25,14 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing}) {
   const [sourceFromURL, setSourceFromURL] = useState(false);
 
   useEffect(() => {
-    setScriptText(state.scriptText);
-    setSourceFromURL(getKBfromLocalStorage(state.idx).url !== null);
+    if (state.idx < 0) {
+      // Live generation
+
+    } else {
+      // View stored previous generation
+      setScriptText(state.scriptText);
+      setSourceFromURL(getKBfromLocalStorage(state.idx).url !== null);
+    }
   }, [location.state]);
 
   const handleCopy = async () => {

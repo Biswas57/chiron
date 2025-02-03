@@ -5,13 +5,11 @@ import InputBox from '../components/InputBox';
 import LoadingAnimation from '../components/LoadingAnimation';
 import { useNavigate } from 'react-router';
 import { addKBtoLocalStorage } from '../utils/localStorage';
+import io from 'socket.io-client';
 
 const MotionBox = motion(Box);
 
-const API_URL_UP = 'http://localhost:5000/api/url-generate';
-const API_FILE_UP = 'http://localhost:5000/api/pdf-generate';
-
-function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs}) {
+function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs, socket}) {
   const navigate = useNavigate();
 
   const [error, setError] = useState(null);
@@ -20,68 +18,63 @@ function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs}) {
     setIsLoading(true);
     setError(null);
     
-    try {
-      const response = await fetch(API_URL_UP, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url }),
-      });
+    socket.on("tokens", (data) => {
+      console.log("metadata");
+      console.log(data);
+    })
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+    socket.on("metadata", (data) => {
+      console.log("metadata");
+      console.log(data);
+    })
 
-      const data = await response.json();
-      
-      if (data.success) {
-        addKBtoLocalStorage(url, data.kb_id, data.title, data.data);
-        refreshSavedKbs();
-        navigate("/result", { state: { idx: 0, scriptText: data.data } });
-      } else {
-        throw new Error(data.error || 'Failed to extract text');
-      }
-    } catch (error) {
-      console.error('Error fetching script:', error);
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
-    }
+    socket.emit("url_generate", { url: url });
   };
 
   const handleFileSubmit = async (file) => {
     setIsLoading(true);
     setError(null);
     
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
+    // try {
+    //   if (servSock !== null) {
+    //     // Should never get here if navigation blocking while generating is working.
+    //     throw new Error('An existing connection is still generating text!');
+    //   }
 
-      const response = await fetch(API_FILE_UP, {
-        method: 'POST',
-        body: formData,
-      });
+    //   const servSock = io(API_FILE_UP);
+    //   setSocket(servSock);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
 
-      const data = await response.json();
+
+
+
+    //   const formData = new FormData();
+    //   formData.append('file', file);
+
+    //   const response = await fetch(API_FILE_UP, {
+    //     method: 'POST',
+    //     body: formData,
+    //   });
+
+    //   if (!response.ok) {
+    //     throw new Error(`HTTP error! status: ${response.status}`);
+    //   }
+
+    //   const data = await response.json();
       
-      if (data.success) {
-        addKBtoLocalStorage(null, data.kb_id, data.title, data.data);
-        refreshSavedKbs();
-        navigate("/result", { state: { idx: 0, scriptText: data.data } });
-      } else {
-        throw new Error(data.error || 'Failed to extract text');
-      }
-    } catch (error) {
-      console.error('Error fetching script:', error);
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
-    }
+    //   if (data.success) {
+    //     addKBtoLocalStorage(null, data.kb_id, data.title, data.data);
+    //     refreshSavedKbs();
+    //     navigate("/result", { state: { idx: 0, scriptText: data.data } });
+    //   } else {
+    //     throw new Error(data.error || 'Failed to extract text');
+    //   }
+    // } catch (error) {
+    //   console.error('Error fetching script:', error);
+    //   setError(error.message);
+    // } finally {
+    //   setIsLoading(false);
+    // }
   }
 
   return (
