@@ -80,6 +80,7 @@ function App() {
 
     socket.on('connect_error', () => {
       setConnection(SOCKET_ERROR);
+      setIsLoading(false);
     });
 
     socket.on('connect', () => {

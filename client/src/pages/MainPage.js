@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { AnimatePresence, motion } from 'framer-motion';
 import InputBox from '../components/InputBox';
@@ -13,23 +13,40 @@ function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs, socket}) 
   const navigate = useNavigate();
 
   const [error, setError] = useState(null);
+  const [listeningToTokens, setListeningToTokens] = useState(false);
 
-  const handleUrlSubmit = async (url) => {
+  const handleUrlSubmit = (url) => {
     setIsLoading(true);
     setError(null);
-    
-    socket.on("tokens", (data) => {
-      console.log("tokens");
-      console.log(data);
-    })
-
-    socket.on("metadata", (data) => {
-      console.log("metadata");
-      console.log(data);
-    })
-
     socket.emit("url_generate", { url: url });
+    setListeningToTokens(true);
   };
+
+  useEffect(() => {
+    if (listeningToTokens) {
+      socket.on("metadata", (data) => {
+        console.log("metadata");
+        console.log(data);
+        socket.off("metadata");
+      })
+
+      socket.on("tokens", (data) => {
+        console.log("tokens");
+        console.log(data);
+      })
+  
+      socket.on("complete", () => {
+        console.log("done!");
+        setListeningToTokens(false);
+      })
+    }
+
+    return () => {
+      socket.off("metadata");
+      socket.off("tokens");
+      socket.off("complete");
+    }
+  }, [listeningToTokens]);
 
   const handleFileSubmit = async (file) => {
     setIsLoading(true);
@@ -76,6 +93,8 @@ function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs, socket}) 
     //   setIsLoading(false);
     // }
   }
+
+
 
   return (
     <div>      
