@@ -1,10 +1,11 @@
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 import url_scraper as us 
 import pdf_reader as pr
 from urllib.parse import urlparse
-import base64
+import signal
+import sys
 
 app = Flask(__name__)
 CORS(app)
@@ -14,6 +15,15 @@ app.config['ALLOWED_EXTENSIONS'] = {'pdf'}
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 API_PATH = '/web_sock_api'
+
+# Set up signal handling to ensure subprocesses such as Ollama also exit
+def handle_exit(signum, frame):
+    print("\nGracefully shutting down...")
+    # Perform any additional cleanup if required
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, handle_exit)  # Handle Ctrl+C
+signal.signal(signal.SIGTERM, handle_exit)  # Handle termination signals
 
 @socketio.on('connect')
 def handle_connect():
