@@ -1,7 +1,7 @@
-from flask_socketio import emit
-from ollama import chat
+#!/usr/bin/env python3
 
-MODEL = "llama3.1:8b"
+import subprocess
+from flask_socketio import emit
 
 def generate_prompt(content):
     """
@@ -21,17 +21,32 @@ Your script will be converted to speech using TTS, and someone will manually gen
 
 def write_script(prompt):
     """
-    Pass the prompt to Ollama and capture tokens as they are generated.
+    Pass the prompt to Ollama via subprocess.
+    Capture the model's response from stdout.
     """
+    # Command and model name you'd like to run
+    model_cmd = ["ollama", "run", "llama3.1:8b"]
 
-    stream = chat(
-        model=MODEL,
-        messages=[{'role': 'user', 'content': prompt}],
-        stream=True
+    # Run the command, sending `prompt` to its stdin
+    # `capture_output=True` captures the response
+    process = subprocess.Popen(
+        model_cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        stdin=subprocess.PIPE,
+        text=True,
+        bufsize=1  # Line-buffered output
     )
 
-    for chunk in stream:
-        emit("tokens", {"tokens": chunk['message']['content']})
+    try:
+        process.stdin.write(prompt + "\n")
+        process.stdin.close()
+    except:
+        for line in process.stdout:
+            emit("tokens", {"tokens": line})
+        emit("complete", {})
+    finally:
+        process.wait()
 
 def generate(content):
     """
