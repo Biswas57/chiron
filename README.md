@@ -1,70 +1,108 @@
-# Getting Started with Create React App
+# **Chiron: Local Development Setup**
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## **🚀 Overview**
+This guide provides step-by-step instructions to set up and run the Chiron application locally. **Ensure that Python and Node.js are already installed** on your system before proceeding.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## **📌 Prerequisites**
+Before running the application, install the required dependencies.
 
-### `npm start`
+### **1️⃣ Install Required Dependencies**
+Run the following commands to install necessary dependencies:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```bash
+# Install pip3 if not already installed
+python3 -m ensurepip --default-pip
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+# Upgrade pip3 to the latest version
+pip3 install --upgrade pip
 
-### `npm test`
+# Install virtualenv (recommended for Python dependency management)
+pip3 install virtualenv
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# Install npm (if not already installed)
+npm install -g npm@latest
+```
 
-### `npm run build`
+Verify the installations:
+```bash
+python3 --version  # Should output Python 3 version
+pip3 --version     # Should output pip version
+node -v            # Should output Node.js version
+npm -v             # Should output npm version
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## **📂 Clone the Repository and Install Dependencies**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+# Clone the Chiron repository
+git clone <your-repo-url> chiron
+cd chiron
+```
 
-### `npm run eject`
+### **2️⃣ Install Frontend Dependencies**
+```bash
+cd client
+npm install
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### **3️⃣ Install Backend Dependencies**
+```bash
+cd ../server
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# Create and activate a virtual environment
+python3 -m venv venv
+source venv/bin/activate  # Use 'venv\Scripts\activate' on Windows
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# Install required Python dependencies
+pip3 install -r requirements.txt
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+## **🚀 Running the Application Locally**
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### **4️⃣ Start the Backend (Flask API)**
+```bash
+cd server
+source venv/bin/activate  # Use 'venv\Scripts\activate' on Windows
+python3 app.py
+```
+The Flask backend should now be running on **http://localhost:5000**
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### **5️⃣ Start the Frontend (React App)**
+```bash
+cd ../client
+npm start
+```
+The frontend should now be running on **http://localhost:3000**
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## **✅ Verifying the Setup**
+- **Check Flask API:** Open a browser and visit **http://localhost:5000/api/health** (or use Postman/curl).
+- **Check React App:** Open **http://localhost:3000** in a browser.
+- If the frontend and backend are connected properly, API calls should return valid responses.
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## **🛠 Troubleshooting**
+### **Common Issues & Fixes**
+| Issue | Solution |
+|--------|----------|
+| `ModuleNotFoundError` when running Flask | Ensure virtualenv is activated before running `python3 app.py`, especially if you are on windows |
+| Frontend shows API connection errors | Check if backend is running on `localhost:5000` |
+| Frontend shows HTTP status 500 errors | Check what specific error is being printed on the backend terminal |
+| `npm install` fails | Run `npm cache clean --force` and try again |
 
-### Making a Progressive Web App
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## **🎯 Additional Notes**
+- Always activate the virtual environment (`source venv/bin/activate`) before running backend commands, especially on windows devices.
+- Use `CTRL+C` to stop the server in the terminal.
+- To exit the virtual environment, run `deactivate`.
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Now you’re all set to develop with Chiron locally! 🚀
