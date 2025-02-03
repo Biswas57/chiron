@@ -19,7 +19,7 @@ function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs, socket}) 
     setError(null);
     
     socket.on("tokens", (data) => {
-      console.log("metadata");
+      console.log("tokens");
       console.log(data);
     })
 
