@@ -2,6 +2,7 @@
 
 import subprocess
 from flask_socketio import emit
+from flask import current_app as app
 
 def generate_prompt(content):
     """
@@ -43,6 +44,7 @@ def write_script(prompt):
         process.stdin.close()
     except:
         for line in process.stdout:
+            app.logger.debug(line)
             emit("tokens", {"tokens": line})
         emit("complete", {})
     finally:
