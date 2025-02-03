@@ -1,5 +1,3 @@
-import time
-import subprocess
 from flask_socketio import emit
 from ollama import chat
 
@@ -33,7 +31,7 @@ def write_script(prompt):
     )
 
     for chunk in stream:
-        print(chunk['message']['content'], end='', flush=True)
+        emit("tokens", {"tokens": chunk['message']['content']})
 
 def generate(content):
     """
