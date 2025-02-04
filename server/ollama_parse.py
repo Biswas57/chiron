@@ -45,7 +45,7 @@ def write_script(prompt, model_idx):
     enc = tiktoken.get_encoding("gpt2")
     tokens = enc.encode(prompt)
     token_count = len(tokens)
-    app.logger.debug(f"Token count is {token_count} and model is {models[model_idx]["display_name"]}")
+    app.logger.debug(f"Token count is {token_count} and model is {models[model_idx]['display_name']}")
 
     resp = ollama.generate(
         model=models[model_idx]["ollama_name"],
