@@ -8,6 +8,7 @@ import signal
 import sys
 from ollama_parse import models as ollama_models_dict
 import base64
+import io
 
 app = Flask(__name__)
 CORS(app)
@@ -84,7 +85,8 @@ def handle_file_generate(data):
     else:
         app.logger.debug(f'Client #{request.sid} generating PDF {data["filename"]} with model {data["modelIdx"]}')
         pdf_bytes = base64.b64decode(data["data"])
-        pr.generate(pdf_bytes, data["filename"], data["modelIdx"])
+        pdf_buffer = io.BytesIO(pdf_bytes)
+        pr.generate(pdf_buffer, data["filename"], data["modelIdx"])
     
 # @app.route("/api/url-generate", methods=["POST"])
 # def extract_text_endpoint():
