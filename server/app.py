@@ -56,7 +56,7 @@ def handle_url_generate(data):
 
     if "url" not in data:
         emit("error", {"error": "Payload missing URL key."})
-    if "modelIdx" not in data:
+    elif "modelIdx" not in data:
         emit("error", {"error": "Payload missing model index key."})
     elif not is_valid_url(data["url"]):
         emit("error", {"error": "Malformed URL."})
