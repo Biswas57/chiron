@@ -9,6 +9,22 @@ import sys
 from ollama_parse import models as ollama_models_dict
 import base64
 import io
+import ollama
+
+# Before we do anything, make sure all the models are downloaded
+print("BOOTING UP")
+
+print("*** Available models:")
+print(ollama.list())
+
+for model in ollama_models_dict:
+    print(f"Checking status of {model["ollama_name"]}...", end="")
+    if model["ollama_name"] not in ollama.list():
+        print(f"haven't been downloaded...downloading:")
+        # TODO
+    else:
+        print(f"downloaded!")
+
 
 app = Flask(__name__)
 CORS(app)
