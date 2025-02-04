@@ -3,6 +3,7 @@ import ollama_parse as op
 import time
 import re
 from flask_socketio import emit
+from flask import current_app as app
 
 def scrape_title_and_text(url):
     with sync_playwright() as p:
@@ -48,9 +49,13 @@ def scrape_kb_id(text):
         return match.group()
 
 def generate(url, model_idx):
+    app.logger.debug(f"in generate url={url}")
+
     title, text = scrape_title_and_text(url)
     parsed_text = parse(text)
     kb_id = scrape_kb_id(parsed_text)
+
+    app.logger.debug(f"got metadata")
 
     # Step 2 of protocol: return metadata for creating local storage on frontend
     emit("metadata", {"kb_id": kb_id, "title": title})
