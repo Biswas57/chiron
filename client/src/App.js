@@ -89,6 +89,12 @@ function App() {
     socket.on('connect_error', () => {
       setConnection(SOCKET_ERROR);
       setIsLoading(false);
+
+      socket.off("metadata");
+      socket.off("tokens");
+      socket.off("complete");
+      setProtState(PROTOCOL_STATE_IDLE);
+      
       console.error("socket connection error...");
     });
 
