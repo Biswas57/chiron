@@ -11,7 +11,7 @@ import NutanixBirds from "./nutanixBirds"
 import VideoBackground from "./components/VideoBackground"
 import InstructionPage from "./pages/InstructionPage"
 import Game from "./pages/Game"
-import { getAllKBfromLocalStorage } from './utils/localStorage';
+import { addKBtoLocalStorage, getAllKBfromLocalStorage } from './utils/localStorage';
 import io from 'socket.io-client';
 import { Typography } from '@mui/material';
 import {
@@ -147,7 +147,15 @@ function App() {
     // Prime the event listeners before we initiate the protocol.
     socket.on("metadata", (data) => {
       setProtState((prev) => { return PROTOCOL_STATE_METADATA_RECV });
-      setMetadata((prev) => { return data });
+      setMetadata((prev) => {
+        let resp_metadata = data;
+        if (fileObj === null) {
+          resp_metadata.url = url;
+        } else {
+          resp_metadata.url = null;
+        }
+        return resp_metadata;
+      });
       setScriptText((prev) => { return "" });
       setProtState((prev) => { return PROTOCOL_STATE_WAITING_FIRST_TOKEN });
     });
@@ -172,6 +180,11 @@ function App() {
       socket.off("tokens");
       socket.off("complete");
       setProtState((prev) => { return PROTOCOL_STATE_IDLE; });
+
+      console.log(metadata);
+      addKBtoLocalStorage(metadata, scriptText);
+      refreshSavedKbs();
+
       setIsLoading((prev) => { return false; });
     });
 
@@ -212,6 +225,8 @@ function App() {
             savedKbs={savedKbs}
             refreshSavedKbs={refreshSavedKbs}
             editing={editing}
+            setMetadata={setMetadata}
+            setScriptText={setScriptText}
           />
 
           {brainRot ? <VideoBackground /> : <NutanixBirds />}

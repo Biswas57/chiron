@@ -25,7 +25,6 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, m
   const { state } = location;
 
   const [copied, setCopied] = useState(false);
-  const [sourceFromURL, setSourceFromURL] = useState(false);
 
   const endDivRef = useRef(null);
 
@@ -34,16 +33,6 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, m
       setIsLoading(false);
     } if (protState == PROTOCOL_STATE_WAITING_TOKENS) {
       // endDivRef.current.scrollIntoView({ behaviour: 'smooth' });
-    }
-
-    return;
-    if (state.idx < 0) {
-      // Live generation
-
-    } else {
-      // View stored previous generation
-      // setScriptText(state.scriptText);
-      // setSourceFromURL(getKBfromLocalStorage(state.idx).url !== null);
     }
   }, [location.state, protState, scriptText]);
 
@@ -86,6 +75,7 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, m
       <Tooltip title={copied ? "Copied!" : "Copy to clipboard"}>
         <IconButton
           onClick={handleCopy}
+          disabled={protState === PROTOCOL_STATE_WAITING_TOKENS}
           sx={{
             position: 'absolute',
             top: 16,
@@ -124,6 +114,7 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, m
       <Tooltip title={editing ? "Save!" : "Edit Text"}>
         <IconButton
           onClick={handleEdit}
+          disabled={protState === PROTOCOL_STATE_WAITING_TOKENS}
           sx={{
             position: 'absolute',
             top: 16,
@@ -160,11 +151,12 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, m
         </IconButton>
       </Tooltip>
       <Tooltip title={
-        sourceFromURL ? "Go to original KB article" : "Going to article source disabled as this script was generated from a PDF."
+        metadata.url !== null ? "Go to original KB article" : "Going to article source disabled as this script was generated from a PDF."
       }>
         <IconButton
+          disabled={protState === PROTOCOL_STATE_WAITING_TOKENS}
           onClick={() => {
-            if (sourceFromURL) {
+            if (metadata.url !== null) {
               window.open(getKBfromLocalStorage(state.idx).url, '_blank');
             }
           }}

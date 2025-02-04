@@ -29,7 +29,7 @@ function MainPage({models, brainRot, isLoading, setIsLoading, refreshSavedKbs, i
 
   useEffect(() => {
     if (protState === PROTOCOL_STATE_WAITING_TOKENS) {
-      navigate("/result");
+      navigate("/result", { state: { idx: 0 }});
     }
   }, [protState]);
 

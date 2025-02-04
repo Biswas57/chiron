@@ -1,22 +1,22 @@
 const KB_LOCAL_STORAGE_KEY = "KBs"
 
-export function addKBtoLocalStorage(url, kb_id, title, data) {
+export function addKBtoLocalStorage(metadata, scriptText) {
     let kbs = getAllKBfromLocalStorage();
     kbs.unshift({
-        url: url,
-        kbId: kb_id,
-        title: title,
+        url: metadata.url,
+        kbId: metadata.kb_id,
+        title: metadata.title,
         timeGenerated: new Date().toLocaleString(),
-        data: data
+        data: scriptText
     });
 
     localStorage.setItem(KB_LOCAL_STORAGE_KEY, JSON.stringify(kbs));
 }
 
-export function editKBtoLocalStorage(index, data) {
+export function editKBtoLocalStorage(index, scriptText) {
     let kbs = getAllKBfromLocalStorage();
     console.log(index);
-    kbs[index].data = data;
+    kbs[index].data = scriptText;
 
     localStorage.setItem(KB_LOCAL_STORAGE_KEY, JSON.stringify(kbs));
 }

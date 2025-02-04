@@ -3,8 +3,12 @@ import PyPDF2
 import re
 from flask_socketio import emit
 
-def scrape_text(pdf_file):    
-    reader = PyPDF2.PdfReader(pdf_file)
+def scrape_text(pdf_file):
+    try:
+        reader = PyPDF2.PdfReader(pdf_file)
+    except Exception as e:
+        emit("error", {"error": f"PDF file cannot be read: {str(e)}"})
+
     text_list = []
 
     for page in reader.pages:

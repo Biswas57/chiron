@@ -22,8 +22,9 @@ import { CircularProgress, Divider, ListItem, Typography, Modal } from '@mui/mat
 import AboutModal from './AboutModal';
 import ErrorModal from './ErrorModal';
 import ConfirmModal from './ConfirmModal';
+import { getKBfromLocalStorage } from '../utils/localStorage';
 
-const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, editing}) => {
+const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, editing, setMetadata, setScriptText}) => {
   const navigate = useNavigate();
   
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
@@ -268,7 +269,15 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
                           }
                         }}
                         onClick={() => {
-                          navigate('/result', { state: { idx: idx, scriptText: pastKb.data }});
+                          const saved = getKBfromLocalStorage(idx);
+                          setMetadata({
+                            url: saved.url,
+                            kbId: saved.kbId,
+                            title: saved.title,
+                            timeGenerated: saved.timeGenerated,
+                          })
+                          setScriptText(saved.data);
+                          navigate('/result', { state: { idx: idx }});
                         }}
                       >
                         <Box>
