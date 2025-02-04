@@ -4,97 +4,34 @@ import { AnimatePresence, motion } from 'framer-motion';
 import InputBox from '../components/InputBox';
 import LoadingAnimation from '../components/LoadingAnimation';
 import { useNavigate } from 'react-router';
-import { addKBtoLocalStorage } from '../utils/localStorage';
-import io from 'socket.io-client';
+import {
+  PROTOCOL_STATE_WAITING_TOKENS
+} from '../utils/protocol'
 
 const MotionBox = motion(Box);
 
-function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs, socket}) {
+function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs, initiateProtocol, protState}) {
   const navigate = useNavigate();
 
   const [error, setError] = useState(null);
-  const [listeningToTokens, setListeningToTokens] = useState(false);
 
   const handleUrlSubmit = (url) => {
     setIsLoading(true);
     setError(null);
-    socket.emit("url_generate", { url: url });
-    setListeningToTokens(true);
+    initiateProtocol(url, null);
   };
-
-  useEffect(() => {
-    if (listeningToTokens) {
-      socket.on("metadata", (data) => {
-        console.log("metadata");
-        console.log(data);
-        socket.off("metadata");
-      })
-
-      socket.on("tokens", (data) => {
-        console.log("tokens");
-        console.log(data);
-      })
-  
-      socket.on("complete", () => {
-        console.log("done!");
-        setListeningToTokens(false);
-      })
-    }
-
-    return () => {
-      socket.off("metadata");
-      socket.off("tokens");
-      socket.off("complete");
-    }
-  }, [listeningToTokens]);
 
   const handleFileSubmit = async (file) => {
     setIsLoading(true);
     setError(null);
     
-    // try {
-    //   if (servSock !== null) {
-    //     // Should never get here if navigation blocking while generating is working.
-    //     throw new Error('An existing connection is still generating text!');
-    //   }
-
-    //   const servSock = io(API_FILE_UP);
-    //   setSocket(servSock);
-
-
-
-
-
-    //   const formData = new FormData();
-    //   formData.append('file', file);
-
-    //   const response = await fetch(API_FILE_UP, {
-    //     method: 'POST',
-    //     body: formData,
-    //   });
-
-    //   if (!response.ok) {
-    //     throw new Error(`HTTP error! status: ${response.status}`);
-    //   }
-
-    //   const data = await response.json();
-      
-    //   if (data.success) {
-    //     addKBtoLocalStorage(null, data.kb_id, data.title, data.data);
-    //     refreshSavedKbs();
-    //     navigate("/result", { state: { idx: 0, scriptText: data.data } });
-    //   } else {
-    //     throw new Error(data.error || 'Failed to extract text');
-    //   }
-    // } catch (error) {
-    //   console.error('Error fetching script:', error);
-    //   setError(error.message);
-    // } finally {
-    //   setIsLoading(false);
-    // }
   }
 
-
+  useEffect(() => {
+    if (protState === PROTOCOL_STATE_WAITING_TOKENS) {
+      navigate("/result");
+    }
+  }, [protState]);
 
   return (
     <div>      
@@ -147,7 +84,7 @@ function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs, socket}) 
               zIndex: 1
             }}
           >
-            <LoadingAnimation brainRot={brainRot}/>
+            <LoadingAnimation brainRot={brainRot} protState={protState}/>
           </MotionBox>
         )}
       </AnimatePresence>

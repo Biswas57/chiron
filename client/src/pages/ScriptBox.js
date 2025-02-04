@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -14,26 +14,38 @@ import SaveIcon from '@mui/icons-material/Save';
 import { editKBtoLocalStorage, getKBfromLocalStorage } from '../utils/localStorage';
 import TextField from '@mui/material/TextField';
 import LaunchIcon from '@mui/icons-material/Launch';
+import {
+  PROTOCOL_STATE_IDLE,
+  PROTOCOL_STATE_WAITING_TOKENS,
+} from '../utils/protocol'
 
-function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, socket}) {
+function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, metadata, scriptText, setScriptText, setIsLoading}) {
   // Get the result from App.js
   const location = useLocation();
   const { state } = location;
 
-  const [scriptText, setScriptText] = useState("");
   const [copied, setCopied] = useState(false);
   const [sourceFromURL, setSourceFromURL] = useState(false);
 
+  const endDivRef = useRef(null);
+
   useEffect(() => {
+    if (protState == PROTOCOL_STATE_IDLE) {
+      setIsLoading(false);
+    } if (protState == PROTOCOL_STATE_WAITING_TOKENS) {
+      endDivRef.current.scrollIntoView({ behaviour: 'smooth' });
+    }
+
+    return;
     if (state.idx < 0) {
       // Live generation
 
     } else {
       // View stored previous generation
-      setScriptText(state.scriptText);
-      setSourceFromURL(getKBfromLocalStorage(state.idx).url !== null);
+      // setScriptText(state.scriptText);
+      // setSourceFromURL(getKBfromLocalStorage(state.idx).url !== null);
     }
-  }, [location.state]);
+  }, [location.state, protState, scriptText]);
 
   const handleCopy = async () => {
     try {
@@ -195,15 +207,15 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, socket}) {
             />
           ) : (
             <Box
-            sx={{
-              color: 'grey.100',
-              fontSize: '1.125rem',
-              lineHeight: 1.7,
-              '& p': {
-                marginBottom: 2
-              },
-              overflowWrap: 'break-word'
-            }}
+              sx={{
+                color: 'grey.100',
+                fontSize: '1.125rem',
+                lineHeight: 1.7,
+                '& p': {
+                  marginBottom: 2
+                },
+                overflowWrap: 'break-word'
+              }}
             >
               {(scriptText.split('\n').map((paragraph, index) => (
                     <p key={index}>{paragraph}</p>    
@@ -218,7 +230,7 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, socket}) {
           sx={{
             flexDirection: 'column', 
             justifyContent: 'center',
-            display: (editing ? "none" : "flex"),
+            display: ((editing || protState === PROTOCOL_STATE_WAITING_TOKENS) ? "none" : "flex"),
           }}
         >
           <Typography
@@ -239,6 +251,8 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, socket}) {
             Open Synthesia
           </Button>
         </Box>
+
+        <div ref={endDivRef} />
       </motion.div>
     </Box>
   );

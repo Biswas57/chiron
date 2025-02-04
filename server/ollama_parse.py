@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-
-import subprocess
 from flask_socketio import emit
 from flask import current_app as app
 from ollama import chat
@@ -26,35 +24,6 @@ def write_script(prompt):
     Pass the prompt to Ollama via subprocess.
     Capture the model's response from stdout.
     """
-    # # Command and model name you'd like to run
-    # model_cmd = ["ollama", "run", "llama3.1:8b"]
-
-    # # Run the command, sending `prompt` to its stdin
-    # # `capture_output=True` captures the response
-    # process = subprocess.Popen(
-    #     model_cmd,
-    #     stdout=subprocess.PIPE,
-    #     stderr=subprocess.PIPE,
-    #     stdin=subprocess.PIPE,
-    #     text=True,
-    #     bufsize=1  # Line-buffered output
-    # )
-
-    # try:
-    #     process.stdin.write(prompt + "\n")
-    #     process.stdin.flush()
-    #     process.stdin.close()
-
-    #     for line in process.stdout:
-    #         app.logger.debug(line)
-    #         
-    #     emit("complete", {})
-
-    # except:
-    #     emit("error", {"error": "Internal server error"})
-
-    # finally:
-    #     process.wait()
 
     stream = chat(
         model='llama3.1:8b',
@@ -63,7 +32,10 @@ def write_script(prompt):
     )
 
     for chunk in stream:
+        # Step 3 of protocol: stream back tokens as they are generated.
         emit("tokens", {"tokens": chunk['message']['content']})
+
+    # Step 4 of protocol: send a completion event.
     emit("complete", {})
 
 def generate(content):

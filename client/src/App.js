@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Box from '@mui/material/Box';
 import { BrowserRouter, Routes, Route } from "react-router";
 import { ThemeProvider } from '@mui/material/styles';
@@ -14,6 +14,14 @@ import Game from "./pages/Game"
 import { getAllKBfromLocalStorage } from './utils/localStorage';
 import io from 'socket.io-client';
 import { Typography } from '@mui/material';
+import {
+  PROTOCOL_STATE_IDLE,
+  PROTOCOL_STATE_WAITING_FOR_METADATA,
+  PROTOCOL_STATE_METADATA_RECV,
+  PROTOCOL_STATE_WAITING_FIRST_TOKEN,
+  PROTOCOL_STATE_WAITING_TOKENS
+} from './utils/protocol'
+
 
 const API_URL = 'http://10.134.83.201:6969/';
 
@@ -81,10 +89,12 @@ function App() {
     socket.on('connect_error', () => {
       setConnection(SOCKET_ERROR);
       setIsLoading(false);
+      console.error("socket connection error...");
     });
 
     socket.on('connect', () => {
       setConnection(SOCKET_CONNECTED);
+      console.log("socket connected!");
     });
 
     // Cleanup event listener on unmount
@@ -93,7 +103,70 @@ function App() {
       window.removeEventListener("popstate", handleBrowserNavigation);
       socket.disconnect();
     };
-  }, [editing])
+  }, [editing]);
+
+  // State management of the protocol to the backend
+  const [protState, setProtState] = useState(PROTOCOL_STATE_IDLE);
+  const [metadata, setMetadata] = useState(null);
+  const [scriptText, setScriptText] = useState(null);
+
+  const initiateProtocol = (url, fileObj) => {
+    // This function initiate the event driven protocol via
+    // websocket to communicate with the server and stream back the tokens
+    // One of the argument must be null!
+
+    if (protState !== PROTOCOL_STATE_IDLE) {
+      alert("Protocol in inconsistent state! Should never see this message!!");
+      return;
+    }
+
+    setMetadata(null);
+    setScriptText(null);
+
+    // Make sure all the event listeners are in a clean state.
+    socket.off("metadata");
+    socket.off("tokens");
+    socket.off("complete");
+
+    // Prime the event listeners before we initiate the protocol.
+    socket.on("metadata", (data) => {
+      setProtState((prev) => { return PROTOCOL_STATE_METADATA_RECV });
+      setMetadata((prev) => { return data });
+      setScriptText((prev) => { return "" });
+      setProtState((prev) => { return PROTOCOL_STATE_WAITING_FIRST_TOKEN });
+    });
+
+    // Next step after metadata receive: listen for tokens
+    socket.on("tokens", (data) => {
+      setProtState((prev) => {
+        if (prev === PROTOCOL_STATE_WAITING_FIRST_TOKEN) {
+          // Received first token, time to navigate!
+          return PROTOCOL_STATE_WAITING_TOKENS;
+        } else {
+          return prev;
+        }
+      })
+      setScriptText((prev) => { return prev + data["tokens"]; });
+    });
+
+    // Final step when we get the completion event
+    socket.on("complete", () => {
+      // Clean up the event listeners
+      socket.off("metadata");
+      socket.off("tokens");
+      socket.off("complete");
+      setProtState((prev) => { return PROTOCOL_STATE_IDLE; });
+      setIsLoading((prev) => { return false; });
+    });
+
+    // Start the protocol sequence.
+    setProtState((prev) => { return PROTOCOL_STATE_WAITING_FOR_METADATA; });
+    if (fileObj === null) {
+      socket.emit("url_generate", { url: url });
+    } else {
+      // emit file...
+    }
+  };
 
   return (
     <BrowserRouter>
@@ -127,7 +200,8 @@ function App() {
                   isLoading={isLoading}
                   setIsLoading={setIsLoading}
                   refreshSavedKbs={refreshSavedKbs}
-                  socket={socket}
+                  initiateProtocol={initiateProtocol}
+                  protState={protState}
                 />
               }/>
               <Route path="/result" element={
@@ -136,7 +210,11 @@ function App() {
                   refreshSavedKbs={refreshSavedKbs}
                   editing={editing}
                   setEditing={setEditing}
-                  socket={socket}
+                  protState={protState}
+                  metadata={metadata}
+                  scriptText={scriptText}
+                  setScriptText={setScriptText}
+                  setIsLoading={setIsLoading}
                 />
               }/>
               <Route path="/game" element={<Game />} />
