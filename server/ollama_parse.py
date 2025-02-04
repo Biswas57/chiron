@@ -2,7 +2,7 @@
 from flask_socketio import emit
 from flask import current_app as app
 from ollama import chat
-from transformers import AutoTokenizer
+import tiktoken
 
 def generate_prompt(content):
     """
@@ -46,8 +46,10 @@ def generate(content):
     """
     prompt = generate_prompt(content)
 
-    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3.3-70B-Instruct")
-    tokens = tokenizer.encode(prompt)
+    # Count tokens using OpenAI's tokenizer
+    # The Llama tokenizer can't be used as access must be granted by the model author.
+    enc = tiktoken.get_encoding("gpt2")
+    tokens = enc.encode(prompt)
     token_count = len(tokens)
 
     app.logger.debug(f"Token count is {token_count}")
