@@ -46,7 +46,7 @@ def generate(content):
     """
     prompt = generate_prompt(content)
 
-    tokenizer = AutoTokenizer.from_pretrained("Llama-3.3-70B-Instruct")
+    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3.3-70B-Instruct")
     tokens = tokenizer.encode(prompt)
     token_count = len(tokens)
 
