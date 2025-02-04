@@ -33,7 +33,7 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, m
     if (protState == PROTOCOL_STATE_IDLE) {
       setIsLoading(false);
     } if (protState == PROTOCOL_STATE_WAITING_TOKENS) {
-      endDivRef.current.scrollIntoView({ behaviour: 'smooth' });
+      // endDivRef.current.scrollIntoView({ behaviour: 'smooth' });
     }
 
     return;
