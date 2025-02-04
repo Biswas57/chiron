@@ -7,3 +7,4 @@ groq
 PyPDF2
 flask-socketio
 Ollama
+transformers

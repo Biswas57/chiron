@@ -2,6 +2,7 @@
 from flask_socketio import emit
 from flask import current_app as app
 from ollama import chat
+from transformers import AutoTokenizer
 
 def generate_prompt(content):
     """
@@ -44,4 +45,11 @@ def generate(content):
     calls Ollama, and returns the AI's completion.
     """
     prompt = generate_prompt(content)
+
+    tokenizer = AutoTokenizer.from_pretrained("Llama-3.3-70B-Instruct")
+    tokens = tokenizer.encode(prompt)
+    token_count = len(tokens)
+
+    app.logger.debug(f"Token count is {token_count}")
+
     write_script(prompt)
