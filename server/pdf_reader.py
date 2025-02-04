@@ -25,18 +25,11 @@ def scrape_kb_id(text):
     else:
         return match.group()
 
-def begin_tokens_stream(pdf, filename):
+def generate(pdf, filename, model_idx):
     text = scrape_text(pdf)
 
     kb_id = scrape_kb_id(text)
     title = filename
 
-    # first response returned is the kb_id and title before the first tokens
-    # the double newline is the "delimiter" between events
-    emit("response", {"kb_id": kb_id, "title": title})
-    
-    # then send back tokens as a series of responses
-    op.generate(text)
-
-    # finally send the completion response
-    emit("response", {"success": True, "error": ""})
+    emit("metadata", {"kb_id": kb_id, "title": title})
+    op.generate(text, model_idx)

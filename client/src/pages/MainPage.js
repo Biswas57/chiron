@@ -21,11 +21,10 @@ function MainPage({models, brainRot, isLoading, setIsLoading, refreshSavedKbs, i
     initiateProtocol(url, null, modelIdx);
   };
 
-  const handleFileSubmit = async (file) => {
+  const handleFileSubmit = async (file, modelIdx) => {
     setIsLoading(true);
     setError(null);
-    
-
+    initiateProtocol(null, file, modelIdx);
   }
 
   useEffect(() => {

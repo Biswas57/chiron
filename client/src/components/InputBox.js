@@ -293,7 +293,7 @@ const InputBox = ({ models, onSubmitURL, onSubmitFile }) => {
                   },
                   transition: 'all 0.2s ease-in-out',
                 }}
-                onClick={() => {onSubmitFile(fileObj)}}
+                onClick={() => {onSubmitFile(fileObj, modelIdx)}}
                 disabled={fileObj === null}
               >
                 Upload

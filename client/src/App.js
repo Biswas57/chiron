@@ -181,7 +181,14 @@ function App() {
       const payload = { url: url, modelIdx: modelIdx };
       socket.emit("url_generate", payload);
     } else {
-      // emit file...
+      const reader = new FileReader();
+      reader.onload = () => {
+        // Get base64 encoded string of the file
+        const fileData = reader.result.split(",")[1];
+        const payload = { filename: fileObj.name, data: fileData, modelIdx: modelIdx };
+        socket.emit("file_generate", payload);
+      };
+      reader.readAsDataURL(fileObj);
     }
   };
 

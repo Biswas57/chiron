@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 import signal
 import sys
 from ollama_parse import models as ollama_models_dict
+import base64
 
 app = Flask(__name__)
 CORS(app)
@@ -60,13 +61,31 @@ def handle_url_generate(data):
         emit("error", {"error": "Payload missing model index key."})
     elif not is_valid_url(data["url"]):
         emit("error", {"error": "Malformed URL."})
+    elif int(data["modelIdx"]) > len(ollama_models_dict):
+        emit("error", {"error": "Model index out of bound"})
     else:
-        app.logger.debug(f'Client #{request.sid} generating URL {data["url"]}')
+        app.logger.debug(f'Client #{request.sid} generating URL {data["url"]} with model {data["modelIdx"]}')
 
         # The URL scraper will further return events for the frontend.
         us.generate(data["url"], data["modelIdx"])
 
+@socketio.on("file_generate")
+def handle_file_generate(data):
+    app.logger.debug(f"Client #{request.sid} FILE GENERATE")
 
+    if "filename" not in data:
+        emit("error", {"error": "Payload missing filename key."})
+    elif "data" not in data:
+        emit("error", {"error": "Payload missing data key."})
+    elif "modelIdx" not in data:
+        emit("error", {"error": "Payload missing model index key."})
+    elif int(data["modelIdx"]) > len(ollama_models_dict):
+        emit("error", {"error": "Model index out of bound"})
+    else:
+        app.logger.debug(f'Client #{request.sid} generating PDF {data["filename"]} with model {data["modelIdx"]}')
+        pdf_bytes = base64.b64decode(data["data"])
+        pr.generate(pdf_bytes, data["filename"], data["modelIdx"])
+    
 # @app.route("/api/url-generate", methods=["POST"])
 # def extract_text_endpoint():
 #     """
