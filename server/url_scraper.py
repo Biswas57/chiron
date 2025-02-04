@@ -49,13 +49,9 @@ def scrape_kb_id(text):
         return match.group()
 
 def generate(url, model_idx):
-    app.logger.debug(f"in generate url={url}")
-
     title, text = scrape_title_and_text(url)
     parsed_text = parse(text)
     kb_id = scrape_kb_id(parsed_text)
-
-    app.logger.debug(f"got metadata")
 
     # Step 2 of protocol: return metadata for creating local storage on frontend
     emit("metadata", {"kb_id": kb_id, "title": title})
