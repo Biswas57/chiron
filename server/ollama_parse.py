@@ -58,8 +58,7 @@ def write_script(prompt, ollama_model_name):
 
     for chunk in resp:
         # Step 3 of protocol: stream back tokens as they are generated.
-        app.logger.debug(chunk)
-        emit("tokens", {"tokens": chunk["content"]})
+        emit("tokens", {"tokens": chunk["response"]})
 
     # Step 4 of protocol: send a completion event.
     emit("complete", {})

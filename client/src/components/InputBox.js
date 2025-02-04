@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import TextField from '@mui/material/TextField';
-import { Box, Typography, Paper, Button, Collapse, IconButton } from '@mui/material';
+import { Box, Typography, Paper, Button, Collapse, IconButton, Divider } from '@mui/material';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import ErrorModal from './ErrorModal';
@@ -106,6 +106,10 @@ const InputBox = ({ onSubmitURL, onSubmitFile }) => {
           border: '1px solid rgba(255, 255, 255, 0.1)',
         }}
       >
+        Choose your model
+
+        <Divider />
+
         {/* Public KB Section */}
         <SectionHeader 
           title="Enter URL"
