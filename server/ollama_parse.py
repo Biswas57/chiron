@@ -7,14 +7,14 @@ import math
 
 models = [
     {
+        "display_name": "Llama-3.1-8B",
+        "note": "Low quality script | Fast",
+        "ollama_name": "llama3.1:8b",
+    },
+    {
         "display_name": "Llama-3.3-70B-Instruct",
         "note": "High quality script | Very slow",
         "ollama_name": "llama3.3",
-    },
-    {
-        "display_name": "Llama-3.1-8B",
-        "note": "Low quality script | Very fast",
-        "ollama_name": "llama3.1:8b",
     },
 ]
 
@@ -34,7 +34,7 @@ Your script will be converted to speech using TTS, and someone will manually gen
 """
     return prompt + "\n\n" + content
 
-def write_script(prompt, ollama_model_name):
+def write_script(prompt, model_idx):
     """
     Pass the prompt to Ollama via subprocess.
     Capture the model's response from stdout.
@@ -45,10 +45,10 @@ def write_script(prompt, ollama_model_name):
     enc = tiktoken.get_encoding("gpt2")
     tokens = enc.encode(prompt)
     token_count = len(tokens)
-    app.logger.debug(f"Token count is {token_count} and model is {ollama_model_name}")
+    app.logger.debug(f"Token count is {token_count} and model is {models[model_idx]["display_name"]}")
 
     resp = ollama.generate(
-        model=ollama_model_name,
+        model=models[model_idx]["ollama_name"],
         prompt=prompt,
         stream=True,
         options={
@@ -63,10 +63,10 @@ def write_script(prompt, ollama_model_name):
     # Step 4 of protocol: send a completion event.
     emit("complete", {})
 
-def generate(content, ollama_model_name):
+def generate(content, model_idx):
     """
     High-level function that builds the prompt,
     calls Ollama, and returns the AI's completion.
     """
     prompt = generate_prompt(content)
-    write_script(prompt, ollama_model_name)
+    write_script(prompt, model_idx)

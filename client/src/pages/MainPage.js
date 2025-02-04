@@ -10,22 +10,22 @@ import {
 
 const MotionBox = motion(Box);
 
-function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs, initiateProtocol, protState}) {
+function MainPage({models, brainRot, isLoading, setIsLoading, refreshSavedKbs, initiateProtocol, protState}) {
   const navigate = useNavigate();
 
   const [error, setError] = useState(null);
 
-  const handleUrlSubmit = (url) => {
+  const handleUrlSubmit = (url, modelIdx) => {
     setIsLoading(true);
     setError(null);
-    initiateProtocol(url, null);
+    initiateProtocol(url, null, modelIdx);
   };
 
   const handleFileSubmit = async (file) => {
     setIsLoading(true);
     setError(null);
     
-    
+
   }
 
   useEffect(() => {
@@ -55,7 +55,7 @@ function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs, initiateP
               width: '100vw'
             }}
           >
-            <InputBox onSubmitURL={handleUrlSubmit} onSubmitFile={handleFileSubmit} />
+            <InputBox models={models} onSubmitURL={handleUrlSubmit} onSubmitFile={handleFileSubmit} />
             {error && (
               <Box sx={{ 
                 position: 'relative',

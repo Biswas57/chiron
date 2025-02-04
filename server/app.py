@@ -56,15 +56,15 @@ def handle_url_generate(data):
 
     if "url" not in data:
         emit("error", {"error": "Payload missing URL key."})
-    if "ollama_model_name" not in data:
-        emit("error", {"error": "Payload missing model name key."})
+    if "modelIdx" not in data:
+        emit("error", {"error": "Payload missing model index key."})
     elif not is_valid_url(data["url"]):
         emit("error", {"error": "Malformed URL."})
     else:
         app.logger.debug(f'Client #{request.sid} generating URL {data["url"]}')
 
         # The URL scraper will further return events for the frontend.
-        us.generate(data["url"], data["ollama_model_name"])
+        us.generate(data["url"], data["modelIdx"])
 
 
 # @app.route("/api/url-generate", methods=["POST"])

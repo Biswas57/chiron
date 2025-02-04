@@ -55,6 +55,9 @@ function App() {
   // Server connection status.
   const [connection, setConnection] = useState(SOCKET_CONNECTING);
 
+  // Lists of available LLMs
+  const [models, setModels] = useState(null);
+
   // TODO: clicking back still triggers a navigation during edit mode. Need to fix
   useEffect(() => {
     // Prevent navigation during generation
@@ -99,8 +102,15 @@ function App() {
     });
 
     socket.on('connect', () => {
-      setConnection(SOCKET_CONNECTED);
-      console.log("socket connected!");
+      // Refresh the models list
+      socket.on('get_models_return', (data) => {
+        setModels((prev) => { return data; });
+        socket.off('get_models');
+        // Unblock webpage
+        setConnection(SOCKET_CONNECTED);
+        console.log("socket connected!");
+      });
+      socket.emit('get_models');
     });
 
     // Cleanup event listener on unmount
@@ -116,10 +126,10 @@ function App() {
   const [metadata, setMetadata] = useState(null);
   const [scriptText, setScriptText] = useState(null);
 
-  const initiateProtocol = (url, fileObj) => {
+  const initiateProtocol = (url, fileObj, modelIdx) => {
     // This function initiate the event driven protocol via
     // websocket to communicate with the server and stream back the tokens
-    // One of the argument must be null!
+    // One of the two first arguments must be null!
 
     if (protState !== PROTOCOL_STATE_IDLE) {
       alert("Protocol in inconsistent state! Should never see this message!!");
@@ -168,7 +178,7 @@ function App() {
     // Start the protocol sequence.
     setProtState((prev) => { return PROTOCOL_STATE_WAITING_FOR_METADATA; });
     if (fileObj === null) {
-      socket.emit("url_generate", { url: url, ollama_model_name :"llama3.1:8b" });
+      socket.emit("url_generate", { url: url, modelIdx: modelIdx });
     } else {
       // emit file...
     }
@@ -202,6 +212,7 @@ function App() {
             <Routes className="url-input-container">
               <Route path="/" element={
                 <MainPage
+                  models={models}
                   brainRot={brainRot}
                   isLoading={isLoading}
                   setIsLoading={setIsLoading}
