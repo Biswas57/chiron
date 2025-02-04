@@ -8,6 +8,7 @@ def scrape_text(pdf_file):
         reader = PyPDF2.PdfReader(pdf_file)
     except Exception as e:
         emit("error", {"error": f"PDF file cannot be read: {str(e)}"})
+        return None
 
     text_list = []
 
@@ -31,6 +32,8 @@ def scrape_kb_id(text):
 
 def generate(pdf, filename, model_idx):
     text = scrape_text(pdf)
+    if text is None:
+        return
 
     kb_id = scrape_kb_id(text)
     title = filename

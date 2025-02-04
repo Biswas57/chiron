@@ -24,7 +24,7 @@ def scrape_title_and_text(url):
             content = page.evaluate('document.body.innerText')
             return page.title(), content
         except Exception as e:
-            print(f"Error scraping: {e}")
+            emit("error", {"error": f"Website cannot be scraped: {str(e)}"})
             return None, None
         finally:
             browser.close()
@@ -50,6 +50,10 @@ def scrape_kb_id(text):
 
 def generate(url, model_idx):
     title, text = scrape_title_and_text(url)
+
+    if title is None:
+        return
+
     parsed_text = parse(text)
     kb_id = scrape_kb_id(parsed_text)
 

@@ -143,6 +143,7 @@ function App() {
     socket.off("metadata");
     socket.off("tokens");
     socket.off("complete");
+    socket.off("error");
 
     // Prime the event listeners before we initiate the protocol.
     socket.on("metadata", (data) => {
@@ -179,6 +180,7 @@ function App() {
       socket.off("metadata");
       socket.off("tokens");
       socket.off("complete");
+      socket.off("error")
       setProtState((prev) => { return PROTOCOL_STATE_IDLE; });
 
       console.log(metadata);
@@ -187,6 +189,17 @@ function App() {
 
       setIsLoading((prev) => { return false; });
     });
+
+    socket.on("error", (data) => {
+      alert(data.error);
+
+      socket.off("metadata");
+      socket.off("tokens");
+      socket.off("complete");
+      socket.off("error")
+      setProtState((prev) => { return PROTOCOL_STATE_IDLE; });
+      setIsLoading((prev) => { return false; });
+    })
 
     // Start the protocol sequence.
     setProtState((prev) => { return PROTOCOL_STATE_WAITING_FOR_METADATA; });

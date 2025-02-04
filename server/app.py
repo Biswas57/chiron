@@ -56,37 +56,43 @@ def handle_url_generate(data):
     app.logger.debug(f"Client #{request.sid} URL GENERATE")
     app.logger.debug(data)
 
-    if "url" not in data:
-        emit("error", {"error": "Payload missing URL key."})
-    elif "modelIdx" not in data:
-        emit("error", {"error": "Payload missing model index key."})
-    elif not is_valid_url(data["url"]):
-        emit("error", {"error": "Malformed URL."})
-    elif int(data["modelIdx"]) > len(ollama_models_dict):
-        emit("error", {"error": "Model index out of bound"})
-    else:
-        app.logger.debug(f'Client #{request.sid} generating URL {data["url"]} with model {data["modelIdx"]}')
+    try:
+        if "url" not in data:
+            emit("error", {"error": "Payload missing URL key."})
+        elif "modelIdx" not in data:
+            emit("error", {"error": "Payload missing model index key."})
+        elif not is_valid_url(data["url"]):
+            emit("error", {"error": "Malformed URL."})
+        elif int(data["modelIdx"]) > len(ollama_models_dict):
+            emit("error", {"error": "Model index out of bound"})
+        else:
+            app.logger.debug(f'Client #{request.sid} generating URL {data["url"]} with model {data["modelIdx"]}')
 
-        # The URL scraper will further return events for the frontend.
-        us.generate(data["url"], data["modelIdx"])
+            # The URL scraper will further return events for the frontend.
+            us.generate(data["url"], data["modelIdx"])
+    except Exception as e:
+        emit("error", {"error": "An internal server error occured"})
 
 @socketio.on("file_generate")
 def handle_file_generate(data):
     app.logger.debug(f"Client #{request.sid} FILE GENERATE")
 
-    if "filename" not in data:
-        emit("error", {"error": "Payload missing filename key."})
-    elif "data" not in data:
-        emit("error", {"error": "Payload missing data key."})
-    elif "modelIdx" not in data:
-        emit("error", {"error": "Payload missing model index key."})
-    elif int(data["modelIdx"]) > len(ollama_models_dict):
-        emit("error", {"error": "Model index out of bound"})
-    else:
-        app.logger.debug(f'Client #{request.sid} generating PDF {data["filename"]} with model {data["modelIdx"]}')
-        pdf_bytes = base64.b64decode(data["data"])
-        pdf_buffer = io.BytesIO(pdf_bytes)
-        pr.generate(pdf_buffer, data["filename"], data["modelIdx"])
+    try:
+        if "filename" not in data:
+            emit("error", {"error": "Payload missing filename key."})
+        elif "data" not in data:
+            emit("error", {"error": "Payload missing data key."})
+        elif "modelIdx" not in data:
+            emit("error", {"error": "Payload missing model index key."})
+        elif int(data["modelIdx"]) > len(ollama_models_dict):
+            emit("error", {"error": "Model index out of bound"})
+        else:
+            app.logger.debug(f'Client #{request.sid} generating PDF {data["filename"]} with model {data["modelIdx"]}')
+            pdf_bytes = base64.b64decode(data["data"])
+            pdf_buffer = io.BytesIO(pdf_bytes)
+            pr.generate(pdf_buffer, data["filename"], data["modelIdx"])
+    except Exception as e:
+        emit("error", {"error": "An internal server error occured"})
 
 if __name__ == "__main__":
     # Run the Flask development server (not for production use)
