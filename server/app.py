@@ -15,15 +15,19 @@ import ollama
 print("BOOTING UP")
 
 print("*** Available models:")
-print(ollama.list())
+models = [model.model for model in ollama.list()]
+print(models)
 
 for model in ollama_models_dict:
     print(f"Checking status of {model['ollama_name']}...", end="")
-    if model["ollama_name"] not in ollama.list():
-        print(f"haven't been downloaded...downloading:")
-        # TODO
-    else:
-        print(f"downloaded!")
+    for full_model_name in models:
+        if model not in full_model_name:
+            print(f"haven't been downloaded...downloading:")
+            # TODO
+
+            continue
+
+    print(f"downloaded!")
 
 
 app = Flask(__name__)
