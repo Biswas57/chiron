@@ -26,10 +26,11 @@ def write_script(prompt):
     Capture the model's response from stdout.
     """
 
-    resp = ollama.stream(
+    resp = ollama.generate(
         model='llama3.3',
         prompt=prompt,
-        max_context_length=8192,
+        stream=True,
+        options={"num_ctx": 8192},
     )
 
     for chunk in resp:
