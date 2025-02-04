@@ -178,11 +178,13 @@ function App() {
     // Start the protocol sequence.
     setProtState((prev) => { return PROTOCOL_STATE_WAITING_FOR_METADATA; });
     if (fileObj === null) {
-      socket.emit("url_generate", { url: url, modelIdx: modelIdx });
+      const payload = { url: url, modelIdx: modelIdx };
+      socket.emit("url_generate", payload);
     } else {
       // emit file...
     }
   };
+
 
   return (
     <BrowserRouter>

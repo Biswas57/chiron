@@ -23,7 +23,7 @@ const InputBox = ({ models, onSubmitURL, onSubmitFile }) => {
     e.preventDefault();
     if (urlPattern.test(url.trim())) {
       setError(false);
-      onSubmitURL(url);
+      onSubmitURL(url, modelIdx);
     } else {
       setError(true);
     }
