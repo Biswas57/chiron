@@ -18,7 +18,7 @@ print("*** Available models:")
 print(ollama.list())
 
 for model in ollama_models_dict:
-    print(f"Checking status of {model["ollama_name"]}...", end="")
+    print(f"Checking status of {model['ollama_name']}...", end="")
     if model["ollama_name"] not in ollama.list():
         print(f"haven't been downloaded...downloading:")
         # TODO
