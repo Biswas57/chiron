@@ -26,7 +26,7 @@ def write_script(prompt):
     """
 
     stream = chat(
-        model='llama3.1:8b',
+        model='llama3.3',
         messages=[{'role': 'user', 'content': prompt}],
         stream=True,
     )

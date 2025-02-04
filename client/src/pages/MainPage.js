@@ -25,6 +25,7 @@ function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs, initiateP
     setIsLoading(true);
     setError(null);
     
+    
   }
 
   useEffect(() => {
