@@ -168,7 +168,7 @@ function App() {
     // Start the protocol sequence.
     setProtState((prev) => { return PROTOCOL_STATE_WAITING_FOR_METADATA; });
     if (fileObj === null) {
-      socket.emit("url_generate", { url: url });
+      socket.emit("url_generate", { url: url, ollama_model_name :"llama3.1:8b" });
     } else {
       // emit file...
     }

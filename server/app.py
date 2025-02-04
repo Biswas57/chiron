@@ -6,6 +6,7 @@ import pdf_reader as pr
 from urllib.parse import urlparse
 import signal
 import sys
+from ollama_parse import models as ollama_models_dict
 
 app = Flask(__name__)
 CORS(app)
@@ -42,20 +43,28 @@ def is_valid_url(url):
     except ValueError:
         return False
 
+@socketio.on("get_models")
+def handle_get_models():
+    app.logger.debug(f"Client #{request.sid} REQUESTED_MODEL_LIST")
+    emit("get_models_return", ollama_models_dict)
+
 @socketio.on("url_generate")
 def handle_url_generate(data):
     # Step 1 of protocol: request a URL to be scraped and AI'ed.
+    app.logger.debug(f"Client #{request.sid} URL GENERATE")
     app.logger.debug(data)
 
     if "url" not in data:
         emit("error", {"error": "Payload missing URL key."})
+    if "ollama_model_name" not in data:
+        emit("error", {"error": "Payload missing model name key."})
     elif not is_valid_url(data["url"]):
         emit("error", {"error": "Malformed URL."})
     else:
         app.logger.debug(f'Client #{request.sid} generating URL {data["url"]}')
 
         # The URL scraper will further return events for the frontend.
-        us.generate(data["url"])
+        us.generate(data["url"], data["ollama_model_name"])
 
 
 # @app.route("/api/url-generate", methods=["POST"])

@@ -3,6 +3,20 @@ from flask_socketio import emit
 from flask import current_app as app
 import ollama
 import tiktoken
+import math
+
+models = [
+    {
+        "display_name": "Llama-3.3-70B-Instruct",
+        "note": "High quality script | Very slow",
+        "ollama_name": "llama3.3",
+    },
+    {
+        "display_name": "Llama-3.1-8B",
+        "note": "Low quality script | Very fast",
+        "ollama_name": "llama3.1:8b",
+    },
+]
 
 def generate_prompt(content):
     """
@@ -20,39 +34,39 @@ Your script will be converted to speech using TTS, and someone will manually gen
 """
     return prompt + "\n\n" + content
 
-def write_script(prompt):
+def write_script(prompt, ollama_model_name):
     """
     Pass the prompt to Ollama via subprocess.
     Capture the model's response from stdout.
     """
-
-    resp = ollama.generate(
-        model='llama3.3',
-        prompt=prompt,
-        stream=True,
-        options={"num_ctx": 8192},
-    )
-
-    for chunk in resp:
-        # Step 3 of protocol: stream back tokens as they are generated.
-        emit("tokens", {"tokens": chunk['token']})
-
-    # Step 4 of protocol: send a completion event.
-    emit("complete", {})
-
-def generate(content):
-    """
-    High-level function that builds the prompt,
-    calls Ollama, and returns the AI's completion.
-    """
-    prompt = generate_prompt(content)
 
     # Count tokens using OpenAI's tokenizer
     # The Llama tokenizer can't be used as access must be granted by the model author.
     enc = tiktoken.get_encoding("gpt2")
     tokens = enc.encode(prompt)
     token_count = len(tokens)
+    app.logger.debug(f"Token count is {token_count} and model is {ollama_model_name}")
 
-    app.logger.debug(f"Token count is {token_count}")
+    resp = ollama.generate(
+        model=ollama_model_name,
+        prompt=prompt,
+        stream=True,
+        options={
+            "num_ctx": math.floor(token_count * 1.2) # Over-estimate the required tokens needed because the OpenAI tokenizer is different
+        },
+    )
 
-    write_script(prompt)
+    for chunk in resp:
+        # Step 3 of protocol: stream back tokens as they are generated.
+        emit("tokens", {"tokens": chunk["content"]})
+
+    # Step 4 of protocol: send a completion event.
+    emit("complete", {})
+
+def generate(content, ollama_model_name):
+    """
+    High-level function that builds the prompt,
+    calls Ollama, and returns the AI's completion.
+    """
+    prompt = generate_prompt(content)
+    write_script(prompt, ollama_model_name)

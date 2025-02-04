@@ -47,7 +47,7 @@ def scrape_kb_id(text):
     else:
         return match.group()
 
-def generate(url):
+def generate(url, ollama_model_name):
     title, text = scrape_title_and_text(url)
     parsed_text = parse(text)
     kb_id = scrape_kb_id(parsed_text)
@@ -56,4 +56,4 @@ def generate(url):
     emit("metadata", {"kb_id": kb_id, "title": title})
 
     # Step 3 of protocol: stream back tokens as they are generated.
-    script = op.generate(parsed_text)
+    script = op.generate(parsed_text, ollama_model_name)

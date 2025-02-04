@@ -128,7 +128,7 @@ const LoadingAnimation = ({brainRot, protState}) => {
                 // textShadow: '0 30px 30px rgba(0,0,0,1), 0 30px 30px rgba(0,0,0,1)'
               }}
             >
-              This may take a few minutes...
+              This will take a few minutes...
             </Box>
           </Box>
         </Box>
