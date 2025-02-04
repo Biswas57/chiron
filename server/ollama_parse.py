@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from flask_socketio import emit
 from flask import current_app as app
-from ollama import chat
+import ollama
 import tiktoken
 
 def generate_prompt(content):
@@ -26,15 +26,15 @@ def write_script(prompt):
     Capture the model's response from stdout.
     """
 
-    stream = chat(
+    resp = ollama.stream(
         model='llama3.3',
-        messages=[{'role': 'user', 'content': prompt}],
-        stream=True,
+        prompt=prompt,
+        max_context_length=8192,
     )
 
-    for chunk in stream:
+    for chunk in resp:
         # Step 3 of protocol: stream back tokens as they are generated.
-        emit("tokens", {"tokens": chunk['message']['content']})
+        emit("tokens", {"tokens": chunk['token']})
 
     # Step 4 of protocol: send a completion event.
     emit("complete", {})
