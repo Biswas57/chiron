@@ -6,6 +6,7 @@ export function addKBtoLocalStorage(metadata, scriptText) {
         url: metadata.url,
         kbId: metadata.kb_id,
         title: metadata.title,
+        model: metadata.model,
         timeGenerated: new Date().toLocaleString(),
         data: scriptText
     });
