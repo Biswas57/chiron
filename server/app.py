@@ -22,7 +22,7 @@ for model in ollama_models_dict:
     print(f"Checking status of {model['ollama_name']}...", end="")
     found = False
     for full_model_name in models:
-        if model in full_model_name:
+        if model['ollama_name'] in full_model_name:
             print(f"downloaded!")
             found = True
             break
