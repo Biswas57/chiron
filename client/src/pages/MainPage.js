@@ -1,88 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { AnimatePresence, motion } from 'framer-motion';
 import InputBox from '../components/InputBox';
 import LoadingAnimation from '../components/LoadingAnimation';
 import { useNavigate } from 'react-router';
-import { addKBtoLocalStorage } from '../utils/localStorage';
+import {
+  PROTOCOL_STATE_WAITING_TOKENS
+} from '../utils/protocol'
 
 const MotionBox = motion(Box);
 
-const API_URL_UP = 'http://localhost:5000/api/url-generate';
-const API_FILE_UP = 'http://localhost:5000/api/pdf-generate';
-
-function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs}) {
+function MainPage({models, brainRot, isLoading, setIsLoading, refreshSavedKbs, initiateProtocol, protState}) {
   const navigate = useNavigate();
 
   const [error, setError] = useState(null);
 
-  const handleUrlSubmit = async (url) => {
+  const handleUrlSubmit = (url, modelIdx) => {
     setIsLoading(true);
     setError(null);
-    
-    try {
-      const response = await fetch(API_URL_UP, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(`${data.error}`);
-      }
-      
-      if (data.success) {
-        addKBtoLocalStorage(url, data.kb_id, data.title, data.data);
-        refreshSavedKbs();
-        navigate("/result", { state: { idx: 0, scriptText: data.data } });
-      } else {
-        throw new Error(data.error || 'Failed to extract text');
-      }
-    } catch (error) {
-      console.error('Error fetching script:', error);
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
-    }
+    initiateProtocol(url, null, modelIdx);
   };
 
-  const handleFileSubmit = async (file) => {
+  const handleFileSubmit = async (file, modelIdx) => {
     setIsLoading(true);
     setError(null);
-    
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch(API_FILE_UP, {
-        method: 'POST',
-        body: formData,
-      });
-      
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(`${data.error}`);
-      }
-      
-      if (data.success) {
-        addKBtoLocalStorage(null, data.kb_id, data.title, data.data);
-        refreshSavedKbs();
-        navigate("/result", { state: { idx: 0, scriptText: data.data } });
-      } else {
-        throw new Error(data.error || 'Failed to extract text');
-      }
-    } catch (error) {
-      console.error('Error fetching script:', error);
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
-    }
+    initiateProtocol(null, file, modelIdx);
   }
+
+  useEffect(() => {
+    if (protState === PROTOCOL_STATE_WAITING_TOKENS) {
+      navigate("/result", { state: { idx: 0 }});
+    }
+  }, [protState]);
 
   return (
     <div>      
@@ -105,7 +54,7 @@ function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs}) {
               width: '100vw'
             }}
           >
-            <InputBox onSubmitURL={handleUrlSubmit} onSubmitFile={handleFileSubmit} setHttpErrorMsg={setError}/>
+            <InputBox models={models} onSubmitURL={handleUrlSubmit} onSubmitFile={handleFileSubmit} setHttpErrorMsg={setError} />
             {error && (
               <Box sx={{ 
                 position: 'relative',
@@ -136,7 +85,7 @@ function MainPage({brainRot, isLoading, setIsLoading, refreshSavedKbs}) {
               zIndex: 1
             }}
           >
-            <LoadingAnimation brainRot={brainRot}/>
+            <LoadingAnimation brainRot={brainRot} protState={protState}/>
           </MotionBox>
         )}
       </AnimatePresence>

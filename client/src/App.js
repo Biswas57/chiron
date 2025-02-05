@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Box from '@mui/material/Box';
 import { BrowserRouter, Routes, Route } from "react-router";
 import { ThemeProvider } from '@mui/material/styles';
@@ -11,7 +11,24 @@ import NutanixBirds from "./nutanixBirds"
 import VideoBackground from "./components/VideoBackground"
 import InstructionPage from "./pages/InstructionPage"
 import Game from "./pages/Game"
-import { getAllKBfromLocalStorage } from './utils/localStorage';
+import { addKBtoLocalStorage, getAllKBfromLocalStorage } from './utils/localStorage';
+import io from 'socket.io-client';
+import { Typography } from '@mui/material';
+import {
+  PROTOCOL_STATE_IDLE,
+  PROTOCOL_STATE_WAITING_FOR_METADATA,
+  PROTOCOL_STATE_METADATA_RECV,
+  PROTOCOL_STATE_WAITING_FIRST_TOKEN,
+  PROTOCOL_STATE_WAITING_TOKENS
+} from './utils/protocol'
+
+
+const API_URL = 'http://10.134.83.201:6969/';
+
+let socket = null;
+const SOCKET_CONNECTING = 0;
+const SOCKET_CONNECTED = 1;
+const SOCKET_ERROR = 2;
 
 function App() {
   // Technical TODO: this is a lot of global states, better if we use something 
@@ -35,8 +52,15 @@ function App() {
   // Global state to disable navigation during edit mode
   const [editing, setEditing] = useState(false);
 
+  // Server connection status.
+  const [connection, setConnection] = useState(SOCKET_CONNECTING);
+
+  // Lists of available LLMs
+  const [models, setModels] = useState(null);
+
   // TODO: clicking back still triggers a navigation during edit mode. Need to fix
   useEffect(() => {
+    // Prevent navigation during generation
     const handleBeforeUnload = (event) => {
       if (editing) {
         event.preventDefault();
@@ -60,12 +84,149 @@ function App() {
       window.removeEventListener("popstate", handleBrowserNavigation);
     }
 
+    // Open a socket to the server
+    socket = io(API_URL, {
+      transports: ['websocket'],
+    });
+
+    socket.on('connect_error', () => {
+      setConnection(SOCKET_ERROR);
+      setIsLoading(false);
+
+      socket.off("metadata");
+      socket.off("tokens");
+      socket.off("complete");
+      setProtState(PROTOCOL_STATE_IDLE);
+      
+      console.error("socket connection error...");
+    });
+
+    socket.on('connect', () => {
+      // Refresh the models list
+      socket.on('get_models_return', (data) => {
+        setModels((prev) => { return data; });
+        socket.off('get_models');
+        // Unblock webpage
+        setConnection(SOCKET_CONNECTED);
+        console.log("socket connected!");
+      });
+      socket.emit('get_models');
+    });
+
     // Cleanup event listener on unmount
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("popstate", handleBrowserNavigation);
+      socket.disconnect();
     };
-  }, [editing])
+  }, [editing]);
+
+  // State management of the protocol to the backend
+  const [protState, setProtState] = useState(PROTOCOL_STATE_IDLE);
+  const [metadata, setMetadata] = useState(null);
+  const [scriptText, setScriptText] = useState(null);
+
+  const metadataRef = useRef(metadata);
+  useEffect(() => {
+    metadataRef.current = metadata;
+  }, [metadata]);
+  const scriptTextRef = useRef(scriptText);
+  useEffect(() => {
+    scriptTextRef.current = scriptText;
+  }, [scriptText]);
+
+  const initiateProtocol = (url, fileObj, modelIdx) => {
+    // This function initiate the event driven protocol via
+    // websocket to communicate with the server and stream back the tokens
+    // One of the two first arguments must be null!
+
+    if (protState !== PROTOCOL_STATE_IDLE) {
+      alert("Protocol in inconsistent state! Should never see this message!!");
+      return;
+    }
+
+    setMetadata(null);
+    setScriptText(null);
+
+    // Make sure all the event listeners are in a clean state.
+    socket.off("metadata");
+    socket.off("tokens");
+    socket.off("complete");
+    socket.off("error");
+
+    // Prime the event listeners before we initiate the protocol.
+    socket.on("metadata", (data) => {
+      setProtState((prev) => { return PROTOCOL_STATE_METADATA_RECV });
+      setMetadata((prev) => {
+        let resp_metadata = data;
+        if (fileObj === null) {
+          resp_metadata.url = url;
+        } else {
+          resp_metadata.url = null;
+        }
+        return resp_metadata;
+      });
+      setScriptText((prev) => { return "" });
+      setProtState((prev) => { return PROTOCOL_STATE_WAITING_FIRST_TOKEN });
+    });
+
+    // Next step after metadata receive: listen for tokens
+    socket.on("tokens", (data) => {
+      setProtState((prev) => {
+        if (prev === PROTOCOL_STATE_WAITING_FIRST_TOKEN) {
+          // Received first token, time to navigate!
+          return PROTOCOL_STATE_WAITING_TOKENS;
+        } else {
+          return prev;
+        }
+      })
+      setScriptText((prev) => { return prev + data["tokens"]; });
+    });
+
+    // Final step when we get the completion event
+    socket.on("complete", () => {
+      // Clean up the event listeners
+      socket.off("metadata");
+      socket.off("tokens");
+      socket.off("complete");
+      socket.off("error")
+      setProtState((prev) => { return PROTOCOL_STATE_IDLE; });
+
+      console.log(metadataRef.current);
+      addKBtoLocalStorage(metadataRef.current, scriptTextRef.current);
+      refreshSavedKbs();
+
+      setIsLoading((prev) => { return false; });
+    });
+
+    socket.on("error", (data) => {
+      alert(data.error);
+
+      socket.off("metadata");
+      socket.off("tokens");
+      socket.off("complete");
+      socket.off("error")
+      setProtState((prev) => { return PROTOCOL_STATE_IDLE; });
+      setIsLoading((prev) => { return false; });
+    })
+
+    // Start the protocol sequence.
+    setProtState((prev) => { return PROTOCOL_STATE_WAITING_FOR_METADATA; });
+    if (fileObj === null) {
+      const payload = { url: url, modelIdx: modelIdx };
+      socket.emit("url_generate", payload);
+    } else {
+      const reader = new FileReader();
+      reader.onload = () => {
+        // Get base64 encoded string of the file
+        const fileData = reader.result.split(",")[1];
+        const payload = { filename: fileObj.name, data: fileData, modelIdx: modelIdx };
+        socket.emit("file_generate", payload);
+      };
+      reader.readAsDataURL(fileObj);
+    }
+  };
+
 
   return (
     <BrowserRouter>
@@ -86,31 +247,71 @@ function App() {
             savedKbs={savedKbs}
             refreshSavedKbs={refreshSavedKbs}
             editing={editing}
+            setMetadata={setMetadata}
+            setScriptText={setScriptText}
           />
 
           {brainRot ? <VideoBackground /> : <NutanixBirds />}
 
           {/* Page content */}
-          <Routes className="url-input-container">
-            <Route path="/" element={
-              <MainPage
-                brainRot={brainRot}
-                isLoading={isLoading}
-                setIsLoading={setIsLoading}
-                refreshSavedKbs={refreshSavedKbs}
-              />
-            }/>
-            <Route path="/result" element={
-              <ScriptBox
-                brainRot={brainRot}
-                refreshSavedKbs={refreshSavedKbs}
-                editing={editing}
-                setEditing={setEditing}
-              />
-            }/>
-            <Route path="/game" element={<Game />} />
-            <Route path="/instructions" element={<InstructionPage/>} />
-          </Routes>
+          { connection === SOCKET_CONNECTED ? (
+            <Routes className="url-input-container">
+              <Route path="/" element={
+                <MainPage
+                  models={models}
+                  brainRot={brainRot}
+                  isLoading={isLoading}
+                  setIsLoading={setIsLoading}
+                  refreshSavedKbs={refreshSavedKbs}
+                  initiateProtocol={initiateProtocol}
+                  protState={protState}
+                />
+              }/>
+              <Route path="/result" element={
+                <ScriptBox
+                  brainRot={brainRot}
+                  refreshSavedKbs={refreshSavedKbs}
+                  editing={editing}
+                  setEditing={setEditing}
+                  protState={protState}
+                  metadata={metadata}
+                  scriptText={scriptText}
+                  setScriptText={setScriptText}
+                  setIsLoading={setIsLoading}
+                />
+              }/>
+              <Route path="/game" element={<Game />} />
+              <Route path="/instructions" element={<InstructionPage/>} />
+            </Routes>
+          ) : (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                textAlign: 'center',
+              }}
+            >
+              { connection === SOCKET_ERROR ? (                  
+                <Typography
+                  sx={{
+                    fontSize: '200%'
+                  }}
+                >
+                  Cannot connect to server, reattempting connection in background. In the meantime you can only view previous generations.
+                </Typography>
+              ) : (
+                <Typography
+                  sx={{
+                    fontSize: '200%'
+                  }}
+                >
+                  Connecting to server...
+                </Typography>
+              )}
+            </Box>
+          )}
         </Box>
       </ThemeProvider>
     </BrowserRouter>

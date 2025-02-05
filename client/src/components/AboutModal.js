@@ -50,7 +50,7 @@ function AboutModal() {
           ["Adib Akbari", "https://www.linkedin.com/in/adibakbari"],
           ["Bill Nguyen", "https://www.linkedin.com/in/bill-nguyen-737061232"],
           ["Biswas Simkhada", "https://www.linkedin.com/in/biswas-simkhada"],
-          ["Joseph Hayek", ""],
+          ["Joseph Hayek", "https://au.linkedin.com/in/joseph-hayek-000385318"],
           ["Leo Li", "https://www.linkedin.com/in/leo-l-384b4b160"],
           ["Lucas Young", "https://www.linkedin.com/in/lyou02"],
           ["Sandin Jayasekera", "https://www.linkedin.com/in/sandin-j"],

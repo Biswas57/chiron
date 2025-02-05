@@ -3,8 +3,28 @@ import { SyncLoader } from 'react-spinners';
 import Box from '@mui/material/Box';
 import { motion } from 'framer-motion';
 import brainRotGif from '../assets/brainrot/loading.gif'
+import {
+  PROTOCOL_STATE_WAITING_FOR_METADATA,
+  PROTOCOL_STATE_WAITING_FIRST_TOKEN,
+} from '../utils/protocol'
 
-const LoadingAnimation = ({brainRot}) => {
+function loadingStatus(protState) {
+  if (protState == PROTOCOL_STATE_WAITING_FOR_METADATA) {
+    return (
+      <div>
+        Scraping your article...
+      </div>
+    )
+  } else if (protState == PROTOCOL_STATE_WAITING_FIRST_TOKEN) {
+    return (
+      <div>
+        Scraped article, piped into LLM, waiting for first token...
+      </div>
+    )
+  }
+}
+
+const LoadingAnimation = ({brainRot, protState}) => {
   if (brainRot) {
     return (
       <Box
@@ -28,7 +48,7 @@ const LoadingAnimation = ({brainRot}) => {
             textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 2px rgba(0,0,0,0.4)'
           }}
         >
-          Processing your article...
+          {loadingStatus(protState)}
         </Box>
         <img src={brainRotGif} alt="loading..." />
       </Box>
@@ -97,7 +117,7 @@ const LoadingAnimation = ({brainRot}) => {
                 // textShadow: '0 30px 30px rgba(0,0,0,1), 0 30px 30px rgba(0,0,0,1)'
               }}
             >
-              Processing your article
+              {loadingStatus(protState)}
             </Box>
             <Box
               sx={{
@@ -108,7 +128,7 @@ const LoadingAnimation = ({brainRot}) => {
                 // textShadow: '0 30px 30px rgba(0,0,0,1), 0 30px 30px rgba(0,0,0,1)'
               }}
             >
-              This may take a few minutes...
+              This will take a few minutes...
             </Box>
           </Box>
         </Box>

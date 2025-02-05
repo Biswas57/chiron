@@ -1,8 +1,9 @@
 from playwright.sync_api import sync_playwright
-import groq_parse as gp
+import ollama_parse as op
 import time
 import re
-import platform
+from flask_socketio import emit
+from flask import current_app as app
 
 def is_login_page(page_content):
     if "Log in with your Email" in page_content:
@@ -32,8 +33,8 @@ def scrape_title_and_text(url):
             
             return page.title(), content
         except Exception as e:
-            print(f"Error scraping: {e}")
-            raise
+            emit("error", {"error": f"Website cannot be scraped: {str(e)}"})
+            return None, None
         finally:
             browser.close()
 
@@ -56,8 +57,17 @@ def scrape_kb_id(text):
     else:
         return match.group()
 
-def generate(url):
+def generate(url, model_idx):
     title, text = scrape_title_and_text(url)
+
+    if title is None:
+        return
+
     parsed_text = parse(text)
     kb_id = scrape_kb_id(parsed_text)
-    return kb_id, title, gp.generate_script(parsed_text)
+
+    # Step 2 of protocol: return metadata for creating local storage on frontend
+    emit("metadata", {"kb_id": kb_id, "title": title})
+
+    # Step 3 of protocol: stream back tokens as they are generated.
+    script = op.generate(parsed_text, model_idx)

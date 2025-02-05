@@ -1,11 +1,17 @@
 import React, { useState, useCallback } from 'react';
 import TextField from '@mui/material/TextField';
-import { Box, Typography, Paper, Button, Collapse, IconButton } from '@mui/material';
+import { Box, Typography, Paper, Button, Collapse, IconButton, Divider, MenuItem } from '@mui/material';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import ErrorModal from './ErrorModal';
+import Select from '@mui/material/Select';
 
-const InputBox = ({ onSubmitURL, onSubmitFile, setHttpErrorMsg }) => {
+const InputBox = ({ models, onSubmitURL, onSubmitFile, setHttpErrorMsg }) => {
+  const [modelIdx, setModelIdx] = useState(0);
+  const handleModelChange = (event) => {
+    setModelIdx(event.target.value);
+  }
+
   const [url, setUrl] = useState('');
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -17,7 +23,7 @@ const InputBox = ({ onSubmitURL, onSubmitFile, setHttpErrorMsg }) => {
     e.preventDefault();
     if (urlPattern.test(url.trim())) {
       setError(false);
-      onSubmitURL(url);
+      onSubmitURL(url, modelIdx);
     } else {
       setError(true);
     }
@@ -98,7 +104,7 @@ const InputBox = ({ onSubmitURL, onSubmitFile, setHttpErrorMsg }) => {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          width: '500px',
+          width: '540px',
           padding: '24px',
           background: 'rgba(4, 4, 4, 0.1)',
           backdropFilter: 'blur(5px)',
@@ -106,6 +112,44 @@ const InputBox = ({ onSubmitURL, onSubmitFile, setHttpErrorMsg }) => {
           border: '1px solid rgba(255, 255, 255, 0.1)',
         }}
       >
+        <Box>
+          <Typography
+            sx={{
+              paddingLeft: '15px',
+              paddingBottom: '15px',
+              color: 'text.primary',
+              fontWeight: 600,
+              fontSize: '1.1rem'
+            }}
+          >
+            Choose your LLM
+          </Typography>
+          <Select
+            value={modelIdx}
+            onChange={handleModelChange}
+            sx={{
+              width: '100%'
+            }}
+          >
+            {models.map((model, index) => {
+              return (
+                <MenuItem
+                  value={index}
+                >
+                  {models[index].display_name + " - " + models[index].note}
+                </MenuItem>
+              )
+            })}
+          </Select>
+        </Box>
+
+        <Divider
+          sx={{
+            marginTop: '20px',
+            marginBottom: '10px'
+          }}
+        />
+
         {/* Public KB Section */}
         <SectionHeader 
           title="Enter URL"
@@ -255,7 +299,7 @@ const InputBox = ({ onSubmitURL, onSubmitFile, setHttpErrorMsg }) => {
                   },
                   transition: 'all 0.2s ease-in-out',
                 }}
-                onClick={() => {onSubmitFile(fileObj)}}
+                onClick={() => {onSubmitFile(fileObj, modelIdx)}}
                 disabled={fileObj === null}
               >
                 Upload

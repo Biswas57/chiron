@@ -1,9 +1,15 @@
-import groq_parse as gp
+import ollama_parse as op
 import PyPDF2
 import re
+from flask_socketio import emit
 
-def scrape_text(pdf_file):    
-    reader = PyPDF2.PdfReader(pdf_file)
+def scrape_text(pdf_file):
+    try:
+        reader = PyPDF2.PdfReader(pdf_file)
+    except Exception as e:
+        emit("error", {"error": f"PDF file cannot be read: {str(e)}"})
+        return None
+
     text_list = []
 
     for page in reader.pages:
@@ -43,22 +49,13 @@ def kb_check(page_content):
     return False
 
 
-def generate(pdf, filename):
+def generate(pdf, filename, model_idx):
     text = scrape_text(pdf)
+    if text is None:
+        return
 
-    is_conf, title_in_filename = conf_check(filename)
-    if is_conf:
-        id = 'Confluence'
-        print(title_in_filename)
-        if title_in_filename:
-            title = filename.split('_')[0]
-        else:
-            content_lines = text.split('\n')
-            title = content_lines[0]
-    elif kb_check(text):
-        id = scrape_kb_id(text)
-        title = filename.split('.')[0]
-    else:
-        raise Exception('PDF must be a KB or Confluence Article.')
-    
-    return id, title, gp.generate_script(text)
+    kb_id = scrape_kb_id(text)
+    title = filename.split(".pdf")[0]
+
+    emit("metadata", {"kb_id": kb_id, "title": title})
+    op.generate(text, model_idx)
