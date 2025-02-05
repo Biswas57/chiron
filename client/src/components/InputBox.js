@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import TextField from '@mui/material/TextField';
 import { Box, Typography, Paper, Button, Collapse, IconButton, Divider, MenuItem } from '@mui/material';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, InfoIcon } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import ErrorModal from './ErrorModal';
 import Select from '@mui/material/Select';
+import { Tooltip } from '@mui/material';
 
 const InputBox = ({ models, onSubmitURL, onSubmitFile, setHttpErrorMsg }) => {
   const [modelIdx, setModelIdx] = useState(0);
@@ -113,17 +114,27 @@ const InputBox = ({ models, onSubmitURL, onSubmitFile, setHttpErrorMsg }) => {
         }}
       >
         <Box>
-          <Typography
+          <Box
             sx={{
-              paddingLeft: '15px',
-              paddingBottom: '15px',
-              color: 'text.primary',
-              fontWeight: 600,
-              fontSize: '1.1rem'
+              display: 'flex'
             }}
           >
-            Choose your LLM
-          </Typography>
+            <Typography
+              sx={{
+                paddingLeft: '15px',
+                paddingBottom: '15px',
+                paddingRight: '10px',
+                color: 'text.primary',
+                fontWeight: 600,
+                fontSize: '1.1rem'
+              }}
+            >
+              Choose your LLM
+            </Typography>
+            <Tooltip title="All models are run locally on a Nutanix SRE lab">
+              <InfoIcon />
+            </Tooltip>
+          </Box>
           <Select
             value={modelIdx}
             onChange={handleModelChange}
