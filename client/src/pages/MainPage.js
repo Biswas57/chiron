@@ -54,16 +54,17 @@ function MainPage({models, brainRot, isLoading, setIsLoading, refreshSavedKbs, i
               width: '100vw'
             }}
           >
-            <InputBox models={models} onSubmitURL={handleUrlSubmit} onSubmitFile={handleFileSubmit} />
+            <InputBox models={models} onSubmitURL={handleUrlSubmit} onSubmitFile={handleFileSubmit} setHttpErrorMsg={setError} />
             {error && (
               <Box sx={{ 
                 position: 'relative',
                 zIndex: 1,
                 color: 'error.main',
+                backdropFilter: 'blur(5px)',
                 textAlign: 'center',
+                border: '1px solid red',
                 mt: 2,
                 p: 2,
-                bgcolor: 'error.light',
                 borderRadius: 1
               }}>
                 {error}

@@ -12,6 +12,7 @@ const InputBox = ({ models, onSubmitURL, onSubmitFile }) => {
     setModelIdx(event.target.value);
   }
 
+const InputBox = ({ onSubmitURL, onSubmitFile, setHttpErrorMsg }) => {
   const [url, setUrl] = useState('');
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -155,7 +156,10 @@ const InputBox = ({ models, onSubmitURL, onSubmitFile }) => {
           title="Enter URL"
           subtitle="Only Public KBs"
           isExpanded={expandedSection === 'public'}
-          onClick={() => setExpandedSection('public')}
+          onClick={() => {
+            setHttpErrorMsg("")
+            setExpandedSection('public')}
+          }
         />
         
         <Collapse in={expandedSection === 'public'}>
@@ -228,9 +232,12 @@ const InputBox = ({ models, onSubmitURL, onSubmitFile }) => {
         {/* Internal KB Section */}
         <SectionHeader 
           title="Upload PDF"
-          subtitle="All KBs"
+          subtitle="All KBs and Confluence Articles"
           isExpanded={expandedSection === 'internal'}
-          onClick={() => setExpandedSection('internal')}
+          onClick={() => {
+            setHttpErrorMsg("")
+            setExpandedSection('internal')
+          }}
         />
         
         <Collapse in={expandedSection === 'internal'}>
