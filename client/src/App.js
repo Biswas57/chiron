@@ -126,6 +126,15 @@ function App() {
   const [metadata, setMetadata] = useState(null);
   const [scriptText, setScriptText] = useState(null);
 
+  const metadataRef = useRef(metadata);
+  useEffect(() => {
+    metadataRef.current = metadata;
+  }, [metadata]);
+  const scriptTextRef = useRef(scriptText);
+  useEffect(() => {
+    scriptTextRef.current = scriptText;
+  }, [scriptText]);
+
   const initiateProtocol = (url, fileObj, modelIdx) => {
     // This function initiate the event driven protocol via
     // websocket to communicate with the server and stream back the tokens
@@ -183,8 +192,8 @@ function App() {
       socket.off("error")
       setProtState((prev) => { return PROTOCOL_STATE_IDLE; });
 
-      console.log(metadata);
-      addKBtoLocalStorage(metadata, scriptText);
+      console.log(metadataRef.current);
+      addKBtoLocalStorage(metadataRef.current, scriptTextRef.current);
       refreshSavedKbs();
 
       setIsLoading((prev) => { return false; });

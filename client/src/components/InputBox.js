@@ -6,13 +6,12 @@ import { useDropzone } from 'react-dropzone';
 import ErrorModal from './ErrorModal';
 import Select from '@mui/material/Select';
 
-const InputBox = ({ models, onSubmitURL, onSubmitFile }) => {
+const InputBox = ({ models, onSubmitURL, onSubmitFile, setHttpErrorMsg }) => {
   const [modelIdx, setModelIdx] = useState(0);
   const handleModelChange = (event) => {
     setModelIdx(event.target.value);
   }
 
-const InputBox = ({ onSubmitURL, onSubmitFile, setHttpErrorMsg }) => {
   const [url, setUrl] = useState('');
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
