@@ -41,7 +41,9 @@ for model in ollama_models_dict:
                 text=True
             )
             for line in process.stdout:
-                print(line.strip())  # Show download progress
+                print(line.strip())
+            for line in process.stderr:
+                print(line.strip())
             process.wait()
         except Exception as e:
             print(f"{str(e)}")
