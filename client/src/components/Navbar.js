@@ -285,6 +285,9 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
                             {pastKb.title}
                           </Typography>
                           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                            {pastKb.model}
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                             {pastKb.kbId} • {pastKb.timeGenerated}
                           </Typography>
                         </Box>

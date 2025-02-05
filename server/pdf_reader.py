@@ -2,6 +2,7 @@ import ollama_parse as op
 import PyPDF2
 import re
 from flask_socketio import emit
+from ollama_parse import models as ollama_models_dict
 
 def scrape_text(pdf_file):
     try:
@@ -57,5 +58,5 @@ def generate(pdf, filename, model_idx):
     kb_id = scrape_kb_id(text)
     title = filename.split(".pdf")[0]
 
-    emit("metadata", {"kb_id": kb_id, "title": title})
+    emit("metadata", {"kb_id": kb_id, "title": title, "model": ollama_models_dict[model_idx]['display_name']})
     op.generate(text, model_idx)

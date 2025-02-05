@@ -3,7 +3,7 @@ import ollama_parse as op
 import time
 import re
 from flask_socketio import emit
-from flask import current_app as app
+from ollama_parse import models as ollama_models_dict
 
 def is_login_page(page_content):
     if "Log in with your Email" in page_content:
@@ -67,7 +67,7 @@ def generate(url, model_idx):
     kb_id = scrape_kb_id(parsed_text)
 
     # Step 2 of protocol: return metadata for creating local storage on frontend
-    emit("metadata", {"kb_id": kb_id, "title": title})
+    emit("metadata", {"kb_id": kb_id, "title": title, "model": ollama_models_dict[model_idx]['display_name']})
 
     # Step 3 of protocol: stream back tokens as they are generated.
     script = op.generate(parsed_text, model_idx)
