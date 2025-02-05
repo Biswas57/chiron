@@ -16,6 +16,11 @@ models = [
         "note": "High quality script | Very slow",
         "ollama_name": "llama3.3",
     },
+    {
+        "display_name": "DeepSeek-R1-Distill-Llama-70B",
+        "note": "Experimental | Slow",
+        "ollama_name": "deepseek-r1:70b",
+    }
 ]
 
 def generate_prompt(content):
