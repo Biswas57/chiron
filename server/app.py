@@ -33,8 +33,10 @@ for model in ollama_models_dict:
 
     if not found:
         print(f"haven't been downloaded...downloading:")
+        shcmd = f"ollama pull {model['ollama_name']}"
+        print(f"executing shell command: {shcmd}")
         try:
-            os.system(f"ollama pull {model['ollama_name']}")
+            os.system(shcmd)
         except Exception as e:
             print(f"{str(e)}")
 
