@@ -14,9 +14,12 @@ import ollama
 # Before we do anything, make sure all the models are downloaded
 print("BOOTING UP")
 
-print("*** Available models:")
+print("*** Downloaded models:")
 models = [model.model for model in ollama.list().models]
 print(models)
+
+print("*** Needed models:")
+print([model_dict['ollama_name'] for model_dict in ollama_models_dict])
 
 for model in ollama_models_dict:
     print(f"Checking status of {model['ollama_name']}...", end="")
