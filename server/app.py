@@ -10,6 +10,7 @@ from ollama_parse import models as ollama_models_dict
 import base64
 import io
 import ollama
+import subprocess
 
 # Before we do anything, make sure all the models are downloaded
 print("BOOTING UP")
@@ -32,7 +33,18 @@ for model in ollama_models_dict:
 
     if not found:
         print(f"haven't been downloaded...downloading:")
-        # TODO    
+        try:
+            process = subprocess.Popen(
+                ["ollama", "pull", model['ollama_name']],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+            for line in process.stdout:
+                print(line.strip())  # Show download progress
+            process.wait()
+        except Exception as e:
+            print(f"{str(e)}")
 
 
 app = Flask(__name__)
