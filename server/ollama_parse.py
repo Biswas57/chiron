@@ -20,24 +20,6 @@ models = [
         "ollama_name": "llama3.3",
         "context_length": 131072,
     },
-    {
-        "display_name": "DS-R1-Distill-Qwen-14B",
-        "note": "Experimental | Good Quality | Fast",
-        "ollama_name": "deepseek-r1:14b",
-        "context_length": 131072,
-    },
-    {
-        "display_name": "DS-R1-Distill-Qwen-32B",
-        "note": "Experimental | High Quality | Slow",
-        "ollama_name": "deepseek-r1:32b",
-        "context_length": 131072,
-    },
-    {
-        "display_name": "DS-R1-Distill-Llama-70B",
-        "note": "Experimental | Best Quality | Very slow",
-        "ollama_name": "deepseek-r1:70b",
-        "context_length": 131072,
-    }
 ]
 
 def generate_prompt(content):
