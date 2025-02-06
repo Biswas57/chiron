@@ -90,7 +90,7 @@ def handle_url_generate(data):
     try:
         if "url" not in data:
             emit("error", {"error": "Payload missing URL key."})
-        elif len(data["url"] > 2048):
+        elif len(data["url"]) > 2048:
             emit("error", {"error": "URL longer than 2048 characters."})
         elif "modelIdx" not in data:
             emit("error", {"error": "Payload missing model index key."})

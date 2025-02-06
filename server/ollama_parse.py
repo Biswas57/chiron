@@ -70,7 +70,7 @@ def write_script(prompt, model_idx):
     token_count = len(tokens)
     app.logger.debug(f"Token count is {token_count} and model is {models[model_idx]['display_name']}")
 
-    if int(token_count) > int(models[model_idx]["context_length"]):
+    if token_count > models[model_idx]["context_length"]:
         app.logger.debug(f"Token count exceeds context size")
         emit("error", {"error": f"Your article's tokens count exceeds the context window limit of the selected model {token_count} > {models[model_idx]['context_length']}. Note: a token is usually 3/4 of a word."})
         return
