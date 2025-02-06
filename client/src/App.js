@@ -23,7 +23,7 @@ import {
 } from './utils/protocol'
 
 
-const API_URL = 'http://10.134.83.201:696/';
+const API_URL = 'http://10.134.83.201:6969/';
 
 let socket = null;
 const SOCKET_CONNECTING = 0;
