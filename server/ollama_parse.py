@@ -43,13 +43,16 @@ def generate_prompt(content):
     Build the text prompt you want to send to Ollama.
     """
     prompt = """
-### INSTRUCTION: 
-The following text is a Knowledge Base article for a Nutanix product. This article is to be converted to a video to assist users of the product run the steps outlined in the article themselves. Your task is to generate a script for this video, based on the article contents. 
-
+### INSTRUCTION:
+The following text is a Knowledge Base article for a Nutanix product. This article is to be converted to a video to assist users of the product run the steps outlined in the article themselves. Your task is to generate a script for this video, based on the article contents.
 Where multiple options or scenarios are presented in the article, choose the most common path to be presented in the video.
-
 Your script will be converted to speech using TTS, and someone will manually generate the visuals based on your script, you should account for this in the pacing of the script. For pauses, add “...” on a new line, however, do not include any additional annotation or direction (i.e. do NOT include annotations such as [Intro music plays]), just the script. Do not include any preamble, only generate the script that is to be fed directly to an AI TTS (i.e. do NOT include something like “here is your script”).
-
+### REQUIREMENTS:
+- Format commands, code snippets, or terminal inputs using Markdown-style formatting (e.g., wrap commands in triple backticks: `command`).
+- Use ellipses ("...") on a new line to indicate pauses for better pacing.
+- Do not include preambles, explanations, or annotations (e.g., [Intro music plays]).
+- The script should be written as it will be read by AI TTS, without extra instructions.
+### NO PREAMBLE. SCRIPT ONLY
 ### KB ARTICLE CONTENT:
 """
     return prompt + "\n\n" + content
