@@ -5,6 +5,8 @@ import ollama
 import tiktoken
 import math
 
+# The models that we have available. This is queried when the app boots to download
+# the models if they haven't been already.
 models = [
     {
         "display_name": "Llama-3.1-8B",
@@ -63,7 +65,7 @@ def write_script(prompt, model_idx):
     Capture the model's response from stdout.
     """
 
-    # Count tokens using OpenAI's tokenizer
+    # Count tokens using OpenAI's tokenizer.
     # The Llama tokenizer can't be used as access must be granted by the model author.
     enc = tiktoken.get_encoding("gpt2")
     tokens = enc.encode(prompt)
@@ -75,6 +77,7 @@ def write_script(prompt, model_idx):
         emit("error", {"error": f"Your article's tokens count exceeds the context window limit of the selected model {token_count} > {models[model_idx]['context_length']}. Note: a token is usually 3/4 of a word."})
         return
 
+    # Now send the request to the Ollama service
     resp = ollama.generate(
         model=models[model_idx]["ollama_name"],
         prompt=prompt,
