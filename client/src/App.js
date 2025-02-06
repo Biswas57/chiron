@@ -192,7 +192,6 @@ function App() {
       socket.off("error")
       setProtState((prev) => { return PROTOCOL_STATE_IDLE; });
 
-      console.log(metadataRef.current);
       addKBtoLocalStorage(metadataRef.current, scriptTextRef.current);
       refreshSavedKbs();
 

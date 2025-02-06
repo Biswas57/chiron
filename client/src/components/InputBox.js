@@ -37,16 +37,27 @@ const InputBox = ({ models, onSubmitURL, onSubmitFile, setHttpErrorMsg }) => {
   };
 
   const onDrop = useCallback((acceptedFiles) => {
+    if (acceptedFiles.length == 0) {
+      return;
+    }
+
     const fname = acceptedFiles[0].name;
     const fname_split = fname.split('.');
     if (fname_split.length > 0) {
       if (fname_split.pop().toLowerCase() === "pdf") {
-        setFileObj(acceptedFiles[0]);
-        return;
+        if (acceptedFiles[0].size > 16777216) {
+          // This is more of an arbitrary restriction for performance rather than a hard limitation.
+          setErrorMessage("File is greater than 16 Megabytes.");
+          setErrorModalOpen(true);
+        } else {
+          setFileObj(acceptedFiles[0]);
+          return;
+        }
+      } else {
+        setErrorMessage("File must be a PDF that ends in '.pdf' or '.PDF'");
+        setErrorModalOpen(true);
       }
     }
-    setErrorMessage("File must be a PDF that ends in '.pdf' or '.PDF'");
-    setErrorModalOpen(true);
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({

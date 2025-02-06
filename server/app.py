@@ -90,6 +90,8 @@ def handle_url_generate(data):
     try:
         if "url" not in data:
             emit("error", {"error": "Payload missing URL key."})
+        elif len(data["url"] > 2048):
+            emit("error", {"error": "URL longer than 2048 characters."})
         elif "modelIdx" not in data:
             emit("error", {"error": "Payload missing model index key."})
         elif not is_valid_url(data["url"]):
@@ -120,6 +122,10 @@ def handle_file_generate(data):
         else:
             app.logger.debug(f'Client #{request.sid} generating PDF {data["filename"]} with model {data["modelIdx"]}')
             pdf_bytes = base64.b64decode(data["data"])
+            if len(pdf_bytes) > 16777216:
+                emit("error", {"error": "PDF over 16 megabytes!"})
+                return
+
             pdf_buffer = io.BytesIO(pdf_bytes)
             pr.generate(pdf_buffer, data["filename"], data["modelIdx"])
     except Exception as e:
