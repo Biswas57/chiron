@@ -17,17 +17,17 @@ models = [
         "ollama_name": "llama3.3",
     },
     {
-        "display_name": "DeepSeek-R1-Distill-Qwen-14B",
+        "display_name": "DS-R1-Distill-Qwen-14B",
         "note": "Experimental | Fast",
         "ollama_name": "deepseek-r1:14b",
     },
     {
-        "display_name": "DeepSeek-R1-Distill-Qwen-32B",
+        "display_name": "DS-R1-Distill-Qwen-32B",
         "note": "Experimental | Slow",
         "ollama_name": "deepseek-r1:32b",
     },
     {
-        "display_name": "DeepSeek-R1-Distill-Llama-70B",
+        "display_name": "DS-R1-Distill-Llama-70B",
         "note": "Experimental | Very slow",
         "ollama_name": "deepseek-r1:70b",
     }
