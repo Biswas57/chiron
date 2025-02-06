@@ -28,13 +28,19 @@ def generate_prompt(content):
     Build the text prompt you want to send to Ollama.
     """
     prompt = """
-### INSTRUCTION: 
-The following text is a Knowledge Base article for a Nutanix product. This article is to be converted to a video to assist users of the product run the steps outlined in the article themselves. Your task is to generate a script for this video, based on the article contents. 
-
-Where multiple options or scenarios are presented in the article, choose the most common path to be presented in the video.
-
-Your script will be converted to speech using TTS, and someone will manually generate the visuals based on your script, you should account for this in the pacing of the script. For pauses, add “...” on a new line, however, do not include any additional annotation or direction (i.e. do NOT include annotations such as [Intro music plays]), just the script. Do not include any preamble, only generate the script that is to be fed directly to an AI TTS (i.e. do NOT include something like “here is your script”).
-
+### INSTRUCTION:
+The following text is a Knowledge Base or Confluence article for a Nutanix product. This article will be converted into a video script that guides users through the content explained in the article. Your task is to generate a video script based solely on the article's content. When multiple options or scenarios are presented, choose the most common path for the video.
+Your script will be fed into an AI text-to-speech engine, and visuals will be manually created based on your script. For natural pacing, include pauses by placing an ellipsis (`...`) on a new line where appropriate. Do not include any annotations, directions, or extra commentary (for example, do not include annotations like `[Intro music plays]`).
+### REQUIREMENTS:
+- The script should be plain text intended for TTS output, with ellipses (`...`) on separate lines to indicate pauses.
+- Do not include any introductory or concluding remarks, explanations, or extra annotations.
+- Format any commands, code snippets, or terminal inputs using Markdown formatting:
+  - Use triple backticks with a language specifier for code blocks (e.g.:
+    ```bash
+    <command>
+    ```
+  - Use single backticks for inline commands (e.g. `<command>`).
+### NO PREAMBLE. SCRIPT FORMAT ONLY.
 ### KB ARTICLE CONTENT:
 """
     return prompt + "\n\n" + content

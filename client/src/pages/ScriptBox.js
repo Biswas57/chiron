@@ -14,10 +14,63 @@ import SaveIcon from '@mui/icons-material/Save';
 import { editKBtoLocalStorage, getKBfromLocalStorage } from '../utils/localStorage';
 import TextField from '@mui/material/TextField';
 import LaunchIcon from '@mui/icons-material/Launch';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
 import {
   PROTOCOL_STATE_IDLE,
   PROTOCOL_STATE_WAITING_TOKENS,
 } from '../utils/protocol'
+
+const CodeBlock = ({ node, inline, className, children, ...props }) => {
+  // If inline is undefined, assume it's a block code element.
+  const match = /language-(\w+)/.exec(className || '');
+  if (!inline && match) {
+    return (
+      <SyntaxHighlighter
+        style={materialDark}
+        language={match[1]}
+        PreTag="div"
+        {...props}
+      >
+        {String(children).replace(/\n$/, '')}
+      </SyntaxHighlighter>
+    );
+  }
+  
+  return (
+    <code
+      {...props}
+      style={{
+        backgroundColor: 'rgba(255,255,255,0.1)',
+        padding: '2px 4px',
+        borderRadius: '6px',
+        margin: '0 4px'
+      }}
+    >
+      {children}
+    </code>
+  );
+};
+
+
+// const PreBlock = ({ node, inline, children, ...props }) => {
+//     return (
+//       <SyntaxHighlighter
+//         style={materialDark}
+//         PreTag="div"
+//         {...props}
+//       >
+//         {String(children).replace(/\n$/, '')}
+//       </SyntaxHighlighter>
+//     );
+//   };
+
+const markdownComponents = {
+  code: CodeBlock,
+};
 
 function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, metadata, scriptText, setScriptText, setIsLoading}) {
   // Get the result from App.js
@@ -34,7 +87,7 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, m
     } if (protState == PROTOCOL_STATE_WAITING_TOKENS) {
       // endDivRef.current.scrollIntoView({ behaviour: 'smooth' });
     }
-  }, [location.state, protState, scriptText]);
+  }, [location.state, protState, setIsLoading, scriptText]);
 
   const handleCopy = async () => {
     try {
@@ -199,19 +252,30 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, m
             />
           ) : (
             <Box
-              sx={{
-                color: 'grey.100',
-                fontSize: '1.125rem',
-                lineHeight: 1.7,
-                '& p': {
-                  marginBottom: 2
-                },
-                overflowWrap: 'break-word'
-              }}
+            sx={{
+              mt: 3,
+              color: 'grey.100',
+              fontSize: '1.125rem',
+              lineHeight: 1.7,
+              overflowWrap: 'break-word',
+              // These styles help mimic ChatGPT's markdown look:
+              '& h1, & h2, & h3, & h4, & h5, & h6': {
+                marginTop: '1.5rem',
+                marginBottom: '1rem',
+                fontWeight: 800,
+              },
+              '& p': {
+                marginBottom: '1rem'
+              },
+              '& a': {
+                color: '#4ea1f3'
+              }
+            }}
             >
-              {(scriptText.split('\n').map((paragraph, index) => (
-                    <p key={index}>{paragraph}</p>    
-              )))}
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={markdownComponents}
+               >{scriptText}</ReactMarkdown>    
             </Box>
           )
         }
