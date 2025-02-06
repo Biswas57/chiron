@@ -40,7 +40,7 @@ for model in ollama_models_dict:
         except Exception as e:
             print(f"{str(e)}")
 
-
+# Initialise the server
 app = Flask(__name__)
 CORS(app)
 
@@ -48,17 +48,14 @@ app.config['ALLOWED_EXTENSIONS'] = {'pdf'}
 
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-API_PATH = '/web_sock_api'
-
-# Set up signal handling to ensure subprocesses such as Ollama also exit
 def handle_exit(signum, frame):
     print("\nGracefully shutting down...")
-    # Perform any additional cleanup if required
     sys.exit(0)
 
 signal.signal(signal.SIGINT, handle_exit)  # Handle Ctrl+C
 signal.signal(signal.SIGTERM, handle_exit)  # Handle termination signals
 
+# Event handlers on the websocket
 @socketio.on('connect')
 def handle_connect():
     # Step 0 of protocol: handshake with the server and create a session.
