@@ -10,26 +10,31 @@ models = [
         "display_name": "Llama-3.1-8B",
         "note": "Low quality script | Fast",
         "ollama_name": "llama3.1:8b",
+        "context_length": 131072,
     },
     {
         "display_name": "Llama-3.3-70B-Instruct",
         "note": "High quality script | Very slow",
         "ollama_name": "llama3.3",
+        "context_length": 131072,
     },
     {
         "display_name": "DS-R1-Distill-Qwen-14B",
-        "note": "Experimental | Fast",
+        "note": "Experimental | Good Quality | Fast",
         "ollama_name": "deepseek-r1:14b",
+        "context_length": 131072,
     },
     {
         "display_name": "DS-R1-Distill-Qwen-32B",
-        "note": "Experimental | Slow",
+        "note": "Experimental | High Quality | Slow",
         "ollama_name": "deepseek-r1:32b",
+        "context_length": 131072,
     },
     {
         "display_name": "DS-R1-Distill-Llama-70B",
-        "note": "Experimental | Very slow",
+        "note": "Experimental | Best Quality | Very slow",
         "ollama_name": "deepseek-r1:70b",
+        "context_length": 131072,
     }
 ]
 
@@ -61,6 +66,11 @@ def write_script(prompt, model_idx):
     tokens = enc.encode(prompt)
     token_count = len(tokens)
     app.logger.debug(f"Token count is {token_count} and model is {models[model_idx]['display_name']}")
+
+    if token_count > models[model_idx]["context_length"]:
+        app.logger.debug(f"Token count exceeds context size")
+        emit("error", {"error": f"Your article's tokens count exceeds the context window limit of the selected model {token_count} > {models[model_idx]['context_length']}. Note: a token is usually 3/4 of a word."})
+        return
 
     resp = ollama.generate(
         model=models[model_idx]["ollama_name"],
