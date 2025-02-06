@@ -6,7 +6,7 @@ import Tooltip from '@mui/material/Tooltip';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import '@fontsource/inter';
-import { useLocation } from 'react-router';
+import { Navigate, useLocation, useNavigate } from 'react-router';
 import { Divider, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
@@ -20,8 +20,9 @@ import {
 } from '../utils/protocol'
 
 function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, metadata, scriptText, setScriptText, setIsLoading}) {
-  // Get the result from App.js
   const location = useLocation();
+
+  // Get the result from App.js
   const { state } = location;
 
   const [copied, setCopied] = useState(false);
@@ -29,9 +30,9 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, m
   const endDivRef = useRef(null);
 
   useEffect(() => {
-    if (protState == PROTOCOL_STATE_IDLE) {
+    if (protState === PROTOCOL_STATE_IDLE) {
       setIsLoading(false);
-    } if (protState == PROTOCOL_STATE_WAITING_TOKENS) {
+    } if (protState === PROTOCOL_STATE_WAITING_TOKENS) {
       // endDivRef.current.scrollIntoView({ behaviour: 'smooth' });
     }
   }, [location.state, protState, scriptText]);
@@ -54,6 +55,13 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, m
     } else {
       setEditing(true);
     }
+  }
+
+  // Prevent the result page from rendering if it is navigated to from a dubious state.
+  if (metadata === null) {
+    return (
+      <Navigate to="/" />
+    );
   }
 
   return (
