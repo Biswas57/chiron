@@ -14,12 +14,16 @@ import SaveIcon from '@mui/icons-material/Save';
 import { editKBtoLocalStorage, getKBfromLocalStorage } from '../utils/localStorage';
 import TextField from '@mui/material/TextField';
 import LaunchIcon from '@mui/icons-material/Launch';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import {
   PROTOCOL_STATE_IDLE,
   PROTOCOL_STATE_WAITING_TOKENS,
 } from '../utils/protocol'
 
-function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, metadata, scriptText, setScriptText, setIsLoading}) {
+function ScriptBox({ brainRot, refreshSavedKbs, editing, setEditing, protState, metadata, setScriptText, setIsLoading, history, scriptIdx }) {
   // Get the result from App.js
   const location = useLocation();
   const { state } = location;
@@ -27,6 +31,12 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, m
   const [copied, setCopied] = useState(false);
 
   const endDivRef = useRef(null);
+
+  const [scriptText, setScriptTextInner] = useState('');
+
+  useEffect(() => {
+    setScriptTextInner(history[scriptIdx].getCurrentData().data);
+  }, [history, scriptIdx]);
 
   useEffect(() => {
     if (protState == PROTOCOL_STATE_IDLE) {
@@ -72,107 +82,167 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, m
         position: 'relative'
       }}
     >
-      <Tooltip title={copied ? "Copied!" : "Copy to clipboard"}>
-        <IconButton
-          onClick={handleCopy}
-          disabled={protState === PROTOCOL_STATE_WAITING_TOKENS}
-          sx={{
-            position: 'absolute',
-            top: 16,
-            right: 16,
-            color: 'grey.400',
-            '&:hover': {
-              color: 'grey.100'
-            }
+      <div
+        style={{
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+        <div
+          style={{
+            position: 'relative',
+            display: 'flex',
           }}
         >
-          <AnimatePresence mode="wait">
-            {copied ? (
-              <motion.div
-                key="check"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <CheckIcon />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="copy"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <ContentCopyIcon />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </IconButton>
-      </Tooltip>
-      <Tooltip title={editing ? "Save!" : "Edit Text"}>
-        <IconButton
-          onClick={handleEdit}
-          disabled={protState === PROTOCOL_STATE_WAITING_TOKENS}
-          sx={{
-            position: 'absolute',
-            top: 16,
-            right: 64,
-            color: 'grey.400',
-            '&:hover': {
-              color: 'grey.100'
-            }
-          }}
-        >
-          <AnimatePresence mode="wait">
-            {editing ? (
-              <motion.div
-                key="save"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <SaveIcon />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="edit"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <EditIcon />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </IconButton>
-      </Tooltip>
-      <Tooltip title={
-        metadata.url !== null ? "Go to original KB article" : "Going to article source disabled as this script was generated from a PDF."
-      }>
-        <IconButton
-          disabled={protState === PROTOCOL_STATE_WAITING_TOKENS}
-          onClick={() => {
-            if (metadata.url !== null) {
-              window.open(getKBfromLocalStorage(state.idx).url, '_blank');
-            }
-          }}
-          sx={{
-            position: 'absolute',
-            top: 16,
-            right: 112,
-            color: 'grey.400',
-            '&:hover': {
-              color: 'grey.100'
-            }
-          }}
-        >
-          <LaunchIcon />
-        </IconButton>
-      </Tooltip>
+
+          <Tooltip title={
+            "Previous script edit"
+          }>
+            <IconButton
+              disabled={history[scriptIdx].currentIndex == 0 || history[scriptIdx].data.length === 1 || protState === PROTOCOL_STATE_WAITING_TOKENS}
+              onClick={() => {
+                history[scriptIdx].goToPreviousData();
+
+                setScriptTextInner(history[scriptIdx].getCurrentData().data)
+
+              }}
+              sx={{
+                color: 'grey.400',
+                '&:hover': {
+                  color: 'grey.100'
+                }
+              }}
+            >
+              <ArrowBackIosNewIcon />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title={
+            "Next script edit"
+          }>
+            <IconButton
+              disabled={history[scriptIdx].currentIndex == history[scriptIdx].data.length - 1 || history[scriptIdx].data.length === 1 || protState === PROTOCOL_STATE_WAITING_TOKENS}
+              onClick={() => {
+                history[scriptIdx].goToNextData();
+
+                setScriptTextInner(history[scriptIdx].getCurrentData().data)
+              }}
+              sx={{
+                color: 'grey.400',
+                '&:hover': {
+                  color: 'grey.100'
+                }
+              }}
+            >
+              <ArrowForwardIosIcon />
+            </IconButton>
+          </Tooltip>
+        </div>
+
+        <div
+          style={{
+            position: 'relative',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+
+          <Tooltip title={copied ? "Copied!" : "Copy to clipboard"}>
+            <IconButton
+              onClick={handleCopy}
+              disabled={protState === PROTOCOL_STATE_WAITING_TOKENS}
+              sx={{
+                color: 'grey.400',
+                '&:hover': {
+                  color: 'grey.100'
+                }
+              }}
+            >
+              <AnimatePresence mode="wait">
+                {copied ? (
+                  <motion.div
+                    key="check"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <CheckIcon />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="copy"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ContentCopyIcon />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={editing ? "Save!" : "Edit Text"}>
+            <IconButton
+              onClick={handleEdit}
+              disabled={protState === PROTOCOL_STATE_WAITING_TOKENS}
+              sx={{
+                color: 'grey.400',
+                '&:hover': {
+                  color: 'grey.100'
+                }
+              }}
+            >
+              <AnimatePresence mode="wait">
+                {editing ? (
+                  <motion.div
+                    key="save"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <SaveIcon />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="edit"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <EditIcon />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={
+            metadata.url !== null ? "Go to original KB article" : "Going to article source disabled as this script was generated from a PDF."
+          }>
+            <IconButton
+              disabled={protState === PROTOCOL_STATE_WAITING_TOKENS}
+              onClick={() => {
+                if (metadata.url !== null) {
+                  window.open(getKBfromLocalStorage(state.idx).url, '_blank');
+                }
+              }}
+              sx={{
+                color: 'grey.400',
+                '&:hover': {
+                  color: 'grey.100'
+                }
+              }}
+            >
+              <LaunchIcon />
+            </IconButton>
+          </Tooltip>
+        </div>
+      </div>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -183,7 +253,7 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, m
             <TextField
               multiline
               value={scriptText}
-              onChange={(e) => setScriptText(e.target.value)}
+              onChange={(e) => setScriptTextInner(e.target.value)}
               onKeyDown={(event) => event.stopPropagation()}
               sx={{
                 width: '100%',
@@ -209,8 +279,8 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, m
                 overflowWrap: 'break-word'
               }}
             >
-              {(scriptText.split('\n').map((paragraph, index) => (
-                    <p key={index}>{paragraph}</p>    
+              {(scriptText?.split('\n').map((paragraph, index) => (
+                <p key={index}>{paragraph}</p>
               )))}
             </Box>
           )
@@ -220,7 +290,7 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, m
 
         <Box
           sx={{
-            flexDirection: 'column', 
+            flexDirection: 'column',
             justifyContent: 'center',
             display: ((editing || protState === PROTOCOL_STATE_WAITING_TOKENS) ? "none" : "flex"),
           }}
@@ -234,7 +304,7 @@ function ScriptBox({brainRot, refreshSavedKbs, editing, setEditing, protState, m
             Everything looks good?
           </Typography>
           <Button
-            onClick={() => {window.open("https://app.synthesia.io/", "_blank")}}
+            onClick={() => { window.open("https://app.synthesia.io/", "_blank") }}
             sx={{
               fontSize: '1.2rem',
               fontWeight: 'bold'

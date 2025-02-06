@@ -125,6 +125,7 @@ function App() {
   const [protState, setProtState] = useState(PROTOCOL_STATE_IDLE);
   const [metadata, setMetadata] = useState(null);
   const [scriptText, setScriptText] = useState(null);
+  const [scriptIdx, setScriptIdx] = useState(0);
 
   const metadataRef = useRef(metadata);
   useEffect(() => {
@@ -248,7 +249,7 @@ function App() {
             refreshSavedKbs={refreshSavedKbs}
             editing={editing}
             setMetadata={setMetadata}
-            setScriptText={setScriptText}
+            setScriptIdx={setScriptIdx}
           />
 
           {brainRot ? <VideoBackground /> : <NutanixBirds />}
@@ -275,9 +276,11 @@ function App() {
                   setEditing={setEditing}
                   protState={protState}
                   metadata={metadata}
-                  scriptText={scriptText}
+                  // scriptText={scriptText}
                   setScriptText={setScriptText}
                   setIsLoading={setIsLoading}
+                  history={savedKbs}
+                  scriptIdx={scriptIdx}
                 />
               }/>
               <Route path="/game" element={<Game />} />

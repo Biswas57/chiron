@@ -24,7 +24,7 @@ import ErrorModal from './ErrorModal';
 import ConfirmModal from './ConfirmModal';
 import { getKBfromLocalStorage } from '../utils/localStorage';
 
-const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, editing, setMetadata, setScriptText}) => {
+const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, editing, setMetadata, setScriptIdx}) => {
   const navigate = useNavigate();
   
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
@@ -274,9 +274,9 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
                             url: saved.url,
                             kbId: saved.kbId,
                             title: saved.title,
-                            timeGenerated: saved.timeGenerated,
+                            timeGenerated: saved.getTimeGenerated(),
                           })
-                          setScriptText(saved.data);
+                          setScriptIdx(idx);
                           navigate('/result', { state: { idx: idx }});
                         }}
                       >
@@ -290,7 +290,7 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
                             {pastKb.title}
                           </Typography>
                           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                            {pastKb.kbId} • {pastKb.timeGenerated}
+                            {pastKb.kbId} • {pastKb.getTimeGenerated()}
                           </Typography>
                           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                             {pastKb.model}
