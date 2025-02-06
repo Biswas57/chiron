@@ -22,6 +22,12 @@ const InputBox = ({ models, onSubmitURL, onSubmitFile, setHttpErrorMsg }) => {
 
   const handleSubmitURL = (e) => {
     e.preventDefault();
+    if (url.length > 2048) { 
+      setErrorMessage("URL length must be shorter than 2048.");
+      setErrorModalOpen(true);
+      return;
+    }
+
     if (urlPattern.test(url.trim())) {
       setError(false);
       onSubmitURL(url, modelIdx);
