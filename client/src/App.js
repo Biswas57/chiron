@@ -11,7 +11,7 @@ import NutanixBirds from "./nutanixBirds"
 import VideoBackground from "./components/VideoBackground"
 import InstructionPage from "./pages/InstructionPage"
 import Game from "./pages/Game"
-import { addKBtoLocalStorage, getAllKBfromLocalStorage } from './utils/localStorage';
+import { addKBtoLocalStorage, getAllKBfromLocalStorage, editKBtoLocalStorage } from './utils/localStorage';
 import io from 'socket.io-client';
 import { Typography } from '@mui/material';
 import {
@@ -44,47 +44,80 @@ function App() {
     setTheme(brainRot ? themes.brainrot : themes.default);
   }, [brainRot]);
 
-  const [savedKbs, setSavedKbs] = React.useState(getAllKBfromLocalStorage());
-  const refreshSavedKbs = () => {
-    setSavedKbs(getAllKBfromLocalStorage());
-  }
-
-  // Global state to disable navigation during edit mode
-  const [editing, setEditing] = useState(false);
-
   // Server connection status.
   const [connection, setConnection] = useState(SOCKET_CONNECTING);
 
   // Lists of available LLMs
   const [models, setModels] = useState(null);
 
-  // TODO: clicking back still triggers a navigation during edit mode. Need to fix
+  // State management of the protocol to the backend
+  const [protState, setProtState] = useState(PROTOCOL_STATE_IDLE);
+  const [metadata, setMetadata] = useState(null);
+  const [scriptText, setScriptText] = useState(null);
+
+  // Global state to disable navigation during edit mode
+  const [editing, setEditing] = useState(false);
+
+  // Reference to allow event listeners to always see the latest state consistently
+  const metadataRef = useRef(metadata);
   useEffect(() => {
-    // Prevent navigation during generation
-    const handleBeforeUnload = (event) => {
-      if (editing) {
-        event.preventDefault();
-        event.returnValue = "You are in editing mode, you will lose your changes if you close this page. Are you sure?";
-      }
-    };
+    metadataRef.current = metadata;
+  }, [metadata]);
+  const scriptTextRef = useRef(scriptText);
+  useEffect(() => {
+    scriptTextRef.current = scriptText;
+  }, [scriptText]);
+  const editingRef = useRef(editing);
+  useEffect(() => {
+    editingRef.current = editing;
+  }, [editing]);
+  const protStateRef = useRef(protState);
+  useEffect(() => {
+    protStateRef.current = protState;
+  }, [protState]);
 
-    const handleBrowserNavigation = (event) => {
-      if (editing) {
-        console.log("back");
-        event.preventDefault();
-        event.returnValue = "You are in editing mode, you will lose your changes if you close this page. Are you sure?";
-      }
-    };
+  const [savedKbs, setSavedKbs] = useState(getAllKBfromLocalStorage());
+  const [selectedKB, setSelectedKB] = useState(null);
+  const [selectedKBIndex, setSelectedKBIndex] = useState(null);
+  // Reference to allow event listeners to always see the latest state consistently
+  // Workaround of a crash that happens on autosave at navigate.
+  const selectedKBIndexRef = useRef(selectedKBIndex);
+  useEffect(() => {
+    selectedKBIndexRef.current = selectedKBIndex;
+  }, [selectedKBIndex]);
 
-    if (editing) {
-      window.addEventListener("beforeunload", handleBeforeUnload);
-      window.addEventListener("popstate", handleBrowserNavigation);
-    } else {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("popstate", handleBrowserNavigation);
-    }
+  const viewSavedKB = (idx, history = savedKbs) => {
+    history[idx].resetCurrentIndex();
+    setSelectedKB(history[idx]);
+    setSelectedKBIndex(idx);
+    setScriptText(history[idx].getCurrentData().data);
+  };
 
-    // Open a socket to the server
+  const nextHistItm = () => {
+    selectedKB.goToNextData();
+    setScriptText(selectedKB.getCurrentData().data);
+  }
+
+  const prevHistItm = () => {
+    selectedKB.goToPreviousData();
+    setScriptText(selectedKB.getCurrentData().data);
+  }
+
+  const editKB = () => {
+    editKBtoLocalStorage(selectedKBIndexRef.current, scriptTextRef.current);
+    const newKbs = getAllKBfromLocalStorage();
+    setSavedKbs(newKbs);
+    viewSavedKB(selectedKBIndexRef.current, newKbs);
+  }
+
+  const clearHistory = () => {
+    localStorage.removeItem("KBs");
+    setSavedKbs([]);
+    setSelectedKB(null);
+  }
+
+  useEffect(() => {
+    // Open a socket to the server on mount
     socket = io(API_URL, {
       transports: ['websocket'],
     });
@@ -97,7 +130,7 @@ function App() {
       socket.off("tokens");
       socket.off("complete");
       setProtState(PROTOCOL_STATE_IDLE);
-      
+
       console.error("socket connection error...");
     });
 
@@ -113,27 +146,20 @@ function App() {
       socket.emit('get_models');
     });
 
+    // Put the website back into a consistent state if the user click back or forward
+    window.addEventListener("popstate", () => {
+      if (editingRef.current) {
+        alert("You have clicked the back/forward browser button during edit mode. Your work have been automatically saved.");
+        editKB();
+        setEditing(false);
+      }
+    });
+
     // Cleanup event listener on unmount
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("popstate", handleBrowserNavigation);
       socket.disconnect();
     };
-  }, [editing]);
-
-  // State management of the protocol to the backend
-  const [protState, setProtState] = useState(PROTOCOL_STATE_IDLE);
-  const [metadata, setMetadata] = useState(null);
-  const [scriptText, setScriptText] = useState(null);
-
-  const metadataRef = useRef(metadata);
-  useEffect(() => {
-    metadataRef.current = metadata;
-  }, [metadata]);
-  const scriptTextRef = useRef(scriptText);
-  useEffect(() => {
-    scriptTextRef.current = scriptText;
-  }, [scriptText]);
+  }, []);
 
   const initiateProtocol = (url, fileObj, modelIdx) => {
     // This function initiate the event driven protocol via
@@ -193,7 +219,11 @@ function App() {
       setProtState((prev) => { return PROTOCOL_STATE_IDLE; });
 
       addKBtoLocalStorage(metadataRef.current, scriptTextRef.current);
-      refreshSavedKbs();
+
+      const newKbs = getAllKBfromLocalStorage();
+      setSavedKbs(newKbs);
+      // Use the fresh history to update the selected script:
+      viewSavedKB(0, newKbs);
 
       setIsLoading((prev) => { return false; });
     });
@@ -226,7 +256,6 @@ function App() {
     }
   };
 
-
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
@@ -244,10 +273,10 @@ function App() {
             setBrainRot={setBrainRot}
             isLoading={isLoading}
             savedKbs={savedKbs}
-            refreshSavedKbs={refreshSavedKbs}
             editing={editing}
             setMetadata={setMetadata}
-            setScriptText={setScriptText}
+            selectSavedKB={viewSavedKB}
+            clearHistory={clearHistory}
           />
 
           {brainRot ? <VideoBackground /> : <NutanixBirds />}
@@ -261,7 +290,6 @@ function App() {
                   brainRot={brainRot}
                   isLoading={isLoading}
                   setIsLoading={setIsLoading}
-                  refreshSavedKbs={refreshSavedKbs}
                   initiateProtocol={initiateProtocol}
                   protState={protState}
                 />
@@ -298,7 +326,6 @@ function App() {
             <Route path="/result" element={
               <ScriptBox
                 brainRot={brainRot}
-                refreshSavedKbs={refreshSavedKbs}
                 editing={editing}
                 setEditing={setEditing}
                 protState={protState}
@@ -306,6 +333,11 @@ function App() {
                 scriptText={scriptText}
                 setScriptText={setScriptText}
                 setIsLoading={setIsLoading}
+                nextHistItm={nextHistItm}
+                prevHistItm={prevHistItm}
+                nextHistAvail={selectedKB && selectedKB.currentIndex < selectedKB.data.length - 1}
+                prevHistAvail={selectedKB && selectedKB.currentIndex > 0}
+                editKB={editKB}
               />
             }/>
             <Route path="/game" element={<Game />} />

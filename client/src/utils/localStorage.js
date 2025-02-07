@@ -1,37 +1,35 @@
+import { HistoryManager, HistoryItem } from './genHistory.js';
+
 const KB_LOCAL_STORAGE_KEY = "KBs"
 
 export function addKBtoLocalStorage(metadata, scriptText) {
-    let kbs = getAllKBfromLocalStorage();
-    kbs.unshift({
-        url: metadata.url,
-        kbId: metadata.kb_id,
-        title: metadata.title,
-        model: metadata.model,
-        timeGenerated: new Date().toLocaleString(),
-        data: scriptText
-    });
+    let historyManager = new HistoryManager();
+    let history = historyManager.fromJSON(localStorage.getItem(KB_LOCAL_STORAGE_KEY));
+    let historyItem = new HistoryItem(metadata.title, metadata.url, metadata.kb_id, metadata.model, scriptText);
 
-    localStorage.setItem(KB_LOCAL_STORAGE_KEY, JSON.stringify(kbs));
+    history.unshift(historyItem);
+    localStorage.setItem(KB_LOCAL_STORAGE_KEY, historyManager.toJSON(history));
 }
 
 export function editKBtoLocalStorage(index, scriptText) {
-    let kbs = getAllKBfromLocalStorage();
-    console.log(index);
-    kbs[index].data = scriptText;
+    let historyManager = new HistoryManager();
+    let history = historyManager.fromJSON(localStorage.getItem(KB_LOCAL_STORAGE_KEY));
 
-    localStorage.setItem(KB_LOCAL_STORAGE_KEY, JSON.stringify(kbs));
+    history[index].addData(scriptText);
+
+    localStorage.setItem(KB_LOCAL_STORAGE_KEY, historyManager.toJSON(history));
 }
 
 export function getAllKBfromLocalStorage() {
-    if (localStorage.getItem(KB_LOCAL_STORAGE_KEY) === null) {
-        localStorage.setItem(KB_LOCAL_STORAGE_KEY, JSON.stringify([]));
-    }
+    let historyManager = new HistoryManager();
+    let history = historyManager.fromJSON(localStorage.getItem(KB_LOCAL_STORAGE_KEY));
 
-    let savedKbs = JSON.parse(localStorage.getItem(KB_LOCAL_STORAGE_KEY));
-
-    return savedKbs;
+    return history;
 }
 
 export function getKBfromLocalStorage(idx) {
-    return getAllKBfromLocalStorage()[idx];
+    let historyManager = new HistoryManager();
+    let history = historyManager.fromJSON(localStorage.getItem(KB_LOCAL_STORAGE_KEY));
+
+    return history[idx];
 }
