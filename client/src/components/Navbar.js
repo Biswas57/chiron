@@ -10,10 +10,10 @@ import List from '@mui/material/List';
 import IconButton from '@mui/material/IconButton';
 import { Tooltip } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import { 
-  Info, 
-  BookOpen, 
-  Sparkles, 
+import {
+  Info,
+  BookOpen,
+  Sparkles,
   Gamepad,
   Trash2
 } from 'lucide-react';
@@ -25,16 +25,15 @@ import ConfirmModal from './ConfirmModal';
 import ChironButton from './ChironButton';
 import { getKBfromLocalStorage } from '../utils/localStorage';
 
-const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, editing, setMetadata, setScriptText}) => {
+const Navbar = ({ brainRot, setBrainRot, isLoading, savedKbs, editing, setMetadata, selectSavedKB, clearHistory }) => {
   const navigate = useNavigate();
-  
+
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
 
   const [confirmModalOpen, setConfirmModalOpen] = React.useState(false);
 
   const [openAbout, setOpenAbout] = React.useState(false);
-  // const [savedKbs, setSavedKbs] = React.useState(getKBfromLocalStorage());
 
   const [openDrawer, setOpenDrawer] = React.useState(false);
 
@@ -42,19 +41,34 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
   const location = useLocation();
   React.useEffect(() => {
     setOpenDrawer(false);
-    refreshSavedKbs();
   }, [location.pathname]);
 
   const handleClearAll = () => {
-    localStorage.clear();
-    refreshSavedKbs();
+    clearHistory();
     navigate('/');
     setConfirmModalOpen(false);
   };
 
+  function formatDateTime(epochString) {
+    // Convert the epoch string to a Date object
+    const date = new Date(parseInt(epochString));
+
+    // Format the date and time (day, abbreviated month, year, and time in HH:mm format)
+    const formattedDateTime = new Intl.DateTimeFormat('en-GB', {
+      day: 'numeric',    // Day of the month (e.g., "6")
+      month: 'short',    // Abbreviated month name (e.g., "Feb")
+      year: 'numeric',   // 4-digit year (e.g., "2024")
+      hour: '2-digit',   // 2-digit hour (24-hour format)
+      minute: '2-digit', // 2-digit minute
+      hour12: true      // Use 24-hour format
+    }).format(date);
+
+    return formattedDateTime;
+  }
+
   return (
     <>
-      <AppBar position='static' color='primary' 
+      <AppBar position='static' color='primary'
         sx={{
           boxShadow: '0 10px 8px rgba(0, 0, 0, 0.5)',
         }}
@@ -76,14 +90,14 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
                   setOpenDrawer(true);
                 }
               }}
-              onKeyDown={(e) => {e.preventDefault()}}
+              onKeyDown={(e) => { e.preventDefault() }}
               disabled={isLoading ? true : false}
             >
               {isLoading ? (<CircularProgress />) : (<DensityMediumIcon />)}
             </IconButton>
-            <Drawer 
-              open={openDrawer} 
-              onClose={() => {setOpenDrawer(false)}}
+            <Drawer
+              open={openDrawer}
+              onClose={() => { setOpenDrawer(false) }}
               PaperProps={{
                 sx: {
                   background: 'rgba(4, 4, 4, 0.95)',
@@ -138,7 +152,7 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
                         backgroundColor: 'rgba(120, 85, 251, 0.1)',
                       }
                     }}
-                    onClick={() => {setOpenAbout(true)}}
+                    onClick={() => { setOpenAbout(true) }}
                   >
                     About
                   </Button>
@@ -158,7 +172,7 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
                         backgroundColor: 'rgba(120, 85, 251, 0.1)',
                       }
                     }}
-                    onClick={() => {navigate('/instructions')}}
+                    onClick={() => { navigate('/instructions') }}
                   >
                     Instructions
                   </Button>
@@ -178,7 +192,7 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
                         backgroundColor: 'rgba(120, 85, 251, 0.1)',
                       }
                     }}
-                    onClick={() => {setBrainRot(!brainRot);}}
+                    onClick={() => { setBrainRot(!brainRot); }}
                   >
                     Funky mode {brainRot ? "✨" : ""}
                   </Button>
@@ -199,7 +213,7 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
                         backgroundColor: 'rgba(120, 85, 251, 0.1)',
                       }
                     }}
-                    onClick={() => {navigate("/game")}}
+                    onClick={() => { navigate("/game") }}
                   >
                     Chrome Dino
                   </Button> */}
@@ -226,9 +240,9 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
                   </Button>
                 </Box>
 
-                <Divider sx={{ 
+                <Divider sx={{
                   backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                  my: 2 
+                  my: 2
                 }} />
 
                 {/* Previous Scripts Section */}
@@ -244,7 +258,7 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
                   Previous Scripts
                 </Typography>
 
-                <List sx={{ 
+                <List sx={{
                   maxHeight: 'calc(100vh - 400px)',
                 }}>
                   {savedKbs.map((pastKb, idx) => (
@@ -275,10 +289,11 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
                             url: saved.url,
                             kbId: saved.kbId,
                             title: saved.title,
-                            timeGenerated: saved.timeGenerated,
+                            timeGenerated: saved.getTimeGenerated(),
                           })
-                          setScriptText(saved.data);
-                          navigate('/result', { state: { idx: idx }});
+                          selectSavedKB(idx);
+                          navigate('/result', { state: { idx: idx } });
+                          setOpenDrawer(false);
                         }}
                       >
                         <Box
@@ -291,7 +306,7 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
                             {pastKb.title}
                           </Typography>
                           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                            {pastKb.kbId} • {pastKb.timeGenerated}
+                            {pastKb.kbId} • {formatDateTime(pastKb.getTimeGenerated())}
                           </Typography>
                           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                             {pastKb.model}
@@ -313,29 +328,29 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
             />
           </Box>
 
-          <Box sx={{display: 'flex', }}>
-          <Tooltip title="Instructions" arrow>
-            <IconButton
-              onClick={() => {
-                if (isLoading) {
-                  setErrorMessage("You cannot navigate to a different page while the script is generating.");
-                  setErrorModalOpen(true);
-                } else if (editing) {
-                  setErrorMessage("You are in editing mode, you will lose your changes if you navigate away. Save your work first!");
-                  setErrorModalOpen(true);
-                } else {
-                  navigate('/instructions');
-                }
-              }}
-              sx={{
-                color: 'white',
-                mr: 3,
-                transition: 'all 0.2s ease-in-out',
-              }}
-            >
-              <HelpOutlineIcon sx={{ fontSize: 40 }} /> {/* Increased from default size */}
-            </IconButton>
-          </Tooltip>
+          <Box sx={{ display: 'flex', }}>
+            <Tooltip title="Instructions" arrow>
+              <IconButton
+                onClick={() => {
+                  if (isLoading) {
+                    setErrorMessage("You cannot navigate to a different page while the script is generating.");
+                    setErrorModalOpen(true);
+                  } else if (editing) {
+                    setErrorMessage("You are in editing mode, you will lose your changes if you navigate away. Save your work first!");
+                    setErrorModalOpen(true);
+                  } else {
+                    navigate('/instructions');
+                  }
+                }}
+                sx={{
+                  color: 'white',
+                  mr: 3,
+                  transition: 'all 0.2s ease-in-out',
+                }}
+              >
+                <HelpOutlineIcon sx={{ fontSize: 40 }} /> {/* Increased from default size */}
+              </IconButton>
+            </Tooltip>
 
 
             {/* NTNX logo */}
@@ -357,13 +372,13 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
         <AboutModal />
       </Modal>
 
-      <ConfirmModal 
+      <ConfirmModal
         open={confirmModalOpen}
         onClose={() => setConfirmModalOpen(false)}
         message="Clear all previous script generations?"
         onConfirm={handleClearAll}
       />
-      <ErrorModal 
+      <ErrorModal
         open={errorModalOpen}
         onClose={() => setErrorModalOpen(false)}
         message={errorMessage}
