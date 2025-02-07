@@ -192,7 +192,6 @@ function App() {
       socket.off("error")
       setProtState((prev) => { return PROTOCOL_STATE_IDLE; });
 
-      console.log(metadataRef.current);
       addKBtoLocalStorage(metadataRef.current, scriptTextRef.current);
       refreshSavedKbs();
 
@@ -254,9 +253,9 @@ function App() {
           {brainRot ? <VideoBackground /> : <NutanixBirds />}
 
           {/* Page content */}
-          { connection === SOCKET_CONNECTED ? (
-            <Routes className="url-input-container">
-              <Route path="/" element={
+          <Routes className="url-input-container">
+            <Route path="/" element={
+              connection === SOCKET_CONNECTED ? (
                 <MainPage
                   models={models}
                   brainRot={brainRot}
@@ -266,52 +265,52 @@ function App() {
                   initiateProtocol={initiateProtocol}
                   protState={protState}
                 />
-              }/>
-              <Route path="/result" element={
-                <ScriptBox
-                  brainRot={brainRot}
-                  refreshSavedKbs={refreshSavedKbs}
-                  editing={editing}
-                  setEditing={setEditing}
-                  protState={protState}
-                  metadata={metadata}
-                  scriptText={scriptText}
-                  setScriptText={setScriptText}
-                  setIsLoading={setIsLoading}
-                />
-              }/>
-              <Route path="/game" element={<Game />} />
-              <Route path="/instructions" element={<InstructionPage/>} />
-            </Routes>
-          ) : (
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                textAlign: 'center',
-              }}
-            >
-              { connection === SOCKET_ERROR ? (                  
-                <Typography
-                  sx={{
-                    fontSize: '200%'
-                  }}
-                >
-                  Cannot connect to server, reattempting connection in background. In the meantime you can only view previous generations.
-                </Typography>
               ) : (
-                <Typography
+                <Box
                   sx={{
-                    fontSize: '200%'
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    textAlign: 'center',
                   }}
                 >
-                  Connecting to server...
-                </Typography>
-              )}
-            </Box>
-          )}
+                  { connection === SOCKET_ERROR ? (                  
+                    <Typography
+                      sx={{
+                        fontSize: '200%'
+                      }}
+                    >
+                      Cannot connect to server, reattempting connection in background. In the meantime you can only view previous generations.
+                    </Typography>
+                  ) : (
+                    <Typography
+                      sx={{
+                        fontSize: '200%'
+                      }}
+                    >
+                      Connecting to server...
+                    </Typography>
+                  )}
+                </Box>
+              )
+            }/>
+            <Route path="/result" element={
+              <ScriptBox
+                brainRot={brainRot}
+                refreshSavedKbs={refreshSavedKbs}
+                editing={editing}
+                setEditing={setEditing}
+                protState={protState}
+                metadata={metadata}
+                scriptText={scriptText}
+                setScriptText={setScriptText}
+                setIsLoading={setIsLoading}
+              />
+            }/>
+            <Route path="/game" element={<Game />} />
+            <Route path="/instructions" element={<InstructionPage/>} />
+          </Routes>
         </Box>
       </ThemeProvider>
     </BrowserRouter>
