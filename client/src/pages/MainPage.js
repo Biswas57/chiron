@@ -10,7 +10,7 @@ import {
 
 const MotionBox = motion(Box);
 
-function MainPage({models, brainRot, isLoading, setIsLoading, refreshSavedKbs, initiateProtocol, protState}) {
+function MainPage({ models, brainRot, isLoading, setIsLoading, initiateProtocol, protState }) {
   const navigate = useNavigate();
 
   const [error, setError] = useState(null);
@@ -29,12 +29,12 @@ function MainPage({models, brainRot, isLoading, setIsLoading, refreshSavedKbs, i
 
   useEffect(() => {
     if (protState === PROTOCOL_STATE_WAITING_TOKENS) {
-      navigate("/result", { state: { idx: 0 }});
+      navigate("/result", { state: { idx: 0 } });
     }
   }, [protState]);
 
   return (
-    <div>      
+    <div>
       <AnimatePresence mode="wait">
         {!isLoading && (
           <MotionBox
@@ -56,7 +56,7 @@ function MainPage({models, brainRot, isLoading, setIsLoading, refreshSavedKbs, i
           >
             <InputBox models={models} onSubmitURL={handleUrlSubmit} onSubmitFile={handleFileSubmit} setHttpErrorMsg={setError} />
             {error && (
-              <Box sx={{ 
+              <Box sx={{
                 position: 'relative',
                 zIndex: 1,
                 color: 'error.main',
@@ -85,7 +85,7 @@ function MainPage({models, brainRot, isLoading, setIsLoading, refreshSavedKbs, i
               zIndex: 1
             }}
           >
-            <LoadingAnimation brainRot={brainRot} protState={protState}/>
+            <LoadingAnimation brainRot={brainRot} protState={protState} />
           </MotionBox>
         )}
       </AnimatePresence>
