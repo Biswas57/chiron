@@ -5,6 +5,9 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@fontsource/anta": "^5.1.1",
+    "@fontsource/audiowide": "^5.1.1",
+    "@fontsource/bruno-ace-sc": "^5.1.1",
     "@fontsource/inter": "^5.1.1",
     "@fontsource/montserrat": "^5.1.1",
     "@fontsource/poppins": "^5.1.1",
