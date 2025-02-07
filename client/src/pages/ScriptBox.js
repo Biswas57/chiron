@@ -11,7 +11,6 @@ import { Divider, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-// import { editKBtoLocalStorage, getKBfromLocalStorage } from '../utils/localStorage';
 import TextField from '@mui/material/TextField';
 import LaunchIcon from '@mui/icons-material/Launch';
 import Select from '@mui/material/Select';
@@ -31,12 +30,6 @@ function ScriptBox({ brainRot, editing, setEditing, protState, metadata, scriptT
   const [copied, setCopied] = useState(false);
 
   const endDivRef = useRef(null);
-
-  // const [scriptText, setScriptTextInner] = useState('');
-
-  // useEffect(() => {
-  //   setScriptTextInner(history[scriptIdx].getCurrentData().data);
-  // }, [history, scriptIdx]);
 
   useEffect(() => {
     if (protState == PROTOCOL_STATE_IDLE) {
