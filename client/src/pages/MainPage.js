@@ -10,7 +10,7 @@ import {
 
 const MotionBox = motion(Box);
 
-function MainPage({models, brainRot, isLoading, setIsLoading, refreshSavedKbs, initiateProtocol, protState}) {
+function MainPage({models, brainRot, isLoading, setIsLoading, initiateProtocol, protState}) {
   const navigate = useNavigate();
 
   const [error, setError] = useState(null);

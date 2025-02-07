@@ -11,7 +11,7 @@ import { Divider, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-import { editKBtoLocalStorage, getKBfromLocalStorage } from '../utils/localStorage';
+// import { editKBtoLocalStorage, getKBfromLocalStorage } from '../utils/localStorage';
 import TextField from '@mui/material/TextField';
 import LaunchIcon from '@mui/icons-material/Launch';
 import Select from '@mui/material/Select';
@@ -23,7 +23,7 @@ import {
   PROTOCOL_STATE_WAITING_TOKENS,
 } from '../utils/protocol'
 
-function ScriptBox({ brainRot, refreshSavedKbs, editing, setEditing, protState, metadata, setScriptText, setIsLoading, history, scriptIdx }) {
+function ScriptBox({ brainRot, editing, setEditing, protState, metadata, scriptText, setScriptText, setIsLoading, nextHistItm, prevHistItm, nextHistAvail, prevHistAvail, editKB,  }) {
   // Get the result from App.js
   const location = useLocation();
   const { state } = location;
@@ -32,11 +32,11 @@ function ScriptBox({ brainRot, refreshSavedKbs, editing, setEditing, protState, 
 
   const endDivRef = useRef(null);
 
-  const [scriptText, setScriptTextInner] = useState('');
+  // const [scriptText, setScriptTextInner] = useState('');
 
-  useEffect(() => {
-    setScriptTextInner(history[scriptIdx].getCurrentData().data);
-  }, [history, scriptIdx]);
+  // useEffect(() => {
+  //   setScriptTextInner(history[scriptIdx].getCurrentData().data);
+  // }, [history, scriptIdx]);
 
   useEffect(() => {
     if (protState == PROTOCOL_STATE_IDLE) {
@@ -58,8 +58,8 @@ function ScriptBox({ brainRot, refreshSavedKbs, editing, setEditing, protState, 
 
   const handleEdit = () => {
     if (editing) {
-      editKBtoLocalStorage(state.idx, scriptText);
-      refreshSavedKbs();
+      editKB()
+      // refreshSavedKbs();
       setEditing(false);
     } else {
       setEditing(true);
@@ -101,12 +101,9 @@ function ScriptBox({ brainRot, refreshSavedKbs, editing, setEditing, protState, 
             "Previous script edit"
           }>
             <IconButton
-              disabled={history[scriptIdx].currentIndex == 0 || history[scriptIdx].data.length === 1 || protState === PROTOCOL_STATE_WAITING_TOKENS}
+              disabled={!prevHistAvail || protState === PROTOCOL_STATE_WAITING_TOKENS}
               onClick={() => {
-                history[scriptIdx].goToPreviousData();
-
-                setScriptTextInner(history[scriptIdx].getCurrentData().data)
-
+                prevHistItm();
               }}
               sx={{
                 color: 'grey.400',
@@ -123,11 +120,9 @@ function ScriptBox({ brainRot, refreshSavedKbs, editing, setEditing, protState, 
             "Next script edit"
           }>
             <IconButton
-              disabled={history[scriptIdx].currentIndex == history[scriptIdx].data.length - 1 || history[scriptIdx].data.length === 1 || protState === PROTOCOL_STATE_WAITING_TOKENS}
+              disabled={!nextHistAvail || protState === PROTOCOL_STATE_WAITING_TOKENS}
               onClick={() => {
-                history[scriptIdx].goToNextData();
-
-                setScriptTextInner(history[scriptIdx].getCurrentData().data)
+                nextHistItm();
               }}
               sx={{
                 color: 'grey.400',
@@ -228,7 +223,7 @@ function ScriptBox({ brainRot, refreshSavedKbs, editing, setEditing, protState, 
               disabled={protState === PROTOCOL_STATE_WAITING_TOKENS}
               onClick={() => {
                 if (metadata.url !== null) {
-                  window.open(getKBfromLocalStorage(state.idx).url, '_blank');
+                  window.open(metadata.url, '_blank');
                 }
               }}
               sx={{
@@ -253,7 +248,7 @@ function ScriptBox({ brainRot, refreshSavedKbs, editing, setEditing, protState, 
             <TextField
               multiline
               value={scriptText}
-              onChange={(e) => setScriptTextInner(e.target.value)}
+              onChange={(e) => setScriptText(e.target.value)}
               onKeyDown={(event) => event.stopPropagation()}
               sx={{
                 width: '100%',

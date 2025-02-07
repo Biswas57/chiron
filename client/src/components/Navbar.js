@@ -24,7 +24,7 @@ import ErrorModal from './ErrorModal';
 import ConfirmModal from './ConfirmModal';
 import { getKBfromLocalStorage } from '../utils/localStorage';
 
-const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, editing, setMetadata, setScriptIdx}) => {
+const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, editing, setMetadata, selectSavedKB, clearHistory}) => {
   const navigate = useNavigate();
   
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
@@ -41,15 +41,33 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
   const location = useLocation();
   React.useEffect(() => {
     setOpenDrawer(false);
-    refreshSavedKbs();
+    // refreshSavedKbs();
   }, [location.pathname]);
 
   const handleClearAll = () => {
-    localStorage.clear();
-    refreshSavedKbs();
+    // localStorage.clear();
+    // refreshSavedKbs();
+    clearHistory();
     navigate('/');
     setConfirmModalOpen(false);
   };
+
+  function formatDateTime(epochString) {
+    // Convert the epoch string to a Date object
+    const date = new Date(parseInt(epochString));
+
+    // Format the date and time (day, abbreviated month, year, and time in HH:mm format)
+    const formattedDateTime = new Intl.DateTimeFormat('en-GB', {
+        day: 'numeric',    // Day of the month (e.g., "6")
+        month: 'short',    // Abbreviated month name (e.g., "Feb")
+        year: 'numeric',   // 4-digit year (e.g., "2024")
+        hour: '2-digit',   // 2-digit hour (24-hour format)
+        minute: '2-digit', // 2-digit minute
+        hour12: true      // Use 24-hour format
+    }).format(date);
+
+    return formattedDateTime;
+  }
 
   return (
     <>
@@ -276,8 +294,9 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
                             title: saved.title,
                             timeGenerated: saved.getTimeGenerated(),
                           })
-                          setScriptIdx(idx);
+                          selectSavedKB(idx);
                           navigate('/result', { state: { idx: idx }});
+                          setOpenDrawer(false);
                         }}
                       >
                         <Box
@@ -290,7 +309,7 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
                             {pastKb.title}
                           </Typography>
                           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                            {pastKb.kbId} • {pastKb.getTimeGenerated()}
+                            {pastKb.kbId} • {formatDateTime(pastKb.getTimeGenerated())}
                           </Typography>
                           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                             {pastKb.model}

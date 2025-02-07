@@ -12,6 +12,7 @@ export class HistoryItem {
         this.kbId = kbId;
         this.model = model;
         this.data.push(new HistoryElem(Date.now(), scriptText));
+        // console.log("HistoryItem constructor", this.data);
     }
 
     addData(scriptText) {
@@ -42,6 +43,10 @@ export class HistoryItem {
             this.currentIndex++;
         }
     }
+
+    resetCurrentIndex() {
+        this.currentIndex = this.data.length - 1;
+    }
 }
 
 export class HistoryElem {
@@ -67,7 +72,7 @@ export class HistoryManager{
 
         for (let i = 0; i < obj.length; i++) {
             let item = obj[i];
-            let historyItem = new HistoryItem(item.title, item.url, item.kbId, item.data[0].data);
+            let historyItem = new HistoryItem(item.title, item.url, item.kbId, item.model, item.data[0].data);
 
             for (let j = 1; j < item.data.length; j++) {
                 historyItem.addData(item.data[j].data);
@@ -92,13 +97,14 @@ export class HistoryManager{
             let data = [];
 
             for (let j = 0; j < item.data.length; j++) {
-                data.push(new HistoryElem(item.data[j].timestamp, item.data[j].data));
+                data.push(new HistoryElem(item.data[j].timestamp, item.data[j].data));  //TODO: This is so stupid, fix this
             }
 
             obj.push({
                 title: item.title,
                 url: item.url,
                 kbId: item.kbId,
+                model: item.model,
                 data: data
             });
         }

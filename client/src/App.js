@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Box from '@mui/material/Box';
 import { BrowserRouter, Routes, Route } from "react-router";
+// import { useLocation } from "react-router-dom"
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Navbar from './components/Navbar';
@@ -11,7 +12,7 @@ import NutanixBirds from "./nutanixBirds"
 import VideoBackground from "./components/VideoBackground"
 import InstructionPage from "./pages/InstructionPage"
 import Game from "./pages/Game"
-import { addKBtoLocalStorage, getAllKBfromLocalStorage } from './utils/localStorage';
+import { addKBtoLocalStorage, getAllKBfromLocalStorage, editKBtoLocalStorage } from './utils/localStorage';
 import io from 'socket.io-client';
 import { Typography } from '@mui/material';
 import {
@@ -44,13 +45,57 @@ function App() {
     setTheme(brainRot ? themes.brainrot : themes.default);
   }, [brainRot]);
 
-  const [savedKbs, setSavedKbs] = React.useState(getAllKBfromLocalStorage());
-  const refreshSavedKbs = () => {
-    setSavedKbs(getAllKBfromLocalStorage());
+  const [savedKbs, setSavedKbs] = useState(getAllKBfromLocalStorage());
+  const [selectedKB, setSelectedKB] = useState(null);
+  const [selectedKBIndex, setSelectedKBIndex] = useState(null);
+
+  const viewSavedKB = (idx, history = savedKbs) => {
+    history[idx].resetCurrentIndex();
+    setSelectedKB(history[idx]);
+    setSelectedKBIndex(idx);
+    setScriptText(history[idx].getCurrentData().data);
+  };
+
+  const nextHistItm = () => {
+    selectedKB.goToNextData();
+    setScriptText(selectedKB.getCurrentData().data);
   }
+
+  const prevHistItm = () => {
+    selectedKB.goToPreviousData();
+    setScriptText(selectedKB.getCurrentData().data);
+  }
+
+  // const location = useLocation();
+
+  // useEffect(() => {
+  //   if (location.pathname === '/') {
+  //     setSelectedKB(null);
+  //   }
+  // }, [location]);
+
+  // useEffect(() => {
+  //   console.log(selectedKB);
+  // }, [selectedKB]);
+
+  // const refreshSavedKbs = () => {
+  //   setSavedKbs(getAllKBfromLocalStorage());
+  // }
 
   // Global state to disable navigation during edit mode
   const [editing, setEditing] = useState(false);
+  const editKB = () => { 
+    editKBtoLocalStorage(selectedKBIndex, scriptText);
+    const newKbs = getAllKBfromLocalStorage();
+    setSavedKbs(newKbs);
+    viewSavedKB(selectedKBIndex, newKbs);
+  }
+
+  const clearHistory = () => {
+    localStorage.removeItem("KBs");
+    setSavedKbs([]);
+    setSelectedKB(null);
+  }
 
   // Server connection status.
   const [connection, setConnection] = useState(SOCKET_CONNECTING);
@@ -125,7 +170,6 @@ function App() {
   const [protState, setProtState] = useState(PROTOCOL_STATE_IDLE);
   const [metadata, setMetadata] = useState(null);
   const [scriptText, setScriptText] = useState(null);
-  const [scriptIdx, setScriptIdx] = useState(0);
 
   const metadataRef = useRef(metadata);
   useEffect(() => {
@@ -193,9 +237,15 @@ function App() {
       socket.off("error")
       setProtState((prev) => { return PROTOCOL_STATE_IDLE; });
 
-      console.log(metadataRef.current);
+      // console.log(metadataRef.current);
       addKBtoLocalStorage(metadataRef.current, scriptTextRef.current);
-      refreshSavedKbs();
+
+      const newKbs = getAllKBfromLocalStorage();
+      setSavedKbs(newKbs);
+      // Use the fresh history to update the selected script:
+      viewSavedKB(0, newKbs);
+
+      console.log(selectedKB);
 
       setIsLoading((prev) => { return false; });
     });
@@ -246,10 +296,12 @@ function App() {
             setBrainRot={setBrainRot}
             isLoading={isLoading}
             savedKbs={savedKbs}
-            refreshSavedKbs={refreshSavedKbs}
+            // refreshSavedKbs={refreshSavedKbs}
             editing={editing}
             setMetadata={setMetadata}
-            setScriptIdx={setScriptIdx}
+            // setScriptIdx={setScriptIdx}
+            selectSavedKB={viewSavedKB}
+            clearHistory={clearHistory}
           />
 
           {brainRot ? <VideoBackground /> : <NutanixBirds />}
@@ -263,7 +315,7 @@ function App() {
                   brainRot={brainRot}
                   isLoading={isLoading}
                   setIsLoading={setIsLoading}
-                  refreshSavedKbs={refreshSavedKbs}
+                  // refreshSavedKbs={refreshSavedKbs}
                   initiateProtocol={initiateProtocol}
                   protState={protState}
                 />
@@ -271,16 +323,21 @@ function App() {
               <Route path="/result" element={
                 <ScriptBox
                   brainRot={brainRot}
-                  refreshSavedKbs={refreshSavedKbs}
+                  // refreshSavedKbs={refreshSavedKbs}
                   editing={editing}
                   setEditing={setEditing}
                   protState={protState}
                   metadata={metadata}
-                  // scriptText={scriptText}
+                  scriptText={scriptText}
                   setScriptText={setScriptText}
                   setIsLoading={setIsLoading}
-                  history={savedKbs}
-                  scriptIdx={scriptIdx}
+                  // history={savedKbs}
+                  // scriptIdx={scriptIdx}
+                  nextHistItm={nextHistItm}
+                  prevHistItm={prevHistItm}
+                  nextHistAvail={selectedKB && selectedKB.currentIndex < selectedKB.data.length - 1}
+                  prevHistAvail={selectedKB && selectedKB.currentIndex > 0}
+                  editKB={editKB}
                 />
               }/>
               <Route path="/game" element={<Game />} />
