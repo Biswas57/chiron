@@ -20,6 +20,12 @@ models = [
         "ollama_name": "llama3.3",
         "context_length": 131072,
     },
+    {
+        "display_name": "Google Gemma 2 27B",
+        "note": "Experimental | Slow",
+        "ollama_name": "gemma2:27b",
+        "context_length": 8192,
+    },
 ]
 
 def generate_prompt(content):
