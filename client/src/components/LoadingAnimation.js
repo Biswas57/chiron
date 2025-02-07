@@ -1,140 +1,144 @@
 import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Box, Typography } from '@mui/material';
 import { SyncLoader } from 'react-spinners';
-import Box from '@mui/material/Box';
-import { motion } from 'framer-motion';
 import brainRotGif from '../assets/brainrot/loading.gif'
 import {
   PROTOCOL_STATE_WAITING_FOR_METADATA,
   PROTOCOL_STATE_WAITING_FIRST_TOKEN,
-} from '../utils/protocol'
+} from '../utils/protocol';
 
-function loadingStatus(protState) {
-  if (protState == PROTOCOL_STATE_WAITING_FOR_METADATA) {
-    return (
-      <div>
-        Scraping your article...
-      </div>
-    )
-  } else if (protState == PROTOCOL_STATE_WAITING_FIRST_TOKEN) {
-    return (
-      <div>
-        Scraped article, piped into LLM, waiting for first token...
-      </div>
-    )
-  }
-}
+const LoadingMessage = ({ message }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -20 }}
+    transition={{ duration: 0.5, ease: "easeOut" }}
+  >
+    <Typography
+      variant="h6"
+      sx={{
+        fontFamily: 'inherit',
+        textAlign: 'center',
+        color: 'grey.100',
+        mb: 1,
+        fontWeight: 500,
+      }}
+    >
+      {message}
+    </Typography>
+  </motion.div>
+);
 
-const LoadingAnimation = ({brainRot, protState}) => {
+const LoadingAnimation = ({ brainRot, protState }) => {
+  const getMessage = () => {
+    switch (protState) {
+      case PROTOCOL_STATE_WAITING_FOR_METADATA:
+        return "Scraping your article...";
+      case PROTOCOL_STATE_WAITING_FIRST_TOKEN:
+        return "Scraped article, piped into LLM, waiting for first token...";
+      default:
+        return "Loading...";
+    }
+  };
+
   if (brainRot) {
     return (
       <Box
+        component={motion.div}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
         sx={{
+          height: '60vh',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          height: '60vh',
-          color: 'white',
           gap: 4,
         }}
       >
-        <Box
+        <Typography
+          variant="h6"
           sx={{
-            typography: 'h6',
-            color: 'grey.100',
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'Comic Sans MS',
             textAlign: 'center',
-            mb: 1,
-            textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 2px rgba(0,0,0,0.4)'
+            color: 'grey.100',
+            textShadow: '0 2px 4px rgba(0,0,0,0.5)'
           }}
         >
-          {loadingStatus(protState)}
-        </Box>
+          {getMessage()}
+        </Typography>
         <img src={brainRotGif} alt="loading..." />
       </Box>
-    )
-  } else {
-    return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '60vh',
-            color: 'white',
-            gap: 4
-          }}
-        >
-          <Box
-            sx={{
-              position: 'relative',
-              '&::after': {
-                content: '""',
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: '200px',
-                height: '200px',
-                borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(120,85,251,0.15) 0%, rgba(0,0,0,0) 70%)',
-                filter: 'blur(8px)',
-                zIndex: -1
-              }
-            }}
-          >
-            <SyncLoader 
-              color="#7855fb"
-              size={15}
-              speedMultiplier={1}
-              // cssOverride={{
-              //   filter: 'drop-shadow(0 0 10px rgba(120,85,251,0.2))'
-              // }}
-            />
-          </Box>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 1
-            }}
-          >
-            <Box
-              sx={{
-                typography: 'h6',
-                color: 'grey.100',
-                fontFamily: 'Inter, sans-serif',
-                textAlign: 'center',
-                mb: 1,
-                // textShadow: '0 30px 30px rgba(0,0,0,1), 0 30px 30px rgba(0,0,0,1)'
-              }}
-            >
-              {loadingStatus(protState)}
-            </Box>
-            <Box
-              sx={{
-                color: 'grey.300',
-                fontSize: '0.9rem',
-                fontFamily: 'Inter, sans-serif',
-                textAlign: 'center',
-                // textShadow: '0 30px 30px rgba(0,0,0,1), 0 30px 30px rgba(0,0,0,1)'
-              }}
-            >
-              This will take a few minutes...
-            </Box>
-          </Box>
-        </Box>
-      </motion.div>
     );
   }
+
+  return (
+    <Box
+      component={motion.div}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.5 }}
+      sx={{
+        height: '60vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 6,
+      }}
+    >
+      <Box
+        sx={{
+          position: 'relative',
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '200px',
+            height: '200px',
+            borderRadius: '50%',
+            background: (theme) => `radial-gradient(circle, ${theme.palette.primary.main}22 0%, transparent 70%)`,
+            filter: 'blur(8px)',
+            zIndex: -1
+          }
+        }}
+      >
+        <SyncLoader 
+          color="#7855fb"
+          size={15}
+          speedMultiplier={0.8}
+        />
+      </Box>
+
+      <Box sx={{ textAlign: 'center' }}>
+        <AnimatePresence mode="wait">
+          <LoadingMessage key={getMessage()} message={getMessage()} />
+        </AnimatePresence>
+        
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'grey.400',
+              mt: 2,
+              fontWeight: 300,
+            }}
+          >
+            This may take a few moments
+          </Typography>
+        </motion.div>
+      </Box>
+    </Box>
+  );
 };
 
 export default LoadingAnimation;
