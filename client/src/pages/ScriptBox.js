@@ -54,7 +54,6 @@ function ScriptBox({ brainRot, editing, setEditing, protState, metadata, scriptT
   const handleEdit = () => {
     if (editing) {
       editKB()
-      // refreshSavedKbs();
       setEditing(false);
     } else {
       setEditing(true);

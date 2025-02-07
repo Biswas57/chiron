@@ -329,7 +329,6 @@ function App() {
             <Route path="/result" element={
               <ScriptBox
                 brainRot={brainRot}
-                refreshSavedKbs={refreshSavedKbs}
                 editing={editing}
                 setEditing={setEditing}
                 protState={protState}
