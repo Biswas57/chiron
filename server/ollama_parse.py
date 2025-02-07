@@ -80,6 +80,7 @@ def write_script(prompt, model_idx):
         emit("tokens", {"tokens": chunk["response"]})
 
     # Step 4 of protocol: send a completion event.
+    app.logger.debug(f"Done! Sending complete event")
     emit("complete", {})
 
 def generate(content, model_idx):
