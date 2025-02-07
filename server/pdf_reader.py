@@ -30,18 +30,6 @@ def scrape_kb_id(text):
         return "KB-????"
     else:
         return match.group()
-    
-def conf_check(filename):
-    title_pattern = r"^([\w\s]+)_[a-f0-9]{32}-\d{6}-\d{4}-\d{5}\.pdf$"
-    id_pattern = r"^(\d+)_([a-f0-9]{32})-(\d{6})-(\d{4})-(\d{5})\.pdf$"
-
-    if re.fullmatch(id_pattern, filename):
-        return True, False
-    elif re.fullmatch(title_pattern, filename):
-        return True, True
-    else:
-        return False, False
-     
 
 def kb_check(page_content):
     kb_match = re.search(r"KB-[0-9]*", page_content)
