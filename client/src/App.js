@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Box from '@mui/material/Box';
 import { BrowserRouter, Routes, Route } from "react-router";
-// import { useLocation } from "react-router-dom"
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Navbar from './components/Navbar';
@@ -221,15 +220,12 @@ function App() {
       socket.off("error")
       setProtState((prev) => { return PROTOCOL_STATE_IDLE; });
 
-      // console.log(metadataRef.current);
       addKBtoLocalStorage(metadataRef.current, scriptTextRef.current);
 
       const newKbs = getAllKBfromLocalStorage();
       setSavedKbs(newKbs);
       // Use the fresh history to update the selected script:
       viewSavedKB(0, newKbs);
-
-      console.log(selectedKB);
 
       setIsLoading((prev) => { return false; });
     });
@@ -280,10 +276,8 @@ function App() {
             setBrainRot={setBrainRot}
             isLoading={isLoading}
             savedKbs={savedKbs}
-            // refreshSavedKbs={refreshSavedKbs}
             editing={editing}
             setMetadata={setMetadata}
-            // setScriptIdx={setScriptIdx}
             selectSavedKB={viewSavedKB}
             clearHistory={clearHistory}
           />
@@ -299,7 +293,6 @@ function App() {
                   brainRot={brainRot}
                   isLoading={isLoading}
                   setIsLoading={setIsLoading}
-                  // refreshSavedKbs={refreshSavedKbs}
                   initiateProtocol={initiateProtocol}
                   protState={protState}
                 />
@@ -307,7 +300,6 @@ function App() {
               <Route path="/result" element={
                 <ScriptBox
                   brainRot={brainRot}
-                  // refreshSavedKbs={refreshSavedKbs}
                   editing={editing}
                   setEditing={setEditing}
                   protState={protState}
@@ -315,8 +307,6 @@ function App() {
                   scriptText={scriptText}
                   setScriptText={setScriptText}
                   setIsLoading={setIsLoading}
-                  // history={savedKbs}
-                  // scriptIdx={scriptIdx}
                   nextHistItm={nextHistItm}
                   prevHistItm={prevHistItm}
                   nextHistAvail={selectedKB && selectedKB.currentIndex < selectedKB.data.length - 1}
