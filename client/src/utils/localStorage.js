@@ -18,8 +18,6 @@ export function editKBtoLocalStorage(index, scriptText) {
     history[index].addData(scriptText);
 
     localStorage.setItem(KB_LOCAL_STORAGE_KEY, historyManager.toJSON(history));
-
-    console.log("editKBtoLocalStorage", history);
 }
 
 export function getAllKBfromLocalStorage() {
