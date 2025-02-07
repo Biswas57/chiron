@@ -12,7 +12,6 @@ export class HistoryItem {
         this.kbId = kbId;
         this.model = model;
         this.data.push(new HistoryElem(Date.now(), scriptText));
-        // console.log("HistoryItem constructor", this.data);
     }
 
     addData(scriptText) {
@@ -29,7 +28,7 @@ export class HistoryItem {
     }
 
     getTimeGenerated() {
-        return this.data[0].timestamp;        
+        return this.data[0].timestamp;
     }
 
     goToPreviousData() {
@@ -56,7 +55,7 @@ export class HistoryElem {
     }
 }
 
-export class HistoryManager{
+export class HistoryManager {
     /**
      * Returns a list of HistoryItem objects
      * 

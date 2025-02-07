@@ -66,25 +66,9 @@ function App() {
     setScriptText(selectedKB.getCurrentData().data);
   }
 
-  // const location = useLocation();
-
-  // useEffect(() => {
-  //   if (location.pathname === '/') {
-  //     setSelectedKB(null);
-  //   }
-  // }, [location]);
-
-  // useEffect(() => {
-  //   console.log(selectedKB);
-  // }, [selectedKB]);
-
-  // const refreshSavedKbs = () => {
-  //   setSavedKbs(getAllKBfromLocalStorage());
-  // }
-
   // Global state to disable navigation during edit mode
   const [editing, setEditing] = useState(false);
-  const editKB = () => { 
+  const editKB = () => {
     editKBtoLocalStorage(selectedKBIndex, scriptText);
     const newKbs = getAllKBfromLocalStorage();
     setSavedKbs(newKbs);
@@ -142,7 +126,7 @@ function App() {
       socket.off("tokens");
       socket.off("complete");
       setProtState(PROTOCOL_STATE_IDLE);
-      
+
       console.error("socket connection error...");
     });
 
@@ -307,7 +291,7 @@ function App() {
           {brainRot ? <VideoBackground /> : <NutanixBirds />}
 
           {/* Page content */}
-          { connection === SOCKET_CONNECTED ? (
+          {connection === SOCKET_CONNECTED ? (
             <Routes className="url-input-container">
               <Route path="/" element={
                 <MainPage
@@ -319,7 +303,7 @@ function App() {
                   initiateProtocol={initiateProtocol}
                   protState={protState}
                 />
-              }/>
+              } />
               <Route path="/result" element={
                 <ScriptBox
                   brainRot={brainRot}
@@ -339,9 +323,9 @@ function App() {
                   prevHistAvail={selectedKB && selectedKB.currentIndex > 0}
                   editKB={editKB}
                 />
-              }/>
+              } />
               <Route path="/game" element={<Game />} />
-              <Route path="/instructions" element={<InstructionPage/>} />
+              <Route path="/instructions" element={<InstructionPage />} />
             </Routes>
           ) : (
             <Box
@@ -353,7 +337,7 @@ function App() {
                 textAlign: 'center',
               }}
             >
-              { connection === SOCKET_ERROR ? (                  
+              {connection === SOCKET_ERROR ? (
                 <Typography
                   sx={{
                     fontSize: '200%'
