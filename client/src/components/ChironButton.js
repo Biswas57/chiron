@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@mui/material';
 import '@fontsource/anta';
-import chironLogo from '../assets/chironlogo.png';
 import '@fontsource/audiowide';
 import '@fontsource/bruno-ace-sc';
 
@@ -24,7 +23,7 @@ const ChironButton = ({ isLoading, editing, setErrorMessage, setErrorModalOpen, 
         }
       }}
       sx={{
-        fontSize: '2.1rem',
+        fontSize: '1.8rem',
         fontWeight: 500,
         letterSpacing: '0.03em',
         textTransform: 'none',

@@ -38,10 +38,11 @@ function MainPage({models, brainRot, isLoading, setIsLoading, refreshSavedKbs, i
       component="div"
       sx={{
         width: '100%',
-        minHeight: '100vh',
+        minHeight: '500px',
+        height: 'calc(100vh - 64px)',
         display: 'flex',
         flexDirection: 'column',
-        mt: '-20px',
+        justifyContent: 'center'
       }}
     >      
       <AnimatePresence mode="wait">

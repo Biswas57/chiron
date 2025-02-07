@@ -22,6 +22,7 @@ import { CircularProgress, Divider, ListItem, Typography, Modal } from '@mui/mat
 import AboutModal from './AboutModal';
 import ErrorModal from './ErrorModal';
 import ConfirmModal from './ConfirmModal';
+import ChironButton from './ChironButton';
 import { getKBfromLocalStorage } from '../utils/localStorage';
 
 const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, editing, setMetadata, setScriptText}) => {
@@ -182,7 +183,7 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
                     Funky mode {brainRot ? "✨" : ""}
                   </Button>
 
-                  <Button
+                  {/* <Button
                     disabled={true} // disabled because causing bugs
                     startIcon={<Gamepad size={20} />}
                     sx={{
@@ -201,7 +202,7 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
                     onClick={() => {navigate("/game")}}
                   >
                     Chrome Dino
-                  </Button>
+                  </Button> */}
 
                   <Button
                     disabled={savedKbs.length === 0}
@@ -303,28 +304,13 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
               </Box>
             </Drawer>    
         {/* Chiron framework button */}
-            <Button
-              color='primary'
-              variant='text'
-              component='div'
-              sx={{
-                  fontSize: '1.4rem',
-                  fontWeight: 'bold',
-              }}
-              onClick={() => {
-                if (isLoading) {
-                  setErrorMessage("You cannot navigate to a different page while the script is generating.");
-                  setErrorModalOpen(true);
-                } else if (editing) {
-                  setErrorMessage("You are in editing mode, you will lose your changes if you navigate away. Save your work first!");
-                  setErrorModalOpen(true);
-                } else {
-                  navigate('/');
-                }
-              }}
-            >
-              Chiron
-            </Button>
+            <ChironButton 
+              isLoading={isLoading}
+              editing={editing}
+              setErrorMessage={setErrorMessage}
+              setErrorModalOpen={setErrorModalOpen}
+              navigate={navigate}
+            />
           </Box>
 
           <Box sx={{display: 'flex', }}>
