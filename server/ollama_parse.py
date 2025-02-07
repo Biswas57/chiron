@@ -9,23 +9,17 @@ import math
 # the models if they haven't been already.
 models = [
     {
-        "display_name": "Llama-3.1-8B",
-        "note": "Low quality script | Fast",
-        "ollama_name": "llama3.1:8b",
+        "display_name": "Llama-3.1-8B-Instruct (FP16)",
+        "note": "Ok quality script | Fast",
+        "ollama_name": "llama3.1:8b-instruct-fp16",
         "context_length": 131072,
     },
-    {
-        "display_name": "Llama-3.3-70B-Instruct",
-        "note": "High quality script | Very slow",
-        "ollama_name": "llama3.3",
-        "context_length": 131072,
-    },
-    {
-        "display_name": "Google Gemma 2 27B",
-        "note": "Experimental | Slow",
-        "ollama_name": "gemma2:27b",
-        "context_length": 8192,
-    },
+    # {
+    #     "display_name": "Llama-3.3-70B-Instruct (FP16)",
+    #     "note": "High quality script | Very slow!",
+    #     "ollama_name": "llama3.3:70b-instruct-fp16",
+    #     "context_length": 131072,
+    # },
 ]
 
 def generate_prompt(content):
