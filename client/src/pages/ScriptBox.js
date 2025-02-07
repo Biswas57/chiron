@@ -36,8 +36,15 @@ function ScriptBox({ brainRot, editing, setEditing, protState, metadata, scriptT
   useEffect(() => {
     if (protState === PROTOCOL_STATE_IDLE) {
       setIsLoading(false);
-    } if (protState === PROTOCOL_STATE_WAITING_TOKENS) {
-      // endDivRef.current.scrollIntoView({ behaviour: 'smooth' });
+    } 
+    
+    if (protState === PROTOCOL_STATE_WAITING_TOKENS) {
+      const threshold = 100;
+      const scrollPosition = window.innerHeight + window.scrollY;
+      const documentHeight = document.documentElement.scrollHeight;
+      if (scrollPosition + threshold >= documentHeight) {
+        endDivRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   }, [location.state, protState, scriptText]);
 
