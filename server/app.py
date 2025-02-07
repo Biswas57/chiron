@@ -10,7 +10,7 @@ from ollama_parse import models as ollama_models_dict
 import base64
 import io
 import ollama
-import subprocess
+import os
 
 # Before we do anything, make sure all the models are downloaded
 print("BOOTING UP")
@@ -33,22 +33,14 @@ for model in ollama_models_dict:
 
     if not found:
         print(f"haven't been downloaded...downloading:")
+        shcmd = f"ollama pull {model['ollama_name']}"
+        print(f"executing shell command: {shcmd}")
         try:
-            process = subprocess.Popen(
-                ["ollama", "pull", model['ollama_name']],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True
-            )
-            for line in process.stdout:
-                print(line.strip())
-            for line in process.stderr:
-                print(line.strip())
-            process.wait()
+            os.system(shcmd)
         except Exception as e:
             print(f"{str(e)}")
 
-
+# Initialise the server
 app = Flask(__name__)
 CORS(app)
 
@@ -56,17 +48,14 @@ app.config['ALLOWED_EXTENSIONS'] = {'pdf'}
 
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-API_PATH = '/web_sock_api'
-
-# Set up signal handling to ensure subprocesses such as Ollama also exit
 def handle_exit(signum, frame):
     print("\nGracefully shutting down...")
-    # Perform any additional cleanup if required
     sys.exit(0)
 
 signal.signal(signal.SIGINT, handle_exit)  # Handle Ctrl+C
 signal.signal(signal.SIGTERM, handle_exit)  # Handle termination signals
 
+# Event handlers on the websocket
 @socketio.on('connect')
 def handle_connect():
     # Step 0 of protocol: handshake with the server and create a session.
@@ -98,6 +87,8 @@ def handle_url_generate(data):
     try:
         if "url" not in data:
             emit("error", {"error": "Payload missing URL key."})
+        elif len(data["url"]) > 2048:
+            emit("error", {"error": "URL longer than 2048 characters."})
         elif "modelIdx" not in data:
             emit("error", {"error": "Payload missing model index key."})
         elif not is_valid_url(data["url"]):
@@ -128,6 +119,10 @@ def handle_file_generate(data):
         else:
             app.logger.debug(f'Client #{request.sid} generating PDF {data["filename"]} with model {data["modelIdx"]}')
             pdf_bytes = base64.b64decode(data["data"])
+            if len(pdf_bytes) > 16777216:
+                emit("error", {"error": "PDF over 16 megabytes!"})
+                return
+
             pdf_buffer = io.BytesIO(pdf_bytes)
             pr.generate(pdf_buffer, data["filename"], data["modelIdx"])
     except Exception as e:

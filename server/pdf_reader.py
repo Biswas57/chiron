@@ -2,6 +2,7 @@ import ollama_parse as op
 import PyPDF2
 import re
 from flask_socketio import emit
+from ollama_parse import models as ollama_models_dict
 
 def scrape_text(pdf_file):
     try:
@@ -29,18 +30,6 @@ def scrape_kb_id(text):
         return "KB-????"
     else:
         return match.group()
-    
-def conf_check(filename):
-    title_pattern = r"^([\w\s]+)_[a-f0-9]{32}-\d{6}-\d{4}-\d{5}\.pdf$"
-    id_pattern = r"^(\d+)_([a-f0-9]{32})-(\d{6})-(\d{4})-(\d{5})\.pdf$"
-
-    if re.fullmatch(id_pattern, filename):
-        return True, False
-    elif re.fullmatch(title_pattern, filename):
-        return True, True
-    else:
-        return False, False
-     
 
 def kb_check(page_content):
     kb_match = re.search(r"KB-[0-9]*", page_content)
@@ -57,5 +46,5 @@ def generate(pdf, filename, model_idx):
     kb_id = scrape_kb_id(text)
     title = filename.split(".pdf")[0]
 
-    emit("metadata", {"kb_id": kb_id, "title": title})
+    emit("metadata", {"kb_id": kb_id, "title": title, "model": ollama_models_dict[model_idx]['display_name']})
     op.generate(text, model_idx)

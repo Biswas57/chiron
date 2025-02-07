@@ -280,12 +280,20 @@ const Navbar = ({brainRot, setBrainRot, isLoading, savedKbs, refreshSavedKbs, ed
                           navigate('/result', { state: { idx: idx }});
                         }}
                       >
-                        <Box>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            flexDirection: 'column'
+                          }}
+                        >
                           <Typography variant="subtitle2" sx={{ color: 'text.primary', mb: 0.5 }}>
                             {pastKb.title}
                           </Typography>
                           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                             {pastKb.kbId} • {pastKb.timeGenerated}
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                            {pastKb.model}
                           </Typography>
                         </Box>
                       </Button>

@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import TextField from '@mui/material/TextField';
 import { Box, Typography, Paper, Button, Collapse, IconButton, Divider, MenuItem } from '@mui/material';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, InfoIcon } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import ErrorModal from './ErrorModal';
 import Select from '@mui/material/Select';
+import { Tooltip } from '@mui/material';
 
 const InputBox = ({ models, onSubmitURL, onSubmitFile, setHttpErrorMsg }) => {
   const [modelIdx, setModelIdx] = useState(0);
@@ -21,6 +22,12 @@ const InputBox = ({ models, onSubmitURL, onSubmitFile, setHttpErrorMsg }) => {
 
   const handleSubmitURL = (e) => {
     e.preventDefault();
+    if (url.length > 2048) { 
+      setErrorMessage("URL length must be shorter than 2048.");
+      setErrorModalOpen(true);
+      return;
+    }
+
     if (urlPattern.test(url.trim())) {
       setError(false);
       onSubmitURL(url, modelIdx);
@@ -30,16 +37,27 @@ const InputBox = ({ models, onSubmitURL, onSubmitFile, setHttpErrorMsg }) => {
   };
 
   const onDrop = useCallback((acceptedFiles) => {
+    if (acceptedFiles.length == 0) {
+      return;
+    }
+
     const fname = acceptedFiles[0].name;
     const fname_split = fname.split('.');
     if (fname_split.length > 0) {
       if (fname_split.pop().toLowerCase() === "pdf") {
-        setFileObj(acceptedFiles[0]);
-        return;
+        if (acceptedFiles[0].size > 16777216) {
+          // This is more of an arbitrary restriction for performance rather than a hard limitation.
+          setErrorMessage("File is greater than 16 Megabytes.");
+          setErrorModalOpen(true);
+        } else {
+          setFileObj(acceptedFiles[0]);
+          return;
+        }
+      } else {
+        setErrorMessage("File must be a PDF that ends in '.pdf' or '.PDF'");
+        setErrorModalOpen(true);
       }
     }
-    setErrorMessage("File must be a PDF that ends in '.pdf' or '.PDF'");
-    setErrorModalOpen(true);
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -113,17 +131,27 @@ const InputBox = ({ models, onSubmitURL, onSubmitFile, setHttpErrorMsg }) => {
         }}
       >
         <Box>
-          <Typography
+          <Box
             sx={{
-              paddingLeft: '15px',
-              paddingBottom: '15px',
-              color: 'text.primary',
-              fontWeight: 600,
-              fontSize: '1.1rem'
+              display: 'flex'
             }}
           >
-            Choose your LLM
-          </Typography>
+            <Typography
+              sx={{
+                paddingLeft: '15px',
+                paddingBottom: '15px',
+                paddingRight: '10px',
+                color: 'text.primary',
+                fontWeight: 600,
+                fontSize: '1.1rem'
+              }}
+            >
+              Choose your LLM
+            </Typography>
+            <Tooltip title="All models are run locally on a Nutanix SRE lab">
+              <InfoIcon />
+            </Tooltip>
+          </Box>
           <Select
             value={modelIdx}
             onChange={handleModelChange}
