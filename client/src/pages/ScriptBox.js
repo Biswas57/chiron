@@ -134,6 +134,7 @@ function ScriptBox({ brainRot, editing, setEditing, protState, metadata, scriptT
         maxWidth: '900px',
         mx: 'auto',
         mt: 4,
+        mb: 4,
         p: 4,
         borderRadius: 2,
         bgcolor: 'rgba(33, 33, 33, 0.95)',
@@ -355,6 +356,7 @@ function ScriptBox({ brainRot, editing, setEditing, protState, metadata, scriptT
 
         <Box
           sx={{
+            mt: '2%',
             flexDirection: 'column',
             justifyContent: 'center',
             display: ((editing || protState === PROTOCOL_STATE_WAITING_TOKENS) ? "none" : "flex"),

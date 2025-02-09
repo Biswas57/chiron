@@ -10,6 +10,7 @@ import themes from './Theme';
 import NutanixBirds from "./nutanixBirds"
 import VideoBackground from "./components/VideoBackground"
 import InstructionPage from "./pages/InstructionPage"
+import ErrorModal from './components/ErrorModal';
 import Game from "./pages/Game"
 import { addKBtoLocalStorage, getAllKBfromLocalStorage, editKBtoLocalStorage } from './utils/localStorage';
 import io from 'socket.io-client';
@@ -22,7 +23,6 @@ import {
   PROTOCOL_STATE_WAITING_FIRST_TOKEN,
   PROTOCOL_STATE_WAITING_TOKENS
 } from './utils/protocol'
-
 
 const API_URL = 'http://10.134.83.201:6969/';
 
@@ -124,6 +124,9 @@ function ConnectionStatus({ status }) {
 function App() {
   // Technical TODO: this is a lot of global states, better if we use something 
   // like MobX to manage states.
+
+  const [errorModalOpen, setErrorModalOpen] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   // This needs to be a global state to disable the navbar during AI generation
   // Navigating during generation leads to a bunch of weirdness.
@@ -248,7 +251,8 @@ function App() {
     // Put the website back into a consistent state if the user click back or forward during edit or generating script
     window.addEventListener("popstate", () => {
       if (editingRef.current) {
-        alert("You have clicked the back/forward browser button during edit mode. Your work have been automatically saved.");
+        setErrorMessage("You have clicked the back/forward browser button during edit mode. Your work have been automatically saved.");
+        setErrorModalOpen(true);
         editKB();
         setEditing(false);
       }
@@ -333,7 +337,8 @@ function App() {
     });
 
     socket.on("error", (data) => {
-      alert(data.error);
+      setErrorMessage(data.error);
+      setErrorModalOpen(true);
 
       socket.off("metadata");
       socket.off("tokens");
@@ -363,65 +368,72 @@ function App() {
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Box
-          sx={{
-            minHeight: '100vh',
-            position: 'relative',
-            backgroundColor: 'transparent',
-          }}
-        >
-          {/* These appear on all pages */}
-          <Navbar
-            brainRot={brainRot}
-            setBrainRot={setBrainRot}
-            isLoading={isLoading}
-            savedKbs={savedKbs}
-            editing={editing}
-            setMetadata={setMetadata}
-            selectSavedKB={viewSavedKB}
-            clearHistory={clearHistory}
-          />
+        <>
+          <CssBaseline />
+          <Box
+            sx={{
+              minHeight: '100vh',
+              position: 'relative',
+              backgroundColor: 'transparent',
+            }}
+          >
+            {/* These appear on all pages */}
+            <Navbar
+              brainRot={brainRot}
+              setBrainRot={setBrainRot}
+              isLoading={isLoading}
+              savedKbs={savedKbs}
+              editing={editing}
+              setMetadata={setMetadata}
+              selectSavedKB={viewSavedKB}
+              clearHistory={clearHistory}
+            />
 
-          {brainRot ? <VideoBackground /> : <NutanixBirds />}
+            {brainRot ? <VideoBackground /> : <NutanixBirds />}
 
-          {/* Page content */}
-          <Routes className="url-input-container">
-            <Route path="/" element={
-              connection === SOCKET_CONNECTED ? (
-                <MainPage
-                  models={models}
+            {/* Page content */}
+            <Routes className="url-input-container">
+              <Route path="/" element={
+                connection === SOCKET_CONNECTED ? (
+                  <MainPage
+                    models={models}
+                    brainRot={brainRot}
+                    isLoading={isLoading}
+                    setIsLoading={setIsLoading}
+                    initiateProtocol={initiateProtocol}
+                    protState={protState}
+                  />
+                ) : (
+                  <ConnectionStatus status={connection} />
+                )
+              }/>
+              <Route path="/result" element={
+                <ScriptBox
                   brainRot={brainRot}
-                  isLoading={isLoading}
-                  setIsLoading={setIsLoading}
-                  initiateProtocol={initiateProtocol}
+                  editing={editing}
+                  setEditing={setEditing}
                   protState={protState}
+                  metadata={metadata}
+                  scriptText={scriptText}
+                  setScriptText={setScriptText}
+                  setIsLoading={setIsLoading}
+                  nextHistItm={nextHistItm}
+                  prevHistItm={prevHistItm}
+                  nextHistAvail={selectedKB && selectedKB.currentIndex < selectedKB.data.length - 1}
+                  prevHistAvail={selectedKB && selectedKB.currentIndex > 0}
+                  editKB={editKB}
                 />
-              ) : (
-                <ConnectionStatus status={connection} />
-              )
-            }/>
-            <Route path="/result" element={
-              <ScriptBox
-                brainRot={brainRot}
-                editing={editing}
-                setEditing={setEditing}
-                protState={protState}
-                metadata={metadata}
-                scriptText={scriptText}
-                setScriptText={setScriptText}
-                setIsLoading={setIsLoading}
-                nextHistItm={nextHistItm}
-                prevHistItm={prevHistItm}
-                nextHistAvail={selectedKB && selectedKB.currentIndex < selectedKB.data.length - 1}
-                prevHistAvail={selectedKB && selectedKB.currentIndex > 0}
-                editKB={editKB}
-              />
-            }/>
-            <Route path="/game" element={<Game />} />
-            <Route path="/instructions" element={<InstructionPage/>} />
-          </Routes>
-        </Box>
+              }/>
+              <Route path="/game" element={<Game />} />
+              <Route path="/instructions" element={<InstructionPage/>} />
+            </Routes>
+          </Box>
+          <ErrorModal
+            open={errorModalOpen}
+            onClose={() => setErrorModalOpen(false)}
+            message={errorMessage}
+          />
+        </>
       </ThemeProvider>
     </BrowserRouter>
   );
