@@ -122,7 +122,7 @@ function App() {
       transports: ['websocket'],
     });
 
-    socket.on('connect_error', () => {
+    const handleSocketDisconnect = () => {
       setConnection(SOCKET_ERROR);
       setIsLoading(false);
 
@@ -130,8 +130,16 @@ function App() {
       socket.off("tokens");
       socket.off("complete");
       setProtState(PROTOCOL_STATE_IDLE);
+    }
 
+    socket.on('connect_error', () => {
+      handleSocketDisconnect();
       console.error("socket connection error...");
+    });
+
+    socket.on('disconnect', () => {
+      handleSocketDisconnect();
+      console.error("socket disconnected...");
     });
 
     socket.on('connect', () => {
@@ -146,12 +154,17 @@ function App() {
       socket.emit('get_models');
     });
 
-    // Put the website back into a consistent state if the user click back or forward
+    // Put the website back into a consistent state if the user click back or forward during edit or generating script
     window.addEventListener("popstate", () => {
       if (editingRef.current) {
         alert("You have clicked the back/forward browser button during edit mode. Your work have been automatically saved.");
         editKB();
         setEditing(false);
+      }
+      if (protState != PROTOCOL_STATE_IDLE) {
+        // Disconnect will trigger a clean up of protocol states by the disconnect event listener
+        socket.disconnect();
+        socket.connect();
       }
     });
 
