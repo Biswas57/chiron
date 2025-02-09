@@ -135,9 +135,47 @@ function App() {
     setTheme(brainRot ? themes.brainrot : themes.default);
   }, [brainRot]);
 
+  // Server connection status.
+  const [connection, setConnection] = useState(SOCKET_CONNECTING);
+
+  // Lists of available LLMs
+  const [models, setModels] = useState(null);
+
+  // State management of the protocol to the backend
+  const [protState, setProtState] = useState(PROTOCOL_STATE_IDLE);
+  const [metadata, setMetadata] = useState(null);
+  const [scriptText, setScriptText] = useState(null);
+
+  // Global state to disable navigation during edit mode
+  const [editing, setEditing] = useState(false);
+
+  // Reference to allow event listeners to always see the latest state consistently
+  const metadataRef = useRef(metadata);
+  useEffect(() => {
+    metadataRef.current = metadata;
+  }, [metadata]);
+  const scriptTextRef = useRef(scriptText);
+  useEffect(() => {
+    scriptTextRef.current = scriptText;
+  }, [scriptText]);
+  const editingRef = useRef(editing);
+  useEffect(() => {
+    editingRef.current = editing;
+  }, [editing]);
+  const protStateRef = useRef(protState);
+  useEffect(() => {
+    protStateRef.current = protState;
+  }, [protState]);
+
   const [savedKbs, setSavedKbs] = useState(getAllKBfromLocalStorage());
   const [selectedKB, setSelectedKB] = useState(null);
   const [selectedKBIndex, setSelectedKBIndex] = useState(null);
+  // Reference to allow event listeners to always see the latest state consistently
+  // Workaround of a crash that happens on autosave at navigate.
+  const selectedKBIndexRef = useRef(selectedKBIndex);
+  useEffect(() => {
+    selectedKBIndexRef.current = selectedKBIndex;
+  }, [selectedKBIndex]);
 
   const viewSavedKB = (idx, history = savedKbs) => {
     history[idx].resetCurrentIndex();
@@ -156,13 +194,11 @@ function App() {
     setScriptText(selectedKB.getCurrentData().data);
   }
 
-  // Global state to disable navigation during edit mode
-  const [editing, setEditing] = useState(false);
   const editKB = () => {
-    editKBtoLocalStorage(selectedKBIndex, scriptText);
+    editKBtoLocalStorage(selectedKBIndexRef.current, scriptTextRef.current);
     const newKbs = getAllKBfromLocalStorage();
     setSavedKbs(newKbs);
-    viewSavedKB(selectedKBIndex, newKbs);
+    viewSavedKB(selectedKBIndexRef.current, newKbs);
   }
 
   const clearHistory = () => {
@@ -171,44 +207,13 @@ function App() {
     setSelectedKB(null);
   }
 
-  // Server connection status.
-  const [connection, setConnection] = useState(SOCKET_CONNECTING);
-
-  // Lists of available LLMs
-  const [models, setModels] = useState(null);
-
-  // TODO: clicking back still triggers a navigation during edit mode. Need to fix
   useEffect(() => {
-    // Prevent navigation during generation
-    const handleBeforeUnload = (event) => {
-      if (editing) {
-        event.preventDefault();
-        event.returnValue = "You are in editing mode, you will lose your changes if you close this page. Are you sure?";
-      }
-    };
-
-    const handleBrowserNavigation = (event) => {
-      if (editing) {
-        console.log("back");
-        event.preventDefault();
-        event.returnValue = "You are in editing mode, you will lose your changes if you close this page. Are you sure?";
-      }
-    };
-
-    if (editing) {
-      window.addEventListener("beforeunload", handleBeforeUnload);
-      window.addEventListener("popstate", handleBrowserNavigation);
-    } else {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("popstate", handleBrowserNavigation);
-    }
-
-    // Open a socket to the server
+    // Open a socket to the server on mount
     socket = io(API_URL, {
       transports: ['websocket'],
     });
 
-    socket.on('connect_error', () => {
+    const handleSocketDisconnect = () => {
       setConnection(SOCKET_ERROR);
       setIsLoading(false);
 
@@ -216,8 +221,16 @@ function App() {
       socket.off("tokens");
       socket.off("complete");
       setProtState(PROTOCOL_STATE_IDLE);
+    }
 
+    socket.on('connect_error', () => {
+      handleSocketDisconnect();
       console.error("socket connection error...");
+    });
+
+    socket.on('disconnect', () => {
+      handleSocketDisconnect();
+      console.error("socket disconnected...");
     });
 
     socket.on('connect', () => {
@@ -232,27 +245,25 @@ function App() {
       socket.emit('get_models');
     });
 
+    // Put the website back into a consistent state if the user click back or forward during edit or generating script
+    window.addEventListener("popstate", () => {
+      if (editingRef.current) {
+        alert("You have clicked the back/forward browser button during edit mode. Your work have been automatically saved.");
+        editKB();
+        setEditing(false);
+      }
+      if (protState != PROTOCOL_STATE_IDLE) {
+        // Disconnect will trigger a clean up of protocol states by the disconnect event listener
+        socket.disconnect();
+        socket.connect();
+      }
+    });
+
     // Cleanup event listener on unmount
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("popstate", handleBrowserNavigation);
       socket.disconnect();
     };
-  }, [editing]);
-
-  // State management of the protocol to the backend
-  const [protState, setProtState] = useState(PROTOCOL_STATE_IDLE);
-  const [metadata, setMetadata] = useState(null);
-  const [scriptText, setScriptText] = useState(null);
-
-  const metadataRef = useRef(metadata);
-  useEffect(() => {
-    metadataRef.current = metadata;
-  }, [metadata]);
-  const scriptTextRef = useRef(scriptText);
-  useEffect(() => {
-    scriptTextRef.current = scriptText;
-  }, [scriptText]);
+  }, []);
 
   const initiateProtocol = (url, fileObj, modelIdx) => {
     // This function initiate the event driven protocol via
@@ -348,7 +359,6 @@ function App() {
       reader.readAsDataURL(fileObj);
     }
   };
-
 
   return (
     <BrowserRouter>

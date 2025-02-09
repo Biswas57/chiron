@@ -8,8 +8,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: 'JetBrains Mono', 'Source Code Pro', 'Fira Code', monospace;
 }
 
 /* make this element fade in on load */

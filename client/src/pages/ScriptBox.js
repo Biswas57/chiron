@@ -13,6 +13,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import TextField from '@mui/material/TextField';
 import LaunchIcon from '@mui/icons-material/Launch';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -21,6 +25,54 @@ import {
   PROTOCOL_STATE_IDLE,
   PROTOCOL_STATE_WAITING_TOKENS,
 } from '../utils/protocol'
+
+const CodeBlock = ({ node, inline, className, children, ...props }) => {
+  // If inline is undefined, assume it's a block code element.
+  const match = /language-(\w+)/.exec(className || '');
+  if (!inline && match) {
+    return (
+      <SyntaxHighlighter
+        style={materialDark}
+        language={match[1]}
+        PreTag="div"
+        {...props}
+      >
+        {String(children).replace(/\n$/, '')}
+      </SyntaxHighlighter>
+    );
+  }
+  
+  return (
+    <code
+      {...props}
+      style={{
+        backgroundColor: 'rgba(255,255,255,0.1)',
+        padding: '2px 4px',
+        borderRadius: '6px',
+        margin: '0 4px'
+      }}
+    >
+      {children}
+    </code>
+  );
+};
+
+
+// const PreBlock = ({ node, inline, children, ...props }) => {
+//     return (
+//       <SyntaxHighlighter
+//         style={materialDark}
+//         PreTag="div"
+//         {...props}
+//       >
+//         {String(children).replace(/\n$/, '')}
+//       </SyntaxHighlighter>
+//     );
+//   };
+
+const markdownComponents = {
+  code: CodeBlock,
+};
 
 function ScriptBox({ brainRot, editing, setEditing, protState, metadata, scriptText, setScriptText, setIsLoading, nextHistItm, prevHistItm, nextHistAvail, prevHistAvail, editKB,  }) {
   // Get the result from App.js
@@ -36,10 +88,17 @@ function ScriptBox({ brainRot, editing, setEditing, protState, metadata, scriptT
   useEffect(() => {
     if (protState === PROTOCOL_STATE_IDLE) {
       setIsLoading(false);
-    } if (protState === PROTOCOL_STATE_WAITING_TOKENS) {
-      // endDivRef.current.scrollIntoView({ behaviour: 'smooth' });
+    } 
+    
+    if (protState === PROTOCOL_STATE_WAITING_TOKENS) {
+      const threshold = 100;
+      const scrollPosition = window.innerHeight + window.scrollY;
+      const documentHeight = document.documentElement.scrollHeight;
+      if (scrollPosition + threshold >= documentHeight) {
+        endDivRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
     }
-  }, [location.state, protState, scriptText]);
+  }, [location.state, protState, setIsLoading, scriptText]);
 
   const handleCopy = async () => {
     try {
@@ -265,19 +324,29 @@ function ScriptBox({ brainRot, editing, setEditing, protState, metadata, scriptT
             />
           ) : (
             <Box
-              sx={{
-                color: 'grey.100',
-                fontSize: '1.125rem',
-                lineHeight: 1.7,
-                '& p': {
-                  marginBottom: 2
-                },
-                overflowWrap: 'break-word'
-              }}
+            sx={{
+              mt: 3,
+              color: 'grey.100',
+              fontSize: '1.125rem',
+              lineHeight: 1.7,
+              overflowWrap: 'break-word',
+              '& h1, & h2, & h3, & h4, & h5, & h6': {
+                marginTop: '1.5rem',
+                marginBottom: '1rem',
+                fontWeight: 800,
+              },
+              '& p': {
+                marginBottom: '1rem'
+              },
+              '& a': {
+                color: '#4ea1f3'
+              }
+            }}
             >
-              {(scriptText?.split('\n').map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
-              )))}
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={markdownComponents}
+               >{scriptText}</ReactMarkdown>    
             </Box>
           )
         }
