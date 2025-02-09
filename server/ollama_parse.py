@@ -14,12 +14,12 @@ models = [
         "ollama_name": "llama3.1:8b-instruct-fp16",
         "context_length": 131072,
     },
-    # {
-    #     "display_name": "Llama-3.3-70B-Instruct (FP16)",
-    #     "note": "High quality script | Very slow!",
-    #     "ollama_name": "llama3.3:70b-instruct-fp16",
-    #     "context_length": 131072,
-    # },
+    {
+        "display_name": "Llama-3.3-70B-Instruct (FP16)",
+        "note": "High quality script | Very slow!",
+        "ollama_name": "llama3.3:70b-instruct-fp16",
+        "context_length": 131072,
+    },
 ]
 
 def generate_prompt(content):
