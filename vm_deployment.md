@@ -145,6 +145,8 @@ ExecStart=/usr/bin/python3 app.py
 Restart=always
 TimeoutStartSec=20
 TimeoutStopSec=20
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
