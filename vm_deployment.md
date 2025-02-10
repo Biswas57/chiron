@@ -65,7 +65,7 @@ cd ~
 PAT=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
 
 # Clone the Chiron repository
-git clone https://<PAT>@github.com/Biswas57/repo.git chiron
+git clone https://$PAT@github.com/Biswas57/repo.git chiron
 cd chiron
 
 # Install frontend dependencies
