@@ -33,7 +33,8 @@ for model in ollama_models_dict:
 
     if not found:
         print(f"haven't been downloaded...downloading:")
-        shcmd = f"ollama pull {model['ollama_name']}"
+        # strip away non printable character so that the log is viewable in journalctl
+        shcmd = f"ollama pull {model['ollama_name']}" + r" | tr -cd '\11\12\15\40-\176'"
         print(f"executing shell command: {shcmd}")
         try:
             if os.system(shcmd) != 0:
