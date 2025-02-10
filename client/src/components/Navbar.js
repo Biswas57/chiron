@@ -15,7 +15,8 @@ import {
   BookOpen,
   Sparkles,
   Gamepad,
-  Trash2
+  Trash2,
+  House
 } from 'lucide-react';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
 import { CircularProgress, Divider, ListItem, Typography, Modal } from '@mui/material';
@@ -137,6 +138,26 @@ const Navbar = ({ brainRot, setBrainRot, isLoading, savedKbs, editing, setMetada
 
                 {/* Main Menu Items */}
                 <Box sx={{ mb: 3 }}>
+                <Button
+                    startIcon={<House size={20} />}
+                    sx={{
+                      width: '100%',
+                      justifyContent: 'flex-start',
+                      py: 1.5,
+                      px: 2,
+                      color: 'text.primary',
+                      textTransform: 'none',
+                      fontSize: '1rem',
+                      fontWeight: 500,
+                      '&:hover': {
+                        backgroundColor: 'rgba(120, 85, 251, 0.1)',
+                      }
+                    }}
+                    onClick={() => { navigate("/"); }}
+                  >
+                    Home
+                  </Button>
+
                   <Button
                     startIcon={<Info size={20} />}
                     sx={{
