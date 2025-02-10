@@ -13,6 +13,9 @@ TODO: add ova stuff
 sudo dnf update -y
 sudo dnf upgrade -y
 
+# Install tar package
+dnf install tar -y
+
 # Install Node.js and npm
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 ### IMPORTANT: Then follow onscreen instruction for updating bashrc
@@ -31,9 +34,6 @@ sudo dnf install nginx -y
 
 ### 3. Install Ollama for running AI models locally
 ```bash
-# Install tar package
-dnf install tar -y
-
 # Fetch Ollama model from website
 curl -fsSL https://ollama.com/install.sh | sh
 ```
