@@ -80,11 +80,16 @@ npm run build
 
 # Change permission for backend dependency install script
 cd ../server
+# For Rocky Linux
 chmod +x dep_script_rocky
+# For Windows/Mac OS
+chmod +x dep_script
 
 # Install backend dependencies
 # This will take a a few minutes.
 sudo ./dep_script_rocky
+# OR
+sudo ./dep_script
 ```
 
 ### 4. Download AI Models
