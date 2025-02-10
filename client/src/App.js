@@ -22,8 +22,7 @@ import {
   PROTOCOL_STATE_WAITING_TOKENS
 } from './utils/protocol'
 
-
-const API_URL = 'http://10.134.83.201:6969/';
+const API_URL = 'http://10.50.136.42:4242/';
 
 let socket = null;
 const SOCKET_CONNECTING = 0;
