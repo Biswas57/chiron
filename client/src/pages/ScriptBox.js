@@ -102,11 +102,32 @@ function ScriptBox({ brainRot, editing, setEditing, protState, metadata, scriptT
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(scriptText);
+      // Try the modern Clipboard API first
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(scriptText);
+      } else {
+        // Fallback to textarea method
+        const textarea = document.createElement('textarea');
+        textarea.value = scriptText;
+        textarea.style.position = 'fixed';  // Avoid scrolling to bottom
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        
+        try {
+          document.execCommand('copy');
+        } catch (err) {
+          console.error('Fallback copy failed:', err);
+          return;
+        } finally {
+          document.body.removeChild(textarea);
+        }
+      }
+      
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy text:', err);
+      console.error('Copy failed:', err);
     }
   };
 
