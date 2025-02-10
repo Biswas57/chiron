@@ -325,7 +325,7 @@ sudo systemctl restart nginx
 
 1. Pull new code:
 ```bash
-cd /home/chiron/chiron
+cd ~/chiron
 git pull
 ```
 
