@@ -1,3 +1,6 @@
+# **Chiron: Production Setup**
+See `vm_deployment.md`
+
 # **Chiron: Local Development Setup**
 
 ## **🚀 Overview**
