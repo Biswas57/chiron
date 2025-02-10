@@ -173,7 +173,7 @@ function InstructionPage() {
           fontStyle: "italic"
         }}
       >
-        That's it! Your knowledge base article is now an engaging video resource.
+        That's it! Your article is now an engaging video resource.
       </Typography>
     </Box>
   );

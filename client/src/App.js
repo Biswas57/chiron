@@ -10,10 +10,12 @@ import themes from './Theme';
 import NutanixBirds from "./nutanixBirds"
 import VideoBackground from "./components/VideoBackground"
 import InstructionPage from "./pages/InstructionPage"
+import ErrorModal from './components/ErrorModal';
 import Game from "./pages/Game"
 import { addKBtoLocalStorage, getAllKBfromLocalStorage, editKBtoLocalStorage } from './utils/localStorage';
 import io from 'socket.io-client';
-import { Typography } from '@mui/material';
+import { Typography, CircularProgress, Paper } from '@mui/material';
+import { WifiOff } from 'lucide-react';
 import {
   PROTOCOL_STATE_IDLE,
   PROTOCOL_STATE_WAITING_FOR_METADATA,
@@ -29,9 +31,102 @@ const SOCKET_CONNECTING = 0;
 const SOCKET_CONNECTED = 1;
 const SOCKET_ERROR = 2;
 
+function ConnectionStatus({ status }) {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '60vh',
+      }}
+    >
+      <Paper
+        elevation={0}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 3,
+          padding: '32px',
+          background: 'rgba(4, 4, 4, 0.1)',
+          backdropFilter: 'blur(5px)',
+          borderRadius: '16px',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          maxWidth: '540px',
+          width: '100%',
+        }}
+      >
+        {status === SOCKET_CONNECTING ? (
+          <>
+            <CircularProgress 
+              size={48}
+              sx={{
+                color: theme => theme.palette.primary.main
+              }}
+            />
+            <Typography
+              variant="h6"
+              sx={{
+                color: 'text.primary',
+                fontWeight: 500,
+                textAlign: 'center'
+              }}
+            >
+              Establishing Connection...
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+                textAlign: 'center'
+              }}
+            >
+              Please wait while we connect to the server
+            </Typography>
+          </>
+        ) : (
+          <>
+            <WifiOff 
+              size={48}
+              style={{
+                color: '#7855fb',
+                opacity: 0.9
+              }}
+            />
+            <Typography
+              variant="h6"
+              sx={{
+                color: 'text.primary',
+                fontWeight: 500,
+                textAlign: 'center'
+              }}
+            >
+              Connection Error
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+                textAlign: 'center'
+              }}
+            >
+              Unable to connect to server. Attempting to reconnect in the background.
+              You can still view previous generations.
+            </Typography>
+          </>
+        )}
+      </Paper>
+    </Box>
+  );
+}
+
 function App() {
   // Technical TODO: this is a lot of global states, better if we use something 
   // like MobX to manage states.
+
+  const [errorModalOpen, setErrorModalOpen] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   // This needs to be a global state to disable the navbar during AI generation
   // Navigating during generation leads to a bunch of weirdness.
@@ -156,7 +251,8 @@ function App() {
     // Put the website back into a consistent state if the user click back or forward during edit or generating script
     window.addEventListener("popstate", () => {
       if (editingRef.current) {
-        alert("You have clicked the back/forward browser button during edit mode. Your work have been automatically saved.");
+        setErrorMessage("You have clicked the back/forward browser button during edit mode. Your work have been automatically saved.");
+        setErrorModalOpen(true);
         editKB();
         setEditing(false);
       }
@@ -241,7 +337,8 @@ function App() {
     });
 
     socket.on("error", (data) => {
-      alert(data.error);
+      setErrorMessage(data.error);
+      setErrorModalOpen(true);
 
       socket.off("metadata");
       socket.off("tokens");
@@ -271,91 +368,72 @@ function App() {
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Box
-          sx={{
-            minHeight: '100vh',
-            position: 'relative',
-            backgroundColor: 'transparent',
-          }}
-        >
-          {/* These appear on all pages */}
-          <Navbar
-            brainRot={brainRot}
-            setBrainRot={setBrainRot}
-            isLoading={isLoading}
-            savedKbs={savedKbs}
-            editing={editing}
-            setMetadata={setMetadata}
-            selectSavedKB={viewSavedKB}
-            clearHistory={clearHistory}
-          />
+        <>
+          <CssBaseline />
+          <Box
+            sx={{
+              minHeight: '100vh',
+              position: 'relative',
+              backgroundColor: 'transparent',
+            }}
+          >
+            {/* These appear on all pages */}
+            <Navbar
+              brainRot={brainRot}
+              setBrainRot={setBrainRot}
+              isLoading={isLoading}
+              savedKbs={savedKbs}
+              editing={editing}
+              setMetadata={setMetadata}
+              selectSavedKB={viewSavedKB}
+              clearHistory={clearHistory}
+            />
 
-          {brainRot ? <VideoBackground /> : <NutanixBirds />}
+            {brainRot ? <VideoBackground /> : <NutanixBirds />}
 
-          {/* Page content */}
-          <Routes className="url-input-container">
-            <Route path="/" element={
-              connection === SOCKET_CONNECTED ? (
-                <MainPage
-                  models={models}
+            {/* Page content */}
+            <Routes className="url-input-container">
+              <Route path="/" element={
+                connection === SOCKET_CONNECTED ? (
+                  <MainPage
+                    models={models}
+                    brainRot={brainRot}
+                    isLoading={isLoading}
+                    setIsLoading={setIsLoading}
+                    initiateProtocol={initiateProtocol}
+                    protState={protState}
+                  />
+                ) : (
+                  <ConnectionStatus status={connection} />
+                )
+              }/>
+              <Route path="/result" element={
+                <ScriptBox
                   brainRot={brainRot}
-                  isLoading={isLoading}
-                  setIsLoading={setIsLoading}
-                  initiateProtocol={initiateProtocol}
+                  editing={editing}
+                  setEditing={setEditing}
                   protState={protState}
+                  metadata={metadata}
+                  scriptText={scriptText}
+                  setScriptText={setScriptText}
+                  setIsLoading={setIsLoading}
+                  nextHistItm={nextHistItm}
+                  prevHistItm={prevHistItm}
+                  nextHistAvail={selectedKB && selectedKB.currentIndex < selectedKB.data.length - 1}
+                  prevHistAvail={selectedKB && selectedKB.currentIndex > 0}
+                  editKB={editKB}
                 />
-              ) : (
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    textAlign: 'center',
-                  }}
-                >
-                  { connection === SOCKET_ERROR ? (                  
-                    <Typography
-                      sx={{
-                        fontSize: '200%'
-                      }}
-                    >
-                      Cannot connect to server, reattempting connection in background. In the meantime you can only view previous generations.
-                    </Typography>
-                  ) : (
-                    <Typography
-                      sx={{
-                        fontSize: '200%'
-                      }}
-                    >
-                      Connecting to server...
-                    </Typography>
-                  )}
-                </Box>
-              )
-            }/>
-            <Route path="/result" element={
-              <ScriptBox
-                brainRot={brainRot}
-                editing={editing}
-                setEditing={setEditing}
-                protState={protState}
-                metadata={metadata}
-                scriptText={scriptText}
-                setScriptText={setScriptText}
-                setIsLoading={setIsLoading}
-                nextHistItm={nextHistItm}
-                prevHistItm={prevHistItm}
-                nextHistAvail={selectedKB && selectedKB.currentIndex < selectedKB.data.length - 1}
-                prevHistAvail={selectedKB && selectedKB.currentIndex > 0}
-                editKB={editKB}
-              />
-            }/>
-            <Route path="/game" element={<Game />} />
-            <Route path="/instructions" element={<InstructionPage/>} />
-          </Routes>
-        </Box>
+              }/>
+              <Route path="/game" element={<Game />} />
+              <Route path="/instructions" element={<InstructionPage/>} />
+            </Routes>
+          </Box>
+          <ErrorModal
+            open={errorModalOpen}
+            onClose={() => setErrorModalOpen(false)}
+            message={errorMessage}
+          />
+        </>
       </ThemeProvider>
     </BrowserRouter>
   );

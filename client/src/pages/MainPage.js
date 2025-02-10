@@ -34,7 +34,17 @@ function MainPage({ models, brainRot, isLoading, setIsLoading, initiateProtocol,
   }, [protState]);
 
   return (
-    <div>
+    <Box
+      component="div"
+      sx={{
+        width: '100%',
+        minHeight: '500px',
+        height: 'calc(100vh - 64px)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center'
+      }}
+    >      
       <AnimatePresence mode="wait">
         {!isLoading && (
           <MotionBox
@@ -48,10 +58,9 @@ function MainPage({ models, brainRot, isLoading, setIsLoading, initiateProtocol,
               zIndex: 1,
               display: 'flex',
               flexDirection: 'column',
-              height: '80vh',
+              flex: 1,
               justifyContent: 'center',
               alignItems: 'center',
-              width: '100vw'
             }}
           >
             <InputBox models={models} onSubmitURL={handleUrlSubmit} onSubmitFile={handleFileSubmit} setHttpErrorMsg={setError} />
@@ -82,14 +91,18 @@ function MainPage({ models, brainRot, isLoading, setIsLoading, initiateProtocol,
             transition={{ duration: 0.3 }}
             sx={{
               position: 'relative',
-              zIndex: 1
+              zIndex: 1,
+              flex: 1,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
             }}
           >
             <LoadingAnimation brainRot={brainRot} protState={protState} />
           </MotionBox>
         )}
       </AnimatePresence>
-    </div>
+    </Box>
   );
 }
 
