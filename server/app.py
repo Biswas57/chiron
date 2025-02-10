@@ -36,7 +36,8 @@ for model in ollama_models_dict:
         shcmd = f"ollama pull {model['ollama_name']}"
         print(f"executing shell command: {shcmd}")
         try:
-            os.system(shcmd)
+            if os.system(shcmd) != 0:
+                sys.exit(1)
         except Exception as e:
             print(f"{str(e)}")
 
@@ -130,4 +131,4 @@ def handle_file_generate(data):
 
 if __name__ == "__main__":
     # Run the Flask development server (not for production use)
-    socketio.run(app, debug=True, host='0.0.0.0', port=6969)
+    socketio.run(app, debug=True, host='0.0.0.0', port=4242, allow_unsafe_werkzeug=True)
