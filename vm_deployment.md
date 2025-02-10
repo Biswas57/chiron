@@ -58,7 +58,7 @@ sudo systemctl daemon-reload && sudo systemctl restart ollama
 ### 3. Clone Repository and Install Dependencies
 ```bash
 # Navigate to home directory
-cd /home
+cd ~
 
 # Clone the repository, replace <PAT> with the Personal Access Token
 git clone https://<PAT>@github.com/Biswas57/chiron.git
@@ -68,8 +68,10 @@ cd chiron
 cd client
 npm install
 
-# Ensure the API call URL in pages/MainPage.js has relative route: "api/generate"
-# Build frontend
+# IMPORTANT: Ensure the API call URL in App.js have your VM's ip address with port 4242!
+nano src/App.js
+# Build frontend for deployment later
+# You will see some warnings, this is OK.
 npm run build
 
 # Change permission for backend dependency install script
@@ -77,7 +79,7 @@ cd ../server
 chmod +x dep_script_rocky
 
 # Install backend dependencies
-./dep_script_rocky
+sudo ./dep_script_rocky
 ```
 
 ## Configure Backend (Flask)
