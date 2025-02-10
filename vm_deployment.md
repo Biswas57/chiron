@@ -34,7 +34,7 @@ sudo dnf install git -y
 sudo dnf install nginx -y
 ```
 
-### 3. Install Ollama for running AI models locally
+### 2. Install Ollama for running AI models locally
 ```bash
 # Install Ollama
 curl -fsSL https://ollama.com/install.sh | sh
@@ -54,7 +54,6 @@ sudo chgrp ollama /home/ollama_alt_home
 
 # Restart Ollama service for changes to take effect
 sudo systemctl daemon-reload && sudo systemctl restart ollama
-
 ```
 
 ### 3. Clone Repository and Install Dependencies
@@ -62,8 +61,11 @@ sudo systemctl daemon-reload && sudo systemctl restart ollama
 # Navigate to home directory
 cd ~
 
-# Clone the repository, replace <PAT> with the Personal Access Token
-git clone https://<PAT>@github.com/Biswas57/chiron.git
+# Personal Access Token (PAT) for Cloning the repository into a VM
+PAT=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
+
+# Clone the Chiron repository
+git clone https://<PAT>@github.com/Biswas57/repo.git chiron
 cd chiron
 
 # Install frontend dependencies
@@ -93,25 +95,26 @@ python app.py
 
 # You will see something like this:
 [chiron@localhost server]$ python app.py 
-BOOTING UP
-*** Downloaded models:
-[]
-*** Needed models:
-['llama3.1:8b-instruct-fp16', 'llama3.3:70b-instruct-fp16']
-Checking status of llama3.1:8b-instruct-fp16...haven't been downloaded...downloading:
-executing shell command: ollama pull llama3.1:8b-instruct-fp16
+>> BOOTING UP
+>> *** Downloaded models:
+>> []
+>> *** Needed models:
+>> ['llama3.1:8b-instruct-fp16', 'llama3.3:70b-instruct-fp16']
+>> Checking status of llama3.1:8b-instruct-fp16...haven\'t been downloaded...downloading:
+>> executing shell command: ollama pull llama3.1:8b-instruct-fp16
 ...
 
 # Wait for the downloads and checksum validation to finish. It is about 160GB. Press Ctrl+C to exit once you see "ALL MODELS OK...CONTINUING BOOT"
 ```
 
 ## Configure Backend (Flask)
+
 ### 1. Update Flask Code
 Navigate to your server directory and ensure your Flask app has the correct host setting in app.py:
 ```bash
 cd ~/chiron/server
 
-# Ensure app.py has the following block:
+# Ensure main in app.py looks like this:
 if __name__ == "__main__":
     socketio.run(app, debug=True, host='0.0.0.0', port=4242, allow_unsafe_werkzeug=True)
 ```
@@ -289,10 +292,9 @@ http://<vm-ip>/
    - Check file permissions in server directory
 
 4. Backend not responding:
-   - curl -X POST -H "Content-Type: application/json" -d '{"url":"https://portal.nutanix.com/page/documents/kbs/details?targetId=kA0320000004H2NCAU"}' http://localhost:4242/api/generate
-
-  - check AI API functions and API keys
-  - check backend functions output formatting
+   - Use the [backend_troubleshoot script]() to test if websocket connection is existing
+   - check AI API functions and correct variable are being parsed
+   - check backend functions output formatting
 
 ### Quick Fixes
 

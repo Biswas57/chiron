@@ -1,0 +1,26 @@
+#! usr/env/bin python3
+import socketio
+
+# Instantiate a Socket.IO client
+sio = socketio.Client()
+
+@sio.event
+def connect():
+    print("Connected to the backend server!")
+
+@sio.event
+def disconnect():
+    print("Disconnected from the backend server.")
+
+@sio.on("get_models_return")
+def on_get_models_return(data):
+    print("Received models:", data)
+
+# Connect to the Socket.IO server
+sio.connect('http://localhost:4242')
+
+# Request the list of models to verify communication
+sio.emit('get_models')
+
+# Keep the client running to listen for responses
+sio.wait()
