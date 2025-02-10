@@ -34,8 +34,25 @@ sudo dnf install nginx -y
 
 ### 3. Install Ollama for running AI models locally
 ```bash
-# Fetch Ollama model from website
+# Install Ollama
 curl -fsSL https://ollama.com/install.sh | sh
+
+# Create a directory for Ollama to download the models
+mkdir /home/ollama_alt_home
+
+# Using your favourite text editor, reconfigure Ollama to use the new home
+sudo nano /etc/systemd/system/ollama.service
+# Add this line:
+Environment="HOME=/home/ollama_alt_home"
+# Under [Environment]
+
+# Make the directory owned by the Ollama user
+sudo chown ollama /home/ollama_alt_home
+sudo chgrp ollama /home/ollama_alt_home
+
+# Restart Ollama service for changes to take effect
+sudo systemctl daemon-reload && sudo systemctl restart ollama
+
 ```
 
 ### 3. Clone Repository and Install Dependencies
