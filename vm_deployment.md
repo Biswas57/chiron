@@ -64,7 +64,7 @@ cd /home/chiron/server
 
 # Ensure app.py has the following block:
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    socketio.run(app, debug=True, host='0.0.0.0', port=4242, allow_unsafe_werkzeug=True)
 ```
 
 ### 2. Create Flask Service
@@ -84,7 +84,7 @@ User=root
 WorkingDirectory=/home/chiron/server
 Environment="FLASK_APP=app.py"
 Environment="FLASK_ENV=production"
-ExecStart=/usr/bin/python3 -c "from app import app; app.run(host='0.0.0.0', port=5000)"
+ExecStart=/usr/bin/python3 -c "from app import app; app.run(host='0.0.0.0', port=4242)"
 Restart=always
 TimeoutStartSec=20
 TimeoutStopSec=20
