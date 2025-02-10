@@ -9,7 +9,10 @@ sudo dnf update -y
 sudo dnf upgrade -y
 
 # Install Node.js and npm
-sudo dnf install nodejs npm -y
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+### IMPORTANT: Then follow onscreen instruction for updating bashrc
+### Finally:
+nvm install 22
 
 # Install Python and pip
 sudo dnf install python3 python3-pip -y
