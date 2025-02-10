@@ -31,13 +31,6 @@ def scrape_kb_id(text):
     else:
         return match.group()
 
-def kb_check(page_content):
-    kb_match = re.search(r"KB-[0-9]*", page_content)
-    if kb_match:
-        return True
-    return False
-
-
 def generate(pdf, filename, model_idx):
     text = scrape_text(pdf)
     if text is None:
