@@ -102,7 +102,7 @@ Checking status of llama3.1:8b-instruct-fp16...haven't been downloaded...downloa
 executing shell command: ollama pull llama3.1:8b-instruct-fp16
 ...
 
-# Wait for the downloads to finish. It is about 160GB. Press Ctrl+C to exit once you see "ALL MODELS OK...CONTINUING BOOT"
+# Wait for the downloads and checksum validation to finish. It is about 160GB. Press Ctrl+C to exit once you see "ALL MODELS OK...CONTINUING BOOT"
 ```
 
 ## Configure Backend (Flask)
