@@ -2,6 +2,11 @@
 
 ## Initial Setup and Prerequisites
 
+### 0. Set up VM on Prism Element
+Create a VM on an SSD/NVMe cluster with at least 300GB of disk, 200GB of RAM and as much CPUs as possible.
+
+TODO: add ova stuff
+
 ### 1. Install Required Packages
 ```bash
 # Update system
