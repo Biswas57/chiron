@@ -3,7 +3,7 @@
 ## Initial Setup and Prerequisites
 
 ### 0. Set up VM on Prism Element
-Create a VM on an SSD/NVMe cluster with at least 300GB of disk, 200GB of RAM and as much CPUs as possible.
+Create a VM on an SSD/NVMe cluster with at least 300GB of disk, 200GB of RAM and as much CPUs as possible. At least 100GHz worth of CPU is recommended for acceptable performance.
 
 Configure your VM with a static IP address, IP gateway, Name Server and Netmask.
 
