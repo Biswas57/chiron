@@ -41,6 +41,8 @@ for model in ollama_models_dict:
         except Exception as e:
             print(f"{str(e)}")
 
+print("ALL MODELS OK...CONTINUING BOOT")
+
 # Initialise the server
 app = Flask(__name__)
 CORS(app)

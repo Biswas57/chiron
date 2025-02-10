@@ -85,6 +85,26 @@ chmod +x dep_script_rocky
 sudo ./dep_script_rocky
 ```
 
+### 4. Download AI Models
+Although not strictly necessary, it is recommended you do this step to be able to monitor the download progress easily as once the backend is deployed as a service, viewing the download progress will be more difficult.
+```bash
+# Run the backend manually, this will trigger download of the AI models automatically
+python app.py
+
+# You will see something like this:
+[chiron@localhost server]$ python app.py 
+BOOTING UP
+*** Downloaded models:
+[]
+*** Needed models:
+['llama3.1:8b-instruct-fp16', 'llama3.3:70b-instruct-fp16']
+Checking status of llama3.1:8b-instruct-fp16...haven't been downloaded...downloading:
+executing shell command: ollama pull llama3.1:8b-instruct-fp16
+...
+
+# Wait for the downloads to finish. It is about 160GB. Press Ctrl+C to exit once you see "ALL MODELS OK...CONTINUING BOOT"
+```
+
 ## Configure Backend (Flask)
 ### 1. Update Flask Code
 Navigate to your server directory and ensure your Flask app has the correct host setting in app.py:
