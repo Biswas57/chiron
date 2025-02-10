@@ -28,17 +28,6 @@ dnf install tar -y
 
 # Fetch Ollama model from website
 curl -fsSL https://ollama.com/install.sh | sh
-
-# Check Ollama model runs properly
-ollama run llama3.2-vision:90b
-
-# Create Modelfile to increase context window allowing for larger article
-echo "# Modelfile
-FROM llama3.2-vision:90b
-PARAMETER num_ctx 128000" > Modelfile
-
-# Apply Modelfile
-ollama create -f Modelfile llama3.2-vision:90b
 ```
 
 
