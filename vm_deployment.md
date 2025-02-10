@@ -116,7 +116,7 @@ if __name__ == "__main__":
     socketio.run(app, debug=True, host='0.0.0.0', port=4242, allow_unsafe_werkzeug=True)
 ```
 
-### 2. Create Flask Service
+### 2. Create Flask Service for Backend
 ```bash
 # Create systemd service file
 sudo vi /etc/systemd/system/flask-app.service
@@ -129,11 +129,11 @@ Description=Flask Application
 After=network.target
 
 [Service]
-User=root
-WorkingDirectory=/home/chiron/server
+User=chiron
+WorkingDirectory=/home/chiron/chiron/server
 Environment="FLASK_APP=app.py"
 Environment="FLASK_ENV=production"
-ExecStart=/usr/bin/python3 -c "from app import app; app.run(host='0.0.0.0', port=4242)"
+ExecStart=/usr/bin/python3 app.py
 Restart=always
 TimeoutStartSec=20
 TimeoutStopSec=20
@@ -142,18 +142,15 @@ TimeoutStopSec=20
 WantedBy=multi-user.target
 ```
 
-## Configure Frontend Deploymen (Nginx)
+## Configure Frontend Deployment (Nginx)
 
 ### 1. Set Directory Permissions
 ```bash
 # Set correct permissions for directories
-sudo chmod 755 /home
-sudo chmod 755 /home/chiron
-sudo chmod 755 /home/chiron/client
-sudo chmod 755 /home/chiron/client/build
+sudo chmod 755 /home /home/chiron /home/chiron/chiron/client /home/chiron/chiron/client/build
 
 # Change ownership of build directory
-sudo chown -R nginx:nginx /home/chiron/client/build
+sudo chown -R nginx:nginx /home/chiron/chiron/client/build
 ```
 
 ### 2. Configure Nginx
@@ -168,7 +165,7 @@ server {
     listen 80;
     
     location / {
-        root /home/chiron/client/build;
+        root /home/chiron/chiron/client/build;
         try_files $uri $uri/ /index.html;
     }
 
@@ -187,8 +184,8 @@ server {
 sudo dnf install policycoreutils-python-utils -y
 
 # Set SELinux context for build directory
-sudo semanage fcontext -a -t httpd_sys_content_t "/home/chiron/client/build(/.*)?"
-sudo restorecon -Rv /home/chiron/client/build
+sudo semanage fcontext -a -t httpd_sys_content_t "/home/chiron/chiron/client/build(/.*)?"
+sudo restorecon -Rv /home/chiron/chiron/client/build
 
 # Allow nginx to connect to Flask backend
 sudo setsebool -P httpd_can_network_connect 1
@@ -219,6 +216,11 @@ sudo systemctl start flask-app
 ```bash
 # Allow HTTP traffic
 sudo firewall-cmd --permanent --add-service=http
+
+# Allow TCP traffic on port 4242 for clients' frontend to talk to backend
+sudo firewall-cmd --permanent --add-port=4242/tcp
+
+# Refresh firewall
 sudo firewall-cmd --reload
 
 # Verify firewall configuration
@@ -237,10 +239,10 @@ sudo systemctl status flask-app
 
 ### 2. Check Logs
 ```bash
-# Check nginx error logs
+# Check nginx error logs, should be empty
 sudo tail -f /var/log/nginx/error.log
 
-# Check Flask app logs
+# Check Flask app logs, you should see "* Running on http://a.b.c.d:4242"
 sudo journalctl -u flask-app -f
 ```
 
