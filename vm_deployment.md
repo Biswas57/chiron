@@ -253,7 +253,7 @@ sudo systemctl status flask-app
 sudo tail -f /var/log/nginx/error.log
 
 # Check Flask app logs, you should see "* Running on http://a.b.c.d:4242"
-sudo journalctl -u flask-app -f
+sudo journalctl -u flask-app --no-pager --output cat -f
 ```
 
 ### 3. Test Access
@@ -294,7 +294,7 @@ http://<vm-ip>/
    - Check if ports are listening: `sudo ss -tulpn | grep '80\|4242'`
 
 3. Flask app not starting:
-   - Check logs: `sudo journalctl -u flask-app -f`
+   - Check logs: `sudo journalctl -u flask-app --no-pager --output cat -f`
    - Verify Python dependencies
    - Check file permissions in server directory
 
@@ -365,7 +365,7 @@ sudo tail -f /var/log/nginx/access.log
 # Nginx error logs
 sudo tail -f /var/log/nginx/error.log
 
-# Flask app logs
-sudo journalctl -u flask-app -f
+# Flask app logs, this also shows AI models download progress
+sudo journalctl -u flask-app --no-pager --output cat -f
 ```
 
