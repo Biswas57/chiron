@@ -276,12 +276,12 @@ http://<vm-ip>/
 1. 500 Internal Server Error:
    - Check nginx error logs: `sudo tail -f /var/log/nginx/error.log`
    - Verify file permissions
-   - Check SELinux context: `ls -lZ /home/chiron/react-app/client/build`
+   - Check SELinux context: `ls -lZ /home/chiron/chiron`
 
 2. Cannot connect to server:
    - Check firewall: `sudo firewall-cmd --list-all`
    - Verify services are running: `sudo systemctl status nginx flask-app`
-   - Check if ports are listening: `sudo ss -tulpn | grep '80\|5000'`
+   - Check if ports are listening: `sudo ss -tulpn | grep '80\|4242'`
 
 3. Flask app not starting:
    - Check logs: `sudo journalctl -u flask-app -f`
@@ -289,7 +289,7 @@ http://<vm-ip>/
    - Check file permissions in server directory
 
 4. Backend not responding:
-   - curl -X POST -H "Content-Type: application/json" -d '{"url":"https://portal.nutanix.com/page/documents/kbs/details?targetId=kA0320000004H2NCAU"}' http://localhost:5000/api/generate
+   - curl -X POST -H "Content-Type: application/json" -d '{"url":"https://portal.nutanix.com/page/documents/kbs/details?targetId=kA0320000004H2NCAU"}' http://localhost:4242/api/generate
 
   - check AI API functions and API keys
   - check backend functions output formatting
@@ -304,7 +304,7 @@ sudo systemctl restart flask-app
 
 2. Reset SELinux context:
 ```bash
-sudo restorecon -Rv /home/chiron/react-app/client/build
+sudo restorecon -Rv /home/chiron/chiron/client/build
 ```
 
 3. Clear nginx cache:
@@ -318,7 +318,7 @@ sudo systemctl restart nginx
 
 1. Pull new code:
 ```bash
-cd /home/chiron
+cd /home/chiron/chiron
 git pull
 ```
 
