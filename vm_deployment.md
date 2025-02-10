@@ -24,7 +24,7 @@ sudo dnf install git -y
 sudo dnf install nginx -y
 ```
 
-### 3. Install Ollama AI model
+### 3. Install Ollama for running AI models locally
 ```bash
 # Install tar package
 dnf install tar -y
@@ -33,14 +33,13 @@ dnf install tar -y
 curl -fsSL https://ollama.com/install.sh | sh
 ```
 
-
 ### 3. Clone Repository and Install Dependencies
 ```bash
 # Navigate to home directory
 cd /home
 
-# Clone your repository
-git clone <your-repo-url> chiron
+# Clone the repository, replace <PAT> with the Personal Access Token
+git clone https://<PAT>@github.com/Biswas57/chiron.git
 cd chiron
 
 # Install frontend dependencies
@@ -127,7 +126,7 @@ server {
     }
 
     location /api {
-        proxy_pass http://localhost:5000;
+        proxy_pass http://localhost:4242;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
