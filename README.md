@@ -1,5 +1,5 @@
 # **Chiron: Production Setup**
-See `vm_deployment.md`
+See [vm_deployment.md](vm_deployment.md)
 
 # **Chiron: Local Development Setup**
 
