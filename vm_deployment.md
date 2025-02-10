@@ -5,6 +5,8 @@
 ### 0. Set up VM on Prism Element
 Create a VM on an SSD/NVMe cluster with at least 300GB of disk, 200GB of RAM and as much CPUs as possible.
 
+Configure your VM with a static IP address, IP gateway, Name Server and Netmask.
+
 TODO: add ova stuff
 
 ### 1. Install Required Packages
@@ -41,7 +43,7 @@ curl -fsSL https://ollama.com/install.sh | sh
 mkdir /home/ollama_alt_home
 
 # Using your favourite text editor, reconfigure Ollama to use the new home
-sudo nano /etc/systemd/system/ollama.service
+sudo vi /etc/systemd/system/ollama.service
 # Add this line:
 Environment="HOME=/home/ollama_alt_home"
 # Under [Environment]
@@ -69,7 +71,7 @@ cd client
 npm install
 
 # IMPORTANT: Ensure the API call URL in App.js have your VM's ip address with port 4242!
-nano src/App.js
+vi src/App.js
 # Build frontend for deployment later
 # You will see some warnings, this is OK.
 npm run build
@@ -79,6 +81,7 @@ cd ../server
 chmod +x dep_script_rocky
 
 # Install backend dependencies
+# This will take a a few minutes.
 sudo ./dep_script_rocky
 ```
 
@@ -86,7 +89,7 @@ sudo ./dep_script_rocky
 ### 1. Update Flask Code
 Navigate to your server directory and ensure your Flask app has the correct host setting in app.py:
 ```bash
-cd /home/chiron/server
+cd ~/chiron/server
 
 # Ensure app.py has the following block:
 if __name__ == "__main__":
