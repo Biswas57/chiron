@@ -26,9 +26,7 @@ def dequeue():
     app.logger.debug(client_queue)
     if len(client_queue) == 0:
         pass
-    elif len(client_queue) == 1:
-        client_queue = []
     else:
-        client_queue = client_queue[1:]
+        del client_queue[0]
 
     refresh_queue_to_all()
