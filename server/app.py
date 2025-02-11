@@ -90,7 +90,7 @@ def handle_get_models():
 
 # Queue calls
 @socketio.on("enqueue")
-def enqueue():
+def enqueue(data):
     if len(client_queue) != 0:
         client_queue.append({"sid": request.sid})
 
