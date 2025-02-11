@@ -20,4 +20,5 @@ def dequeue():
         client_queue = []
     else:
         client_queue = client_queue[1:]
-        refresh_queue_to_all()
+    
+    refresh_queue_to_all()
