@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Box from '@mui/material/Box';
 import { BrowserRouter, Routes, Route } from "react-router";
 import { ThemeProvider } from '@mui/material/styles';
@@ -8,7 +8,6 @@ import MainPage from './pages/MainPage';
 import ScriptBox from "./pages/ScriptBox";
 import themes from './Theme';
 import NutanixBirds from "./nutanixBirds"
-import VideoBackground from "./components/VideoBackground"
 import InstructionPage from "./pages/InstructionPage"
 import ErrorModal from './components/ErrorModal';
 import Game from "./pages/Game"
@@ -24,6 +23,8 @@ import {
   PROTOCOL_STATE_WAITING_TOKENS,
   PROTOCOL_STATE_QUEUEING
 } from './utils/protocol'
+
+const VideoBackground = React.lazy(() => import("./components/VideoBackground"));
 
 const API_URL = '/';
 
@@ -114,6 +115,28 @@ function ConnectionStatus({ status }) {
             >
               Unable to connect to server. Attempting to reconnect in the background.
               You can still view previous generations.
+            </Typography>
+            <Box
+              sx={{
+                width: '100%',
+                height: '1px',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                margin: '4px 0'
+              }}
+            />
+            <Typography
+              variant="subtitle1"
+              sx={{
+                color: 'text.secondary',
+                textAlign: 'center',
+                fontStyle: 'italic',
+                whiteSpace: 'pre-line'
+              }}
+            >
+              {`The link has faltered, but don't fear,
+            Chiron's tools are still quite near.
+            A brief delay, but scripts await,
+            To guide you through and help create.`}
             </Typography>
           </>
         )}
@@ -409,7 +432,11 @@ function App() {
               clearHistory={clearHistory}
             />
 
-            {brainRot ? <VideoBackground /> : <NutanixBirds />}
+            {brainRot ? 
+            <Suspense fallback={<div></div>}>
+              <VideoBackground />
+            </Suspense>
+            : <NutanixBirds />}
 
             {/* Page content */}
             <Routes className="url-input-container">
