@@ -1,13 +1,13 @@
+# Internal queue functions
+from flask_socketio import emit
+from flask import current_app as app
+
 # Client queue
 # array of dict:
 # {
 #     sid: string,
 # }
 client_queue = []
-# Internal functions
-# Internal functions
-from flask_socketio import emit
-from flask import current_app as app
 
 def refresh_queue_to_all():
     app.logger.debug("refresh_queue_to_all")

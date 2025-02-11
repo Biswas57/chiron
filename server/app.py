@@ -116,6 +116,7 @@ def handle_url_generate(data):
             # The URL scraper will further return events for the frontend.
             us.generate(data["url"], data["modelIdx"])
     except Exception as e:
+        app.logger.error(e)
         emit("error", {"error": f"An internal server error occured: {str(e)}"})
 
 @socketio.on("file_generate")
@@ -141,6 +142,7 @@ def handle_file_generate(data):
             pdf_buffer = io.BytesIO(pdf_bytes)
             pr.generate(pdf_buffer, data["filename"], data["modelIdx"])
     except Exception as e:
+        app.logger.error(e)
         emit("error", {"error": f"An internal server error occured: {str(e)}"})
 
 if __name__ == "__main__":
