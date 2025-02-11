@@ -379,6 +379,8 @@ function App() {
         }
       }
     });
+
+    socket.emit("enqueue", {});
   };
 
   return (

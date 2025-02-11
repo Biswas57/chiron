@@ -6,6 +6,8 @@
 client_queue = []
 # Internal functions
 # Internal functions
+from flask_socketio import SocketIO, emit
+
 def refresh_queue_to_all():
     for i, client_state in enumerate(client_queue):
         sid = client_state["sid"]
