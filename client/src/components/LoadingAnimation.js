@@ -6,6 +6,7 @@ import brainRotGif from '../assets/brainrot/loading.gif'
 import {
   PROTOCOL_STATE_WAITING_FOR_METADATA,
   PROTOCOL_STATE_WAITING_FIRST_TOKEN,
+  PROTOCOL_STATE_QUEUEING,
 } from '../utils/protocol';
 
 const LoadingMessage = ({ message }) => (

@@ -132,7 +132,7 @@ function App() {
   // This needs to be a global state to disable the navbar during AI generation
   // Navigating during generation leads to a bunch of weirdness.
   const [isLoading, setIsLoading] = useState(false);
-  const [queuePos, setQueuePos] = setState(-1);
+  const [queuePos, setQueuePos] = useState(-1);
 
   const [brainRot, setBrainRot] = useState(false);
   const [theme, setTheme] = useState(themes.default);
