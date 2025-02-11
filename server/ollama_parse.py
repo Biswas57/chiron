@@ -80,12 +80,13 @@ def write_script(prompt, model_idx):
         # Step 3 of protocol: stream back tokens as they are generated.
         emit("tokens", {"tokens": chunk["response"]})
 
-    # Inform queueing client AI is ready for next job
-    dequeue()
-
     # Step 4 of protocol: send a completion event.
     app.logger.debug(f"Done! Sending complete event")
     emit("complete", {})
+
+    # Inform queueing client AI is ready for next job
+    # This is done after completion event to avoid race conditions on the queue.
+    dequeue()
 
 def generate(content, model_idx):
     """
