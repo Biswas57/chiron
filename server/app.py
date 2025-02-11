@@ -11,7 +11,7 @@ import base64
 import io
 import ollama
 import os
-from client_queue import client_queue, refresh_queue_to_all
+from client_queue_mgmt import client_queue, refresh_queue_to_all
 
 # Before we do anything, make sure all the models are downloaded
 print("BOOTING UP")
