@@ -72,7 +72,8 @@ def handle_disconnect():
     for i, client_state in enumerate(client_queue):
         if client_state["sid"] == request.sid:
             del client_queue[i]
-            refresh_queue_to_all()
+    
+    refresh_queue_to_all()
 
 def is_valid_url(url):
     """Basic URL validation"""
