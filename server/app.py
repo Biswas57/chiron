@@ -11,6 +11,7 @@ import base64
 import io
 import ollama
 import os
+from client_queue import client_queue, refresh_queue_to_all
 
 # Before we do anything, make sure all the models are downloaded
 print("BOOTING UP")
@@ -58,27 +59,7 @@ def handle_exit(signum, frame):
 signal.signal(signal.SIGINT, handle_exit)  # Handle Ctrl+C
 signal.signal(signal.SIGTERM, handle_exit)  # Handle termination signals
 
-# Client queue
-# array of dict:
-# {
-#     sid: string,
-# }
-client_queue = []
-# Internal functions
-# Internal functions
-def refresh_queue_to_all():
-    for i, client_state in enumerate(client_queue):
-        sid = client_state["sid"]
-        emit("queue", {"queue_pos": i + 1}, to=sid)
 
-def dequeue():
-    if len(client_queue) == 0:
-        pass
-    elif len(client_queue) == 1:
-        client_queue = []
-    else:
-        client_queue = client_queue[1:]
-        refresh_queue_to_all()
 
 # Event handlers on the websocket
 @socketio.on('connect')

@@ -4,7 +4,7 @@ from flask import current_app as app
 import ollama
 import tiktoken
 import math
-from app import dequeue
+from client_queue import dequeue
 
 # The models that we have available. This is queried when the app boots to download
 # the models if they haven't been already.
