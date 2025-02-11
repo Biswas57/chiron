@@ -94,7 +94,7 @@ def enqueue(data):
     if len(client_queue) != 0:
         client_queue.append({"sid": request.sid})
 
-    app.logger.debug(f"Client #{request.sid} QUEUE POS {len(request.sid)}")
+    app.logger.debug(f"Client #{request.sid} QUEUE POS {len(client_queue)}")
     emit("queue", {"queue_pos": len(client_queue)})
 
 @socketio.on("url_generate")
