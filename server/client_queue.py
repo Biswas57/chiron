@@ -10,6 +10,8 @@ from flask_socketio import emit
 from flask import current_app as app
 
 def refresh_queue_to_all():
+    app.logger.debug("refresh_queue_to_all")
+    app.logger.debug(client_queue)
     for i, client_state in enumerate(client_queue):
         sid = client_state["sid"]
         app.logger.debug(f"sending queue pos of {str(i)} back to {sid}")
@@ -22,5 +24,5 @@ def dequeue():
         client_queue = []
     else:
         client_queue = client_queue[1:]
-    
+
     refresh_queue_to_all()
