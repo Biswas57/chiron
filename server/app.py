@@ -98,6 +98,8 @@ def enqueue(data):
 
 @socketio.on("url_generate")
 def handle_url_generate(data):
+    global client_queue
+
     # Step 1 of protocol: request a URL to be scraped and AI'ed.
     app.logger.debug(f"Client #{request.sid} URL GENERATE")
     app.logger.debug(data)
@@ -130,6 +132,8 @@ def handle_url_generate(data):
 
 @socketio.on("file_generate")
 def handle_file_generate(data):
+    global client_queue
+
     app.logger.debug(f"Client #{request.sid} FILE GENERATE")
 
     if len(client_queue) > 1:
