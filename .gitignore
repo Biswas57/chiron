@@ -8,6 +8,11 @@ __pycache__/
 server/__pycache__/
 server/venv/
 venv/
+# Windows:
+server/Include/*
+server/Lib/*
+server/Scripts/*
+server/pyvenv.cfg
 
 # Environment variables
 .env
