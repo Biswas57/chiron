@@ -58,6 +58,28 @@ def handle_exit(signum, frame):
 signal.signal(signal.SIGINT, handle_exit)  # Handle Ctrl+C
 signal.signal(signal.SIGTERM, handle_exit)  # Handle termination signals
 
+# Client queue
+# array of dict:
+# {
+#     sid: string,
+# }
+client_queue = []
+# Internal functions
+# Internal functions
+def refresh_queue_to_all():
+    for i, client_state in enumerate(client_queue):
+        sid = client_state["sid"]
+        emit("queue", {"queue_pos": i + 1}, to=sid)
+
+def dequeue():
+    if len(client_queue) == 0:
+        pass
+    elif len(client_queue) == 1:
+        client_queue = []
+    else:
+        client_queue = client_queue[1:]
+        refresh_queue_to_all()
+
 # Event handlers on the websocket
 @socketio.on('connect')
 def handle_connect():
@@ -67,6 +89,10 @@ def handle_connect():
 @socketio.on('disconnect')
 def handle_disconnect():
     app.logger.debug(f'Client #{request.sid} DISCONNECTED')
+    for i, client_state in enumerate(client_queue):
+        if client_state["sid"] == request.sid:
+            del client_queue[i]
+            refresh_queue_to_all()
 
 def is_valid_url(url):
     """Basic URL validation"""
@@ -80,6 +106,14 @@ def is_valid_url(url):
 def handle_get_models():
     app.logger.debug(f"Client #{request.sid} REQUESTED_MODEL_LIST")
     emit("get_models_return", ollama_models_dict)
+
+# Queue calls
+@socketio.on("enqueue")
+def enqueue():
+    if len(client_queue) != 0:
+        client_queue.append({"sid": request.sid})
+
+    emit("queue", {"queue_pos": len(request.sid)})
 
 @socketio.on("url_generate")
 def handle_url_generate(data):

@@ -30,13 +30,29 @@ const LoadingMessage = ({ message }) => (
   </motion.div>
 );
 
-const LoadingAnimation = ({ brainRot, protState }) => {
+const nthNumber = (number) => {
+  if (number > 3 && number < 21) return number.toString() + "th";
+  switch (number % 10) {
+    case 1:
+      return number.toString() + "st";
+    case 2:
+      return number.toString() + "nd";
+    case 3:
+      return number.toString() + "rd";
+    default:
+      return number.toString() + "th";
+  }
+};
+
+const LoadingAnimation = ({ brainRot, protState, queuePos }) => {
   const getMessage = () => {
     switch (protState) {
       case PROTOCOL_STATE_WAITING_FOR_METADATA:
         return "Scraping your article...";
       case PROTOCOL_STATE_WAITING_FIRST_TOKEN:
         return "Scraped article, piped into LLM, waiting for first token...";
+      case PROTOCOL_STATE_QUEUEING:
+        return "You are " + nthNumber(queuePos) + " in the queue."
       default:
         return "Loading...";
     }

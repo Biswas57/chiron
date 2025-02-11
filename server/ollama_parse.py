@@ -4,20 +4,27 @@ from flask import current_app as app
 import ollama
 import tiktoken
 import math
+from app import dequeue
 
 # The models that we have available. This is queried when the app boots to download
 # the models if they haven't been already.
 models = [
     {
         "display_name": "Llama-3.1-8B-Instruct (FP16)",
-        "note": "Decent Quality script | Fast",
+        "note": "Decent Quality Script | Fast",
         "ollama_name": "llama3.1:8b-instruct-fp16",
         "context_length": 131072,
     },
     {
         "display_name": "Llama-3.3-70B-Instruct (FP16)",
-        "note": "High Quality script | Slow",
+        "note": "High Quality Script | Slow",
         "ollama_name": "llama3.3:70b-instruct-fp16",
+        "context_length": 131072,
+    },
+    {
+        "display_name": "Llama 3.2 1B Q4 Debug ",
+        "note": "Dev use only!",
+        "ollama_name": "llama3.2:1b",
         "context_length": 131072,
     },
 ]
@@ -76,6 +83,9 @@ def write_script(prompt, model_idx):
     # Step 4 of protocol: send a completion event.
     app.logger.debug(f"Done! Sending complete event")
     emit("complete", {})
+
+    # Inform queueing client AI is ready for next job
+    dequeue()
 
 def generate(content, model_idx):
     """
