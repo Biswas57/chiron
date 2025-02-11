@@ -102,6 +102,12 @@ def handle_url_generate(data):
     app.logger.debug(f"Client #{request.sid} URL GENERATE")
     app.logger.debug(data)
 
+    if len(client_queue > 1):
+        if client_queue[0]["sid"] != request.sid:
+            emit("error", {"error": "Not your turn in the queue!"})
+    else:
+        emit("error", {"error": "The client queue on server side is in an undefined state."})
+
     try:
         if "url" not in data:
             emit("error", {"error": "Payload missing URL key."})
@@ -125,6 +131,12 @@ def handle_url_generate(data):
 @socketio.on("file_generate")
 def handle_file_generate(data):
     app.logger.debug(f"Client #{request.sid} FILE GENERATE")
+
+    if len(client_queue > 1):
+        if client_queue[0]["sid"] != request.sid:
+            emit("error", {"error": "Not your turn in the queue!"})
+    else:
+        emit("error", {"error": "The client queue on server side is in an undefined state."})
 
     try:
         if "filename" not in data:
