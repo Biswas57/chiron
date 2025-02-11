@@ -10,13 +10,13 @@ import math
 models = [
     {
         "display_name": "Llama-3.1-8B-Instruct (FP16)",
-        "note": "Ok quality script | Fast",
+        "note": "Decent Quality script | Fast",
         "ollama_name": "llama3.1:8b-instruct-fp16",
         "context_length": 131072,
     },
     {
         "display_name": "Llama-3.3-70B-Instruct (FP16)",
-        "note": "High quality script | Very slow!",
+        "note": "High Quality script | Slow",
         "ollama_name": "llama3.3:70b-instruct-fp16",
         "context_length": 131072,
     },
