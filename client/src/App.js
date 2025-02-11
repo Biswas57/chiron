@@ -358,6 +358,8 @@ function App() {
 
     // Now this part starts the protocol sequence, we find a place in the queue
     socket.on("queue", (data) => {
+      console.log("queue pos is ");
+      console.log(data);
       if (data.queue_pos > 1) {
         setProtState((prev) => { return PROTOCOL_STATE_QUEUEING; });
         setQueuePos(data.queue_pos);
