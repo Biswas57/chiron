@@ -104,7 +104,7 @@ def handle_url_generate(data):
     app.logger.debug(f"Client #{request.sid} URL GENERATE")
     app.logger.debug(data)
 
-    if len(client_queue) > 1:
+    if len(client_queue) >= 1:
         if client_queue[0]["sid"] != request.sid:
             emit("error", {"error": "Not your turn in the queue!"})
     else:
@@ -136,7 +136,7 @@ def handle_file_generate(data):
 
     app.logger.debug(f"Client #{request.sid} FILE GENERATE")
 
-    if len(client_queue) > 1:
+    if len(client_queue) >= 1:
         if client_queue[0]["sid"] != request.sid:
             emit("error", {"error": "Not your turn in the queue!"})
     else:
