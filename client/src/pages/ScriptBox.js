@@ -19,8 +19,8 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import UndoIcon from '@mui/icons-material/Undo';
+import RedoIcon from '@mui/icons-material/Redo';
 import {
   PROTOCOL_STATE_IDLE,
   PROTOCOL_STATE_WAITING_TOKENS,
@@ -194,7 +194,7 @@ function ScriptBox({ brainRot, editing, setEditing, protState, metadata, scriptT
                 }
               }}
             >
-              <ArrowBackIosNewIcon />
+              <UndoIcon />
             </IconButton>
           </Tooltip>
 
@@ -213,7 +213,7 @@ function ScriptBox({ brainRot, editing, setEditing, protState, metadata, scriptT
                 }
               }}
             >
-              <ArrowForwardIosIcon />
+              <RedoIcon />
             </IconButton>
           </Tooltip>
         </div>
