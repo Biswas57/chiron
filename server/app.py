@@ -107,7 +107,7 @@ def handle_url_generate(data):
     if len(client_queue) >= 1:
         if client_queue[0]["sid"] != request.sid:
             emit("error", {"error": "Not your turn in the queue!"})
-    else:
+    elif len(client_queue) == 0:
         emit("error", {"error": "The client queue on server side is in an undefined state."})
 
     try:
@@ -139,7 +139,7 @@ def handle_file_generate(data):
     if len(client_queue) >= 1:
         if client_queue[0]["sid"] != request.sid:
             emit("error", {"error": "Not your turn in the queue!"})
-    else:
+    elif len(client_queue) == 0:
         emit("error", {"error": "The client queue on server side is in an undefined state."})
 
     try:
