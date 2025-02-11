@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Box from '@mui/material/Box';
 import { BrowserRouter, Routes, Route } from "react-router";
 import { ThemeProvider } from '@mui/material/styles';
@@ -8,7 +8,6 @@ import MainPage from './pages/MainPage';
 import ScriptBox from "./pages/ScriptBox";
 import themes from './Theme';
 import NutanixBirds from "./nutanixBirds"
-import VideoBackground from "./components/VideoBackground"
 import InstructionPage from "./pages/InstructionPage"
 import ErrorModal from './components/ErrorModal';
 import Game from "./pages/Game"
@@ -23,6 +22,8 @@ import {
   PROTOCOL_STATE_WAITING_FIRST_TOKEN,
   PROTOCOL_STATE_WAITING_TOKENS
 } from './utils/protocol'
+
+const VideoBackground = React.lazy(() => import("./components/VideoBackground"));
 
 const API_URL = '/';
 
@@ -389,7 +390,11 @@ function App() {
               clearHistory={clearHistory}
             />
 
-            {brainRot ? <VideoBackground /> : <NutanixBirds />}
+            {brainRot ? 
+            <Suspense fallback={<div></div>}>
+              <VideoBackground />
+            </Suspense>
+            : <NutanixBirds />}
 
             {/* Page content */}
             <Routes className="url-input-container">
