@@ -59,8 +59,6 @@ def handle_exit(signum, frame):
 signal.signal(signal.SIGINT, handle_exit)  # Handle Ctrl+C
 signal.signal(signal.SIGTERM, handle_exit)  # Handle termination signals
 
-
-
 # Event handlers on the websocket
 @socketio.on('connect')
 def handle_connect():
@@ -91,9 +89,7 @@ def handle_get_models():
 # Queue calls
 @socketio.on("enqueue")
 def enqueue(data):
-    if len(client_queue) != 0:
-        client_queue.append({"sid": request.sid})
-
+    client_queue.append({"sid": request.sid})
     app.logger.debug(f"Client #{request.sid} QUEUE POS {len(client_queue)}")
     emit("queue", {"queue_pos": len(client_queue)})
 
