@@ -72,6 +72,9 @@ def handle_disconnect():
     for i, client_state in enumerate(client_queue):
         if client_state["sid"] == request.sid:
             del client_queue[i]
+            if i == 0:
+                if os.system("sudo systemctl restart ollama") != 0:
+                    app.logger.error("cannot interrupt AI service!")
     
     refresh_queue_to_all()
 
