@@ -67,6 +67,7 @@ def handle_connect():
 
 @socketio.on('disconnect')
 def handle_disconnect():
+    global client_queue
     app.logger.debug(f'Client #{request.sid} DISCONNECTED')
     for i, client_state in enumerate(client_queue):
         if client_state["sid"] == request.sid:
@@ -89,6 +90,7 @@ def handle_get_models():
 # Queue calls
 @socketio.on("enqueue")
 def enqueue(data):
+    global client_queue
     client_queue.append({"sid": request.sid})
     app.logger.debug(f"Client #{request.sid} QUEUE POS {len(client_queue)}")
     emit("queue", {"queue_pos": len(client_queue)})
