@@ -18,6 +18,8 @@ def refresh_queue_to_all():
         emit("queue", {"queue_pos": i}, to=sid)
 
 def dequeue():
+    global client_queue
+    
     app.logger.debug("dequeue")
     app.logger.debug(client_queue)
     if len(client_queue) == 0:
