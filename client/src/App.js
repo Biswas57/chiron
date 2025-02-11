@@ -115,6 +115,28 @@ function ConnectionStatus({ status }) {
               Unable to connect to server. Attempting to reconnect in the background.
               You can still view previous generations.
             </Typography>
+            <Box
+              sx={{
+                width: '100%',
+                height: '1px',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                margin: '4px 0'
+              }}
+            />
+            <Typography
+              variant="subtitle1"
+              sx={{
+                color: 'text.secondary',
+                textAlign: 'center',
+                fontStyle: 'italic',
+                whiteSpace: 'pre-line'
+              }}
+            >
+              {`The link has faltered, but don't fear,
+            Chiron's tools are still quite near.
+            A brief delay, but scripts await,
+            To guide you through and help create.`}
+            </Typography>
           </>
         )}
       </Paper>
