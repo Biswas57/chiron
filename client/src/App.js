@@ -26,6 +26,7 @@ import {
 
 const VideoBackground = React.lazy(() => import("./components/VideoBackground"));
 
+const API_URL = '/';
 
 let socket = null;
 const SOCKET_CONNECTING = 0;
