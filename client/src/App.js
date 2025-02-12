@@ -26,14 +26,13 @@ import {
 
 const VideoBackground = React.lazy(() => import("./components/VideoBackground"));
 
-const API_URL = '/';
 
 let socket = null;
 const SOCKET_CONNECTING = 0;
 const SOCKET_CONNECTED = 1;
 const SOCKET_ERROR = 2;
 
-function ConnectionStatus({ status }) {
+function ConnectionStatus({ status, connectingPrimaryMsg, connectingSecondMsg }) {
   return (
     <Box
       sx={{
@@ -75,7 +74,7 @@ function ConnectionStatus({ status }) {
                 textAlign: 'center'
               }}
             >
-              Establishing Connection...
+              {connectingPrimaryMsg === null ? "Establishing Connection..." : connectingPrimaryMsg}
             </Typography>
             <Typography
               variant="body2"
@@ -84,7 +83,7 @@ function ConnectionStatus({ status }) {
                 textAlign: 'center'
               }}
             >
-              Please wait while we connect to the server
+              {connectingSecondMsg === null ? "Please wait while we connect to the server" : connectingSecondMsg}
             </Typography>
           </>
         ) : (
@@ -165,6 +164,9 @@ function App() {
 
   // Server connection status.
   const [connection, setConnection] = useState(SOCKET_CONNECTING);
+  // Connecting message.
+  const [connectingPrimaryMsg, setConectingPrimaryMsg] = useState(null);
+  const [connectingSecondMsg, setConectingSecondMsg] = useState(null);
 
   // Lists of available LLMs
   const [models, setModels] = useState(null);
@@ -250,6 +252,10 @@ function App() {
       socket.off("complete");
       socket.off("error");
       socket.off("queue");
+      socket.off("ready");
+      socket.off("progress");
+      setConectingPrimaryMsg(null);
+      setConectingSecondMsg(null);
       setProtState(PROTOCOL_STATE_IDLE);
     }
 
@@ -264,15 +270,24 @@ function App() {
     });
 
     socket.on('connect', () => {
-      // Refresh the models list
-      socket.on('get_models_return', (data) => {
-        setModels((prev) => { return data; });
-        socket.off('get_models');
-        // Unblock webpage
-        setConnection(SOCKET_CONNECTED);
-        console.log("socket connected!");
+      socket.on('progress', (data) => {
+        setConectingPrimaryMsg("Connected to server, but LLMs aren't downloaded.");
+        setConectingSecondMsg(data.message);
+        setConnection(SOCKET_CONNECTING);
       });
-      socket.emit('get_models');
+
+      socket.on('ready', (data) => {
+        // Refresh the models list
+        socket.on('get_models_return', (data) => {
+          setModels((prev) => { return data; });
+          socket.off('get_models');
+          // Unblock webpage
+          setConnection(SOCKET_CONNECTED);
+          console.log("socket connected!");
+        });
+        socket.emit('get_models');
+      });
+      socket.emit('connect_stage_2')
     });
 
     // Put the website back into a consistent state if the user click back or forward during edit or generating script
@@ -316,6 +331,10 @@ function App() {
     socket.off("complete");
     socket.off("error");
     socket.off("queue");
+    socket.off("ready");
+    socket.off("progress");
+    setConectingPrimaryMsg(null);
+    setConectingSecondMsg(null);
 
     // Prime the event listeners before we initiate the protocol.
     socket.on("metadata", (data) => {
@@ -354,6 +373,10 @@ function App() {
       socket.off("complete");
       socket.off("error");
       socket.off("queue");
+      socket.off("ready");
+      socket.off("progress");
+      setConectingPrimaryMsg(null);
+      setConectingSecondMsg(null);
       setProtState((prev) => { return PROTOCOL_STATE_IDLE; });
 
       addKBtoLocalStorage(metadataRef.current, scriptTextRef.current);
@@ -375,6 +398,10 @@ function App() {
       socket.off("complete");
       socket.off("error");
       socket.off("queue");
+      socket.off("ready");
+      socket.off("progress");
+      setConectingPrimaryMsg(null);
+      setConectingSecondMsg(null);
       setProtState((prev) => { return PROTOCOL_STATE_IDLE; });
       setIsLoading((prev) => { return false; });
     })
@@ -452,7 +479,7 @@ function App() {
                     queuePos={queuePos}
                   />
                 ) : (
-                  <ConnectionStatus status={connection} />
+                  <ConnectionStatus status={connection} connectingPrimaryMsg={connectingPrimaryMsg} connectingSecondMsg={connectingSecondMsg} />
                 )
               }/>
               <Route path="/result" element={
