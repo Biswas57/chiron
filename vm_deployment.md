@@ -7,6 +7,8 @@ Create a VM on an SSD/NVMe cluster with at least 300GB of disk, 200GB of RAM and
 
 Configure your VM with a static IP address, IP gateway, Name Server and Netmask.
 
+Install latest Rocky Linux ISO and create a user called `chiron` with sudo permission.
+
 TODO: add ova stuff
 
 ### 1. Install Required Packages
@@ -150,6 +152,17 @@ StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
+```
+
+### 3. Allow the backend to run systemctl commands for interrupting AI service
+Open the sudoer file:
+```bash
+sudo visudo
+```
+
+Add this line to the bottom:
+```
+chiron ALL=(ALL) NOPASSWD: /usr/bin/systemctl
 ```
 
 ## Configure Frontend Deployment (Nginx)

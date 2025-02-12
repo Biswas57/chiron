@@ -10,7 +10,7 @@ import {
 
 const MotionBox = motion(Box);
 
-function MainPage({ models, brainRot, isLoading, setIsLoading, initiateProtocol, protState }) {
+function MainPage({ models, brainRot, isLoading, setIsLoading, initiateProtocol, protState, queuePos }) {
   const navigate = useNavigate();
 
   const [error, setError] = useState(null);
@@ -98,7 +98,7 @@ function MainPage({ models, brainRot, isLoading, setIsLoading, initiateProtocol,
               alignItems: 'center'
             }}
           >
-            <LoadingAnimation brainRot={brainRot} protState={protState} />
+            <LoadingAnimation brainRot={brainRot} protState={protState} queuePos={queuePos} />
           </MotionBox>
         )}
       </AnimatePresence>

@@ -11,6 +11,7 @@ import base64
 import io
 import ollama
 import os
+from client_queue_mgmt import client_queue, refresh_queue_to_all
 
 # Before we do anything, make sure all the models are downloaded
 print("BOOTING UP")
@@ -66,7 +67,16 @@ def handle_connect():
 
 @socketio.on('disconnect')
 def handle_disconnect():
+    global client_queue
     app.logger.debug(f'Client #{request.sid} DISCONNECTED')
+    for i, client_state in enumerate(client_queue):
+        if client_state["sid"] == request.sid:
+            del client_queue[i]
+            if i == 0:
+                if os.system("sudo systemctl restart ollama") != 0:
+                    app.logger.error("cannot interrupt AI service!")
+    
+    refresh_queue_to_all()
 
 def is_valid_url(url):
     """Basic URL validation"""
@@ -81,11 +91,27 @@ def handle_get_models():
     app.logger.debug(f"Client #{request.sid} REQUESTED_MODEL_LIST")
     emit("get_models_return", ollama_models_dict)
 
+# Queue calls
+@socketio.on("enqueue")
+def enqueue(data):
+    global client_queue
+    client_queue.append({"sid": request.sid})
+    app.logger.debug(f"Client #{request.sid} QUEUE POS {len(client_queue)}")
+    emit("queue", {"queue_pos": len(client_queue)})
+
 @socketio.on("url_generate")
 def handle_url_generate(data):
+    global client_queue
+
     # Step 1 of protocol: request a URL to be scraped and AI'ed.
     app.logger.debug(f"Client #{request.sid} URL GENERATE")
     app.logger.debug(data)
+
+    if len(client_queue) >= 1:
+        if client_queue[0]["sid"] != request.sid:
+            emit("error", {"error": f"Not your turn in the queue!: {client_queue[0]['sid']} != {request.sid}"})
+    elif len(client_queue) == 0:
+        emit("error", {"error": "The client queue on server side is in an undefined state."})
 
     try:
         if "url" not in data:
@@ -104,11 +130,20 @@ def handle_url_generate(data):
             # The URL scraper will further return events for the frontend.
             us.generate(data["url"], data["modelIdx"])
     except Exception as e:
+        app.logger.error(e)
         emit("error", {"error": f"An internal server error occured: {str(e)}"})
 
 @socketio.on("file_generate")
 def handle_file_generate(data):
+    global client_queue
+
     app.logger.debug(f"Client #{request.sid} FILE GENERATE")
+
+    if len(client_queue) >= 1:
+        if client_queue[0]["sid"] != request.sid:
+            emit("error", {"error": f"Not your turn in the queue!: {client_queue[0]['sid']} != {request.sid}"})
+    elif len(client_queue) == 0:
+        emit("error", {"error": "The client queue on server side is in an undefined state."})
 
     try:
         if "filename" not in data:
@@ -129,6 +164,7 @@ def handle_file_generate(data):
             pdf_buffer = io.BytesIO(pdf_bytes)
             pr.generate(pdf_buffer, data["filename"], data["modelIdx"])
     except Exception as e:
+        app.logger.error(e)
         emit("error", {"error": f"An internal server error occured: {str(e)}"})
 
 if __name__ == "__main__":

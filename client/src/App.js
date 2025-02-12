@@ -20,7 +20,8 @@ import {
   PROTOCOL_STATE_WAITING_FOR_METADATA,
   PROTOCOL_STATE_METADATA_RECV,
   PROTOCOL_STATE_WAITING_FIRST_TOKEN,
-  PROTOCOL_STATE_WAITING_TOKENS
+  PROTOCOL_STATE_WAITING_TOKENS,
+  PROTOCOL_STATE_QUEUEING
 } from './utils/protocol'
 
 const VideoBackground = React.lazy(() => import("./components/VideoBackground"));
@@ -154,6 +155,7 @@ function App() {
   // This needs to be a global state to disable the navbar during AI generation
   // Navigating during generation leads to a bunch of weirdness.
   const [isLoading, setIsLoading] = useState(false);
+  const [queuePos, setQueuePos] = useState(-1);
 
   const [brainRot, setBrainRot] = useState(false);
   const [theme, setTheme] = useState(themes.default);
@@ -246,6 +248,8 @@ function App() {
       socket.off("metadata");
       socket.off("tokens");
       socket.off("complete");
+      socket.off("error");
+      socket.off("queue");
       setProtState(PROTOCOL_STATE_IDLE);
     }
 
@@ -304,12 +308,14 @@ function App() {
 
     setMetadata(null);
     setScriptText(null);
+    setQueuePos(-1);
 
     // Make sure all the event listeners are in a clean state.
     socket.off("metadata");
     socket.off("tokens");
     socket.off("complete");
     socket.off("error");
+    socket.off("queue");
 
     // Prime the event listeners before we initiate the protocol.
     socket.on("metadata", (data) => {
@@ -346,7 +352,8 @@ function App() {
       socket.off("metadata");
       socket.off("tokens");
       socket.off("complete");
-      socket.off("error")
+      socket.off("error");
+      socket.off("queue");
       setProtState((prev) => { return PROTOCOL_STATE_IDLE; });
 
       addKBtoLocalStorage(metadataRef.current, scriptTextRef.current);
@@ -366,26 +373,39 @@ function App() {
       socket.off("metadata");
       socket.off("tokens");
       socket.off("complete");
-      socket.off("error")
+      socket.off("error");
+      socket.off("queue");
       setProtState((prev) => { return PROTOCOL_STATE_IDLE; });
       setIsLoading((prev) => { return false; });
     })
 
-    // Start the protocol sequence.
-    setProtState((prev) => { return PROTOCOL_STATE_WAITING_FOR_METADATA; });
-    if (fileObj === null) {
-      const payload = { url: url, modelIdx: modelIdx };
-      socket.emit("url_generate", payload);
-    } else {
-      const reader = new FileReader();
-      reader.onload = () => {
-        // Get base64 encoded string of the file
-        const fileData = reader.result.split(",")[1];
-        const payload = { filename: fileObj.name, data: fileData, modelIdx: modelIdx };
-        socket.emit("file_generate", payload);
-      };
-      reader.readAsDataURL(fileObj);
-    }
+    // Now this part starts the protocol sequence, we find a place in the queue
+    socket.on("queue", (data) => {
+      console.log("queue pos is ");
+      console.log(data);
+      if (data.queue_pos > 1) {
+        setProtState((prev) => { return PROTOCOL_STATE_QUEUEING; });
+        setQueuePos(data.queue_pos);
+      } else {
+        // Start the protocol sequence.
+        setProtState((prev) => { return PROTOCOL_STATE_WAITING_FOR_METADATA; });
+        if (fileObj === null) {
+          const payload = { url: url, modelIdx: modelIdx };
+          socket.emit("url_generate", payload);
+        } else {
+          const reader = new FileReader();
+          reader.onload = () => {
+            // Get base64 encoded string of the file
+            const fileData = reader.result.split(",")[1];
+            const payload = { filename: fileObj.name, data: fileData, modelIdx: modelIdx };
+            socket.emit("file_generate", payload);
+          };
+          reader.readAsDataURL(fileObj);
+        }
+      }
+    });
+
+    socket.emit("enqueue", {});
   };
 
   return (
@@ -429,6 +449,7 @@ function App() {
                     setIsLoading={setIsLoading}
                     initiateProtocol={initiateProtocol}
                     protState={protState}
+                    queuePos={queuePos}
                   />
                 ) : (
                   <ConnectionStatus status={connection} />
