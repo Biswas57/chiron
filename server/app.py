@@ -13,36 +13,51 @@ import ollama
 import os
 from client_queue_mgmt import client_queue, refresh_queue_to_all
 
-# Before we do anything, make sure all the models are downloaded
 print("BOOTING UP")
 
-print("*** Downloaded models:")
-models = [model.model for model in ollama.list().models]
-print(models)
+# Make sure all the models are downloaded
+def download_models():
+    print("*** Downloaded models:")
+    models = [model.model for model in ollama.list().models]
+    print(models)
 
-print("*** Needed models:")
-print([model_dict['ollama_name'] for model_dict in ollama_models_dict])
+    print("*** Needed models:")
+    print([model_dict['ollama_name'] for model_dict in ollama_models_dict])
 
-for model in ollama_models_dict:
-    print(f"Checking status of {model['ollama_name']}...", end="")
-    found = False
-    for full_model_name in models:
-        if model['ollama_name'] in full_model_name:
-            print(f"downloaded!")
-            found = True
-            break
+    for i, model in enumerate(ollama_models_dict):
+        print(f"Checking status of {model['ollama_name']}...", end="")
+        found = False
+        for full_model_name in models:
+            if model['ollama_name'] in full_model_name:
+                print(f"downloaded!")
+                found = True
+                break
 
-    if not found:
-        print(f"haven't been downloaded...downloading:")
-        shcmd = f"ollama pull {model['ollama_name']}"
-        print(f"executing shell command: {shcmd}")
-        try:
-            if os.system(shcmd) != 0:
-                sys.exit(1)
-        except Exception as e:
-            print(f"{str(e)}")
+        if not found:
+            print(f"haven't been downloaded...downloading:")
+            try:
+                for progress in ollama.pull(model['ollama_name'], stream=True):
+                    if "pulling " in progress.status \
+                        and progress.status != "pulling manifest" \
+                        and progress.completed != None \
+                        and progress.total != None:
 
-print("ALL MODELS OK...CONTINUING BOOT")
+                        pulled_mbytes = progress.completed / 1000 / 1000
+                        needed_mbytes = progress.total / 1000 / 1000
+                        percent = (pulled_mbytes / needed_mbytes) * 100
+                        msg = f"{i + 1}/{len(ollama_models_dict)}: Pulling {model['ollama_name']}, {pulled_mbytes:.2f}MB / {needed_mbytes:.2f}MB = {percent:.2f}%"
+                        app.logger.debug(msg)
+                        emit("progress", {"message": msg})
+                    else:
+                        emit("progress", {"message": f"{i + 1}/{len(ollama_models_dict)}: Pulling {model['ollama_name']}: {progress.status}"})
+            except Exception as e:
+                emit("error", {"error": f"Cannot download model {str(e)}"})
+                app.logger.error(e)
+                return
+
+    emit("ready")
+
+    print("ALL MODELS OK")
 
 # Initialise the server
 app = Flask(__name__)
@@ -64,6 +79,11 @@ signal.signal(signal.SIGTERM, handle_exit)  # Handle termination signals
 def handle_connect():
     # Step 0 of protocol: handshake with the server and create a session.
     app.logger.debug(f'Client #{request.sid} CONNECTED')
+
+@socketio.on('connect_stage_2')
+def handle_connect2():
+    # Check that all the models are ready
+    download_models()
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -109,7 +129,7 @@ def handle_url_generate(data):
 
     if len(client_queue) >= 1:
         if client_queue[0]["sid"] != request.sid:
-            emit("error", {"error": f"Not your turn in the queue!: {client_queue[0]['sid']} != {request.sid}"})
+            emit("error", {"error": f"Not your turn in the queue!"})
     elif len(client_queue) == 0:
         emit("error", {"error": "The client queue on server side is in an undefined state."})
 
@@ -141,7 +161,7 @@ def handle_file_generate(data):
 
     if len(client_queue) >= 1:
         if client_queue[0]["sid"] != request.sid:
-            emit("error", {"error": f"Not your turn in the queue!: {client_queue[0]['sid']} != {request.sid}"})
+            emit("error", {"error": f"Not your turn in the queue!"})
     elif len(client_queue) == 0:
         emit("error", {"error": "The client queue on server side is in an undefined state."})
 
