@@ -7,8 +7,6 @@ Create a VM on an SSD/NVMe cluster with at least 300GB of disk, 200GB of RAM and
 
 Configure your VM with a static IP address, IP gateway, Name Server and Netmask.
 
-Install latest Rocky Linux ISO and create a user called `chiron` with sudo permission.
-
 TODO: add ova stuff
 
 ### 1. Install Required Packages
@@ -154,17 +152,6 @@ StandardError=journal
 WantedBy=multi-user.target
 ```
 
-### 3. Allow the backend to run systemctl commands for interrupting AI service
-Open the sudoer file:
-```bash
-sudo visudo
-```
-
-Add this line to the bottom:
-```
-chiron ALL=(ALL) NOPASSWD: /usr/bin/systemctl
-```
-
 ## Configure Frontend Deployment (Nginx)
 
 ### 1. Set Directory Permissions
@@ -186,17 +173,46 @@ Add the following content:
 ```nginx
 server {
     listen 80;
-    
+    server_name _;
+
+    # Root directory for static files
+    root /home/chiron/chiron/client/build;
+    index index.html;
+
+    # Serve static files and fall back to index.html for client-side routing
     location / {
-        root /home/chiron/chiron/client/build;
         try_files $uri $uri/ /index.html;
+        add_header Cache-Control "no-cache";
     }
 
-    location /api {
-        proxy_pass http://localhost:4242;
+    # WebSocket endpoint
+    location /socket.io/ {
+        proxy_pass http://localhost:4242/socket.io/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # WebSocket specific settings
+        proxy_buffering off;
+        proxy_cache off;
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 75s;
+    }
+
+    # Serve static files with proper MIME types
+    location ~* \.(?:css|js|jpg|jpeg|gif|png|ico|cur|gz|svg|svgz|mp4|ogg|ogv|webm|htc)$ {
+        expires 1M;
+        access_log off;
+        add_header Cache-Control "public";
+    }
+
+    # Deny access to .htaccess files
+    location ~ /\.ht {
+        deny all;
     }
 }
 ```
@@ -381,4 +397,3 @@ sudo tail -f /var/log/nginx/error.log
 # Flask app logs, this also shows AI models download progress
 sudo journalctl -u flask-app --no-pager --output cat -f
 ```
-
