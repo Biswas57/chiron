@@ -272,7 +272,7 @@ function App() {
 
     socket.on('connect', () => {
       socket.on('progress', (data) => {
-        setConectingPrimaryMsg("Connected to server, but LLMs aren't downloaded.");
+        setConectingPrimaryMsg("Connected to server, but LLMs aren't downloaded. Please leave this tab open.");
         setConectingSecondMsg(data.message);
         setConnection(SOCKET_CONNECTING);
       });
