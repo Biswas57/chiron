@@ -11,13 +11,13 @@ from client_queue_mgmt import dequeue
 models = [
     {
         "display_name": "Llama-3.1-8B-Instruct (FP16)",
-        "note": "Decent Quality Script | Fast",
+        "note": "Decent Quality | Fast",
         "ollama_name": "llama3.1:8b-instruct-fp16",
         "context_length": 131072,
     },
     {
         "display_name": "Llama-3.3-70B-Instruct (FP16)",
-        "note": "High Quality Script | Slow",
+        "note": "High Quality | Slow",
         "ollama_name": "llama3.3:70b-instruct-fp16",
         "context_length": 131072,
     },
