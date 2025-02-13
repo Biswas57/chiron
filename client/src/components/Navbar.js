@@ -373,12 +373,17 @@ const Navbar = ({ brainRot, setBrainRot, isLoading, savedKbs, editing, setMetada
               </IconButton>
             </Tooltip>
 
-
             {/* NTNX logo */}
             <Box
               sx={{
                 display: 'flex',
-                alignItems: 'center'
+                alignItems: 'center',
+                transition: 'transform 0.3s ease, filter 0.3s ease',
+                '&:hover': {
+                  transform: 'scale(1.05)',
+                  filter: 'drop-shadow(0px 0px 8px rgba(168, 85, 247, 0.6))',
+                  cursor: 'pointer',
+                },
               }}
               onClick={() => {
                 window.open("https://portal.nutanix.com/", '_blank').focus();

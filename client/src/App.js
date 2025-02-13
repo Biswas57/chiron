@@ -33,7 +33,45 @@ const SOCKET_CONNECTING = 0;
 const SOCKET_CONNECTED = 1;
 const SOCKET_ERROR = 2;
 
+const ProgressBar = ({ message }) => {
+  // Extract percentage from messages like "2/2: Pulling llama3.3:70b-instruct-fp16, 11494.35MB / 141117.92MB = 8.15%"
+  const getPercentage = (message) => {
+    if (!message) return null;
+    const match = message.match(/(\d+(\.\d+)?)%/);
+    return match ? parseFloat(match[1]) : null;
+  };
+
+  const percentage = getPercentage(message);
+
+  if (percentage === null) return null;
+
+  return (
+    <Box sx={{ 
+      width: '100%', 
+      mt: 2,
+    }}>
+      <Box sx={{
+        height: '10px',
+        backgroundColor: 'rgba(0, 0, 0, 1)',
+        borderRadius: '10px',
+        overflow: 'hidden'
+      }}>
+        <Box 
+          sx={{
+            height: '100%',
+            backgroundColor: '#7855fb',
+            transition: 'width 300ms ease-in-out',
+            width: `${percentage}%`
+          }}
+        />
+      </Box>
+    </Box>
+  );
+};
+
+
 function ConnectionStatus({ status, connectingPrimaryMsg, connectingSecondMsg }) {
+  
   return (
     <Box
       sx={{
@@ -86,6 +124,7 @@ function ConnectionStatus({ status, connectingPrimaryMsg, connectingSecondMsg })
             >
               {connectingSecondMsg === null ? "Please wait while we connect to the server" : connectingSecondMsg}
             </Typography>
+            <ProgressBar message={connectingSecondMsg} />
           </>
         ) : (
           <>
@@ -273,7 +312,7 @@ function App() {
     socket.on('connect', () => {
       socket.on('progress', (data) => {
         setConectingPrimaryMsg("Connected to server, but LLMs aren't downloaded. Please leave this tab open.");
-        setConectingSecondMsg(data.message);
+        setConectingSecondMsg(data.message); // this has the full string like this 2/2: Pulling llama3.3:70b-instruct-fp16, 11494.35MB / 141117.92MB = 8.15%
         setConnection(SOCKET_CONNECTING);
       });
 

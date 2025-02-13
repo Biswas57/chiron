@@ -42,10 +42,10 @@ def download_models():
                         and progress.completed != None \
                         and progress.total != None:
 
-                        pulled_mbytes = progress.completed / 1000 / 1000
-                        needed_mbytes = progress.total / 1000 / 1000
-                        percent = (pulled_mbytes / needed_mbytes) * 100
-                        msg = f"{i + 1}/{len(ollama_models_dict)}: Pulling {model['ollama_name']}, {pulled_mbytes:.2f}MB / {needed_mbytes:.2f}MB = {percent:.2f}%"
+                        pulled_gbytes = progress.completed / 1000 / 1000 / 1000
+                        needed_gbytes = progress.total / 1000 / 1000 / 1000
+                        percent = (pulled_gbytes / needed_gbytes) * 100
+                        msg = f"{i + 1}/{len(ollama_models_dict)}: Pulling {model['ollama_name']}, {pulled_gbytes:.2f}MB / {needed_gbytes:.2f}MB = {percent:.2f}%"
                         app.logger.debug(msg)
                         emit("progress", {"message": msg})
                     else:
