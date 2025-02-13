@@ -375,7 +375,15 @@ const Navbar = ({ brainRot, setBrainRot, isLoading, savedKbs, editing, setMetada
 
 
             {/* NTNX logo */}
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center'
+              }}
+              onClick={() => {
+                window.open("https://portal.nutanix.com/", '_blank').focus();
+              }}
+            >
               <img src={ntxLogo} alt='Nutanix Logo' style={{ height: 20, width: 'auto' }} />
             </Box>
           </Box>
