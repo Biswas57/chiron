@@ -20,13 +20,7 @@ models = [
         "note": "High Quality | Slow",
         "ollama_name": "llama3.3:70b-instruct-fp16",
         "context_length": 131072,
-    },
-    {
-        "display_name": "Llama 3.2 1B Q4 Debug ",
-        "note": "Dev use only!",
-        "ollama_name": "llama3.2:1b",
-        "context_length": 131072,
-    },
+    }
 ]
 
 def generate_prompt(content):
