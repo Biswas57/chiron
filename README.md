@@ -1,8 +1,6 @@
 # **Chiron: Production Setup**
-## **📌 Prerequisites**
-Before running the application, install the required dependencies.
-
-### 0. Set up VM on Prism Element
+## **Prerequisites**
+### 0. Set up Host Machine
 Create a VM on an SSD/NVMe cluster with at least 300GB of disk, 200GB of RAM and as much CPUs as possible (or run on PC with listed resources). At least 100GHz worth of CPU is recommended for acceptable performance.
 
 If using a VM, you can upload [this OVA file](unavailable) containing the ChironVM Disk Image and Configure your VM with a static IP address, IP gateway, Name Server and Netmask. Otherwise, use the below instructions to setup the Chiron application on your device for Production
@@ -375,3 +373,184 @@ sudo tail -f /var/log/nginx/error.log
 # Flask app logs, this also shows AI models download progress
 sudo journalctl -u flask-app --no-pager --output cat -f
 ```
+
+# **Chiron: Local Development Setup**
+## **Prerequisites**
+### 0. Set up Host Machine
+Ensure your development machine meets the following minimum specifications:
+- **Storage**: At least 300GB SSD/NVMe
+- **Memory**: At least 32GB RAM (recommended)
+- **CPU**: At least 8 cores (16 threads preferred)
+
+### 1. Install Required Packages
+```bash
+# Update system
+sudo dnf update -y
+sudo dnf upgrade -y
+
+# Install tar package
+dnf install tar -y
+
+# Install Node.js and npm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+### IMPORTANT: Then follow onscreen instruction for updating bashrc
+### Finally:
+nvm install 22
+
+# Install Python and pip
+sudo dnf install python3 python3-pip -y
+
+# Install Git
+sudo dnf install git -y
+```
+
+### 2. Install Ollama for running AI models locally
+```bash
+# Install Ollama
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Create a directory for Ollama to download the models
+mkdir /home/ollama_alt_home
+
+# Using your favourite text editor, reconfigure Ollama to use the new home
+sudo vi /etc/systemd/system/ollama.service
+# Add this line:
+Environment="HOME=/home/ollama_alt_home"
+# Under [Environment]
+
+# Make the directory owned by the Ollama user
+sudo chown ollama /home/ollama_alt_home
+sudo chgrp ollama /home/ollama_alt_home
+
+# Restart Ollama service for changes to take effect
+sudo systemctl daemon-reload && sudo systemctl restart ollama
+```
+
+### 3. Clone Repository and Install Dependencies
+```bash
+# Navigate to home directory
+cd ~
+
+# Clone the Chiron repository
+git clone https://github.com/Biswas57/chiron.git chiron
+cd chiron
+
+# Install frontend dependencies
+cd client
+npm install
+
+# IMPORTANT: Ensure the API call URL in App.js is set to `http://localhost:4242`
+vi src/App.js
+# Start frontend for development
+npm start
+
+# Change permission for backend dependency install script
+cd ../server
+# For Rocky Linux
+chmod +x dep_script_rocky
+# For Windows/Mac OS
+chmod +x dep_script
+
+# Install backend dependencies
+# This will take a a few minutes.
+sudo ./dep_script_rocky
+# OR
+sudo ./dep_script
+```
+
+## **Configure Backend (Flask)**
+
+### 1. Update Flask Code
+Navigate to your server directory and ensure your Flask app has the correct host setting in **app.py**:
+```bash
+cd ~/chiron/server
+
+# Ensure main in app.py looks like this:
+if __name__ == "__main__":
+    socketio.run(app, debug=True, host='0.0.0.0', port=4242, allow_unsafe_werkzeug=True)
+```
+
+### 2. Run Flask Backend
+```bash
+cd ~/chiron/server
+python3 app.py
+```
+Now, your backend should be running at `http://localhost:4242/`.
+
+## **Start Web Application**
+### 1. Start the Frontend
+```bash
+cd ~/chiron/client
+npm start
+```
+This will run the frontend in **development mode**. You can access it at:
+```
+http://localhost:3000/
+```
+
+## **Verify Local Setup**
+### 1. Check Backend Connectivity
+From another terminal window:
+```bash
+curl http://localhost:4242
+```
+
+### 2. Check Frontend
+Open a browser and go to:
+```
+http://localhost:3000/
+```
+Ensure the frontend is properly communicating with the backend.
+
+## **Troubleshooting**
+### Common Issues and Solutions
+
+1. **500 Internal Server Error:**
+   - Check Flask logs: `python3 app.py`
+   - Ensure API call URLs in the frontend are pointing to `http://localhost:4242`
+   - Verify Python dependencies are installed
+
+2. **Cannot connect to backend:**
+   - Ensure Flask is running: `python3 app.py`
+   - Check if port 4242 is in use: `sudo ss -tulpn | grep '4242'`
+
+3. **Frontend not loading properly:**
+   - Check frontend logs: `npm start`
+   - Verify `src/App.js` is correctly configured for `http://localhost:4242`
+
+## **Development Workflow**
+### Updating the Application
+
+1. Pull new code:
+```bash
+cd ~/chiron
+git pull
+```
+
+2. Update frontend:
+```bash
+cd client
+npm install
+npm start
+```
+
+3. Update backend:
+```bash
+cd ../server
+python3 app.py
+```
+
+### Monitoring
+1. Check Ollama is performing inference:
+```bash
+btop
+```
+
+2. Check logs:
+```bash
+# Flask backend logs
+python3 app.py
+
+# Frontend logs
+npm start
+
